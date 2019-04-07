@@ -2,6 +2,7 @@ from marshmallow import Schema, fields, post_load
 from enum import Enum
 from marshmallow_enum import EnumField
 
+
 class Register(object):
     def __init__(self, address, birthDate, city, confirmPassword, email, firstName, gender, lastName, password, state):
         self.address = address
@@ -14,6 +15,13 @@ class Register(object):
         self.lastName = lastName
         self.password = password
         self.state = state
+
+
+class Login(object):
+    def __init__(self, email, password):
+        self.email = email
+        self.password = password
+
 
 class Gender(Enum):
     male = "m"
@@ -35,3 +43,12 @@ class RegisterSchema(Schema):
     @post_load
     def get_register(self, data):
         return Register(**data)
+
+
+class LoginSchema(Schema):
+    email = fields.Email()
+    password = fields.String()
+
+    @post_load
+    def _login(self, data):
+        return Login(**data)

@@ -46,7 +46,7 @@ def security_token(username, role_name):
     return signed
 
 
-def ok_response(message, additional_data=None):
+"""def ok_response(message, additional_data=None):
     data = {
         'status': 'OK',
         'server_time': now().strftime("%Y-%m-%dT%H:%M:%S"),
@@ -58,7 +58,7 @@ def ok_response(message, additional_data=None):
                         mimetype='application/json',
                         status=200)
 
-    return response
+    return response"""
 
 
 def error_handler(error_status, message):
@@ -72,6 +72,22 @@ def error_handler(error_status, message):
     response = Response(json.dumps(data),
                         mimetype='application/json',
                         status=error_status)
+    return response
+
+
+def ok_response(message, additional_data=None):
+    data = {
+        'status': 'OK',
+        'code': 200,
+        'server_time': now().strftime("%Y-%m-%dT%H:%M:%S"),
+        'message': message,
+    }
+    if additional_data:
+        for k, v in additional_data.items():
+            data['{0}'.format(k)] = v
+    response = Response(json.dumps(data),
+                        mimetype='application/json',
+                        status=200)
     return response
 
 
@@ -95,14 +111,14 @@ def check_security_token(token, user):
         return False
     return True
 
-    """if not user:
-        return False
+
+def decode_security_token(token, user):
     try:
         decode = jwt.decode(token, user.key_word, algorithms='HS256')
     except Exception as ex:
         print(ex)
         return False
-    return decode"""
+    return decode
 
 
 def security_token(username, role_name, user_id, key_word):

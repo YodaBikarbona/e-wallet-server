@@ -1,2 +1,8 @@
 BAD_DATA = "All fields are required!"
 PASSWORDS_NOT_SAME = "Passwords need be same!"
+USER_NOT_EXISTS = "User with that email does not exists!"
+WRONG_PASSWORD = "Password is wrong!"
+USER_NOT_ACTIVATED = "That user is not activated!"
+INVALID_CODE = "Code is not valid!"
+INVALID_TOKEN = "Token is not valid!"
+USER_ALREADY_EXISTS = "User with that email already exists!"

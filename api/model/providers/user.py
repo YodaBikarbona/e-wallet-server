@@ -23,6 +23,7 @@ class UserProvider:
         user.salt = new_salt()
         user.password = new_psw(user.salt, user_data['password'])
         user.role_id = role.id
+        user.image_id = 1
         db.session.add(user)
         db.session.commit()
         return user
@@ -31,3 +32,21 @@ class UserProvider:
     def get_user_by_ID(cls, user_id):
         user = User.query.filter(User.id == user_id).first()
         return user
+
+    @classmethod
+    def get_user_by_email(cls, email):
+        user = User.query.filter(User.email == email).first()
+        return user
+
+    @classmethod
+    def activate_user(cls, user):
+        user.code = ''
+        user.activated = True
+        db.session.commit()
+        return True
+
+    @classmethod
+    def update_key_word(cls, user):
+        user.key_word = random_string(255)
+        db.session.commit()
+        return True
