@@ -10,6 +10,7 @@ import os
 import uuid
 import string
 import random
+from api.helper.constants import key_word
 
 #from api.model.user import User
 import api.model.user
@@ -105,23 +106,23 @@ def create_random_uuid():
     return u'{0}'.format(uuid.uuid1())
 
 
-def check_security_token(token, user):
+def check_security_token_2(token, user):
 
     if not token == security_token(user.email, user.role.role_name, user.id, user.key_word):
         return False
     return True
 
 
-def decode_security_token(token, user):
+def check_security_token(token):
     try:
-        decode = jwt.decode(token, user.key_word, algorithms='HS256')
+        decode = jwt.decode(token, key_word, algorithms='HS256')
     except Exception as ex:
         print(ex)
         return False
     return decode
 
 
-def security_token(username, role_name, user_id, key_word):
+def security_token(username, role_name, user_id):
     signed = jwt.encode(
         {'userName': '{0}'.format(username),
          'role': '{0}'.format(role_name),

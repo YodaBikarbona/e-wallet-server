@@ -55,14 +55,14 @@ def login(request):
     if not user:
         return error_handler(400, error_messages.USER_NOT_EXISTS)
     if user.password != new_psw(user.salt, request.json['password']):
-        return error_handler(400, error_messages.WRONG_PASSWORD)
+        return error_handler(400, error_messages.WRONG_USERNAME_OR_PASSWORD)
     if not user.activated:
         return error_handler(403, error_messages.USER_NOT_ACTIVATED)
     user.last_login = now()
     db.session.commit()
     additional_data = {
         'user_id': user.id,
-        'token': security_token(user.email, user.role.role_name, user.id, user.key_word)
+        'token': security_token(user.email, user.role.role_name, user.id)
     }
     return ok_response(messages.LOGIN, additional_data)
 

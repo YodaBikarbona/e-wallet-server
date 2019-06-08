@@ -4,17 +4,17 @@ from marshmallow_enum import EnumField
 
 
 class Register(object):
-    def __init__(self, address, birthDate, city, confirmPassword, email, firstName, gender, lastName, password, state):
+    def __init__(self, address, birthDate, city_id, confirmPassword, email, firstName, gender, lastName, password, country_id):
         self.address = address
         self.birthDate = birthDate
-        self.city = city
+        self.city_id = city_id
         self.confirmPassword = confirmPassword
         self.email = email
         self.firstName = firstName
         self.gender = gender
         self.lastName = lastName
         self.password = password
-        self.state = state
+        self.country_id = country_id
 
 
 class Login(object):
@@ -30,15 +30,15 @@ class Gender(Enum):
 
 class RegisterSchema(Schema):
     address = fields.String()
-    birthDate = fields.Date()
-    city = fields.String()
+    birthDate = fields.String()
+    city_id = fields.Integer()
     confirmPassword = fields.String()
     email = fields.Email()
     firstName = fields.String()
     gender = EnumField(Gender)
     lastName = fields.String()
     password = fields.String()
-    state = fields.String()
+    country_id = fields.Integer()
 
     @post_load
     def get_register(self, data):

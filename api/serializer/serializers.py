@@ -8,7 +8,7 @@ ma = Marshmallow(app)
 class RoleSerializer(ma.Schema):
 
     class Meta:
-        fields = ('id', 'created', 'deleted', 'role_name')
+        fields = ('id', 'created', 'role_name')
 
 
 class ImageSerializer(ma.Schema):
@@ -17,67 +17,56 @@ class ImageSerializer(ma.Schema):
          fields = ('id', 'name', 'type', 'file_name')
 
 
+class CountrySerializer(ma.Schema):
+    class Meta:
+        fields = ('id', 'created', 'name', 'phone_code', 'alpha3code', 'activated')
+
+
+class CitySerializer(ma.Schema):
+    country = ma.Nested(CountrySerializer, only=['name'])
+
+    class Meta:
+        fields = ('id', 'created', 'name', 'country_id', 'country')
+
+
+class CurrencySerializer(ma.Schema):
+    class Meta:
+        fields = ('id', 'created', 'name', 'symbol', 'symbol_native', 'code', 'name_plural', 'activated')
+
+
 class UsersSerializer(ma.Schema):
     role = ma.Nested(RoleSerializer, only=['role_name'])
     image = ma.Nested(ImageSerializer, only=['file_name'])
+    country = ma.Nested(CountrySerializer, only=['name'])
+    city = ma.Nested(CitySerializer, only=['name'])
+    currency = ma.Nested(CurrencySerializer, only=['name'])
 
     class Meta:
-        fields = ('id', 'created', 'deleted', 'first_name', 'last_name', 'email', 'activated',
-                  'first_login', 'last_login', 'birth_date', 'gender', 'address', 'phone', 'city', 'role_id', 'created',
-                  'address', 'phone', 'city', 'state', 'role', 'image')
+        fields = ('id', 'created', 'first_name', 'last_name', 'email', 'activated',
+                  'first_login', 'last_login', 'birth_date', 'gender', 'address', 'phone', 'role_id', 'created',
+                  'address', 'phone', 'city_id', 'country_id', 'currency_id', 'city', 'country', 'role', 'image', 'currency')
 
 
-# class SchoolYearSerializer(ma.Schema):
-#
-#     class Meta:
-#         fields = ('id', 'start', 'end')
-#
-#
-# class SchoolClassSerializer(ma.Schema):
-#
-#     class Meta:
-#         fields = ('id', 'name', 'school_year_id')
-#
-#
-# class SchoolClassStudentSerializer(ma.Schema):
-#     school_class = ma.Nested(SchoolClassSerializer, only=['name'])
-#     user = ma.Nested(UsersSerializer, only=['first_name', 'last_name'])
-#
-#     class Meta:
-#         fields = ('id', 'student_id', 'classes_id', 'school_class', 'user')
-#
-#
-# class SchoolClassProfessorSerializer(ma.Schema):
-#     school_class = ma.Nested(SchoolClassSerializer, only=['name'])
-#     user = ma.Nested(UsersSerializer, only=['first_name', 'last_name'])
-#
-#     class Meta:
-#         fields = ('id', 'classes_id', 'professor_id', 'multiple_professors', 'school_class', 'user')
-#
-#
-# class SchoolSubjectSerializer(ma.Schema):
-#     user = ma.Nested(UsersSerializer, only=['first_name', 'last_name'])
-#
-#     class Meta:
-#         fields = ('id', 'name', 'professor_id', 'user')
-#
-#
-# class AbsenceSerializer(ma.Schema):
-#
-#     class Meta:
-#         fields = ('id', 'class_id', 'school_subject_id', 'professor_id', 'student_id',
-#                   'date', 'comment', 'approved')
-#
-#
-# class GradeSerializer(ma.Schema):
-#
-#     class Meta:
-#         fields = ('id', 'class_id', 'school_subject_id', 'professor_id', 'student_id',
-#                   'date', 'comment', 'grade')
-#
-#
-# class StudentGradeSerializer(ma.Schema):
-#
-#     class Meta:
-#         fields = ('id', 'class_id', 'school_subject_id', 'professor_id', 'student_id',
-#                   'closed', 'grade')
+class CategorySerializer(ma.Schema):
+
+    class Meta:
+        fields = ('id', 'created', 'name')
+
+
+class SubCategorySerializer(ma.Schema):
+    bill_category = ma.Nested(CategorySerializer, only=['name'])
+
+    class Meta:
+        fields = ('id', 'created', 'name', 'bill_category_id', 'bill_category')
+
+
+class BillSerializer(ma.Schema):
+    bill_category = ma.Nested(CategorySerializer, only=['name'])
+    image = ma.Nested(ImageSerializer, only=['file_name'])
+    user = ma.Nested(UsersSerializer, only=['first_name', 'last_name'])
+    bill_sub_category = ma.Nested(SubCategorySerializer, only=['name'])
+    currency = ma.Nested(CurrencySerializer, only=['name'])
+
+    class Meta:
+        fields = ('id', 'created', 'title', 'comment', 'price', 'currency_id',
+                  'image_id', 'bill_category_id', 'bill_sub_category_id', 'user_id', 'bill_category', 'image', 'user', 'currency')

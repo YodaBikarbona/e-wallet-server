@@ -2,6 +2,7 @@ from sqlalchemy import Integer, Boolean, DateTime, ForeignKey, Unicode, Column, 
 from sqlalchemy.orm import relationship
 from api.helper.helper import now, new_salt, new_psw
 from api.model.config import db
+from api.model.country import Country, Currency, City
 
 
 class User(db.Model):
@@ -9,7 +10,6 @@ class User(db.Model):
 
     id = Column(Integer, primary_key=True)
     created = Column(DateTime, nullable=True, default=now())
-    deleted = Column(Boolean, default=False)
     first_name = Column(Unicode(255), nullable=False)
     last_name = Column(Unicode(255), nullable=False)
     email = Column(Unicode(255), unique=True, nullable=False)
@@ -22,17 +22,21 @@ class User(db.Model):
     gender = Column(Unicode(255), nullable=False)
     address = Column(Unicode(255), nullable=False)
     phone = Column(Unicode(255), nullable=True, default='')
-    city = Column(Unicode(255), nullable=False)
-    change_mail = Column(Unicode(255), nullable=True, default='')
-    key_word = Column(Unicode(255), nullable=True)
-    state = Column(Unicode(255), nullable=False)
+    new_password_code = Column(Unicode(6), nullable=True)
+    new_password_code_expired = Column(DateTime, nullable=True)
     code = Column(Unicode(6), nullable=True)
 
-    role_id = Column(Integer, ForeignKey('role.id', ondelete='CASCADE'))
-    image_id = Column(Integer, ForeignKey('image.id', ondelete='CASCADE'))
+    city_id = Column(Integer, ForeignKey('city.id', ondelete='CASCADE'), nullable=False)
+    role_id = Column(Integer, ForeignKey('role.id', ondelete='CASCADE'), nullable=False)
+    image_id = Column(Integer, ForeignKey('image.id', ondelete='CASCADE'), nullable=True)
+    country_id = Column(Integer, ForeignKey('country.id', ondelete='CASCADE'), nullable=False)
+    currency_id = Column(Integer, ForeignKey('currency.id', ondelete='CASCADE'), nullable=True)
 
     role = relationship('Role')
     image = relationship('Image')
+    country = relationship('Country')
+    currency = relationship('Currency')
+    city = relationship('City')
 
     def __repr__(self):
         return '{0} {1}'.format(self.first_name, self.last_name)
@@ -49,7 +53,6 @@ class Role(db.Model):
 
     id = Column(Integer, primary_key=True)
     created = Column(DateTime, nullable=True, default=now())
-    deleted = Column(Boolean)
     role_name = Column(Unicode(255), nullable=False)
 
     def __repr__(self):
@@ -61,10 +64,24 @@ class Image(db.Model):
 
     id = Column(Integer, primary_key=True)
     created = Column(DateTime, nullable=True, default=now())
-    deleted = Column(Boolean)
     type = Column(Unicode(255))
     name = Column(Unicode(255))
     file_name = Column(Unicode(255))
 
     def __repr__(self):
         return '{0}'.format(self.file_name)
+
+
+class UserCurrency(db.Model):
+    __tablename__ = 'user_currency'
+
+    id = Column(Integer, primary_key=True)
+
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    currency_id = Column(Integer, ForeignKey('currency.id', ondelete='CASCADE'), nullable=False)
+
+    user = relationship('User')
+    currency = relationship('Currency')
+
+    def __repr__(self):
+        return self.code
