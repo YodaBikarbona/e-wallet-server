@@ -85,3 +85,18 @@ def get_costs(request):
         'costs': BillSerializer(many=True).dump(costs).data if costs else []
     }
     return ok_response(message='', additional_data=additional_data)
+
+
+def get_sub_categoryes_by_category(request):
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+    sub_categories = BillProvider.get_sub_categories(category_id=request.json['category_id'])
+    additional_data = {
+        'sub_categories': SubCategorySerializer(many=True).dump(sub_categories).data if sub_categories else []
+    }
+    return ok_response(message='', additional_data=additional_data)

@@ -17,7 +17,8 @@ from api.views.bill import (
     get_sub_categories,
     get_currencies,
     add_bill,
-    get_costs
+    get_costs,
+    get_sub_categoryes_by_category
 )
 
 #from api.model import user, country, bill
@@ -128,6 +129,12 @@ def add_new_bill_endpoint():
 def get_bills_endpoint():
 
     return get_costs(request=request)
+
+
+@app.route('/user/category/sub_categories', methods=['POST'])
+def get_sub_categoryes_by_category_endpoint():
+
+    return get_sub_categoryes_by_category(request=request)
 
 
 @app.route('/user/<int:id>/categories', methods=['GET'])
