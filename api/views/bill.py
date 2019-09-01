@@ -75,14 +75,106 @@ def get_costs(request):
     if not usr:
         return error_handler(404, error_messages.USER_NOT_FOUND)
 
-    costs = BillProvider.get_costs(
+    costs = BillProvider.get_costs_or_profits(
         category_id=request.json['categoryId'],
         sub_category_id=request.json['subCategoryId'],
         currency_id=request.json['currencyId'],
-        user_id=usr.id
+        user_id=usr.id,
+        bill_type='costs'
     )
     additional_data = {
         'costs': BillSerializer(many=True).dump(costs).data if costs else []
+    }
+    return ok_response(message='', additional_data=additional_data)
+
+
+def new_costs(request):
+    """
+    This function will save new user password (Restart password form)
+    :param request:
+        email: string
+        password: string
+        confirmPassword: string
+    :return:
+        message
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+
+    BillProvider.new_costs_or_profits(
+        category_id=request.json['categoryId'],
+        sub_category_id=request.json['subCategoryId'],
+        currency_id=request.json['currencyId'],
+        title=request.json['title'],
+        comment = request.json['comment'] if 'comment' in request.json else "",
+        price = request.json['price'],
+        user_id=usr.id,
+        bill_type='costs')
+    return ok_response(message='')
+
+
+def new_profits(request):
+    """
+    This function will save new user password (Restart password form)
+    :param request:
+        email: string
+        password: string
+        confirmPassword: string
+    :return:
+        message
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+
+    BillProvider.new_costs_or_profits(
+        category_id=request.json['categoryId'],
+        sub_category_id=request.json['subCategoryId'],
+        currency_id=request.json['currencyId'],
+        title=request.json['title'],
+        comment = request.json['comment'] if 'comment' in request.json else "",
+        price = request.json['price'],
+        user_id=usr.id,
+        bill_type='profits')
+    return ok_response(message='')
+
+
+def get_profits(request):
+    """
+    This function will save new user password (Restart password form)
+    :param request:
+        email: string
+        password: string
+        confirmPassword: string
+    :return:
+        message
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+
+    profits = BillProvider.get_costs_or_profits(
+        category_id=request.json['categoryId'],
+        sub_category_id=request.json['subCategoryId'],
+        currency_id=request.json['currencyId'],
+        user_id=usr.id,
+        bill_type='profits'
+    )
+    additional_data = {
+        'profits': BillSerializer(many=True).dump(profits).data if profits else []
     }
     return ok_response(message='', additional_data=additional_data)
 

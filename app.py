@@ -1,15 +1,26 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask import request
 from api.model.user import db
 from flask_cors import CORS
 from api.serializer.serializers import UsersSerializer, RoleSerializer, CountrySerializer, CitySerializer
 from api.views.register_and_login import register, login, activate_user, logout
-from api.views.user import user, upload_image, \
-    get_users, restart_password, restart_password_code, \
-    save_new_password, user_settings_currencies, save_user_settings_currency, \
-    user_settings_sub_categories, user_settings_categories, save_user_settings_category, \
-    save_user_settings_sub_category
-from api.model.config import app
+from api.views.user import (
+    user,
+    upload_image,
+    get_users,
+    restart_password,
+    restart_password_code,
+    save_new_password,
+    user_settings_currencies,
+    save_user_settings_currency,
+    user_settings_sub_categories,
+    user_settings_categories,
+    save_user_settings_category,
+    save_user_settings_sub_category,
+    change_password,
+)
+#from api.model.config import app
+from config import app
 from api.helper.helper import ok_response
 from flask import send_from_directory
 from api.views.bill import (
@@ -18,69 +29,108 @@ from api.views.bill import (
     get_currencies,
     add_bill,
     get_costs,
-    get_sub_categoryes_by_category
+    get_profits,
+    get_sub_categoryes_by_category,
+    new_costs,
+    new_profits,
 )
+from api.routes.get import get_route
+from api.routes.post import post_route
+from api.routes.put import put_route
+from api.routes.delete import delete_route
+
+#app = Flask(__name__, static_url_path='')
 
 #from api.model import user, country, bill
-#db.create_all()
+db.create_all()
+
+
+#----- Config------
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
+import os
+
+"""app = Flask(__name__, static_url_path='')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://mihael:Mihael0110.@localhost/e_wallet?use_unicode=1&charset=utf8mb4'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = Flask
+
+PROJECT_HOME = os.path.dirname(os.path.realpath(__file__))
+UPLOAD_FOLDER = '{}/uploads/'.format(PROJECT_HOME)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+db = SQLAlchemy(app)
+
+#app.config.from_pyfile('config.cfg')
+mail = Mail(app)
+app.config.from_pyfile('config.cfg')"""
+
+#---------
 
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
-@app.route('/register', methods=['POST'])
-def register_endpoint():
 
+
+@app.route('/')
+def root():
+    return app.send_static_file('index.html')
+
+
+@app.route(post_route.REGISTER, methods=['POST'])
+def register_endpoint():
     return register(request)
 
-@app.route('/login', methods=['POST'])
-def login_endpoint():
 
+@app.route(post_route.LOGIN, methods=['POST'])
+def login_endpoint():
     if "code" in request.json:
         activate_user(request)
-
     return login(request)
 
-@app.route('/user', methods=['GET'])
-def get_user_endpoint():
 
+@app.route(get_route.USER, methods=['GET'])
+def get_user_endpoint():
     return user(request)
 
-@app.route('/upload/user', methods=['POST'])
-def upload_endpoint():
 
+@app.route(post_route.UPLOAD_IMAGE, methods=['POST'])
+def upload_endpoint():
     return upload_image(request)
 
-@app.route('/dir/<path:path>', methods=['GET'])
-def serve_file_in_dir_endpoint(path):
 
+@app.route(get_route.SERVE_FILE, methods=['GET'])
+def serve_file_in_dir_endpoint(path):
     var = '/home/oem/Desktop/Projects/E-wallet/e-wallet-server/api/model/uploads/'
     return send_from_directory(var, path)
 
-@app.route('/logout', methods=['POST'])
-def logout_endpoint():
 
+@app.route(post_route.LOGOUT, methods=['POST'])
+def logout_endpoint():
     return logout(request)
 
-@app.route('/restartPassword', methods=['POST'])
-def restart_password_endpoint():
 
+@app.route(post_route.RESTART_PASSWORD, methods=['POST'])
+def restart_password_endpoint():
     return restart_password(request)
 
-@app.route('/restartPasswordCode', methods=['POST'])
-def restart_password_code_endpoint():
 
+@app.route(post_route.RESTART_PASSWORD_CODE, methods=['POST'])
+def restart_password_code_endpoint():
     return restart_password_code(request)
 
-@app.route('/saveNewPassword', methods=['POST'])
-def save_new_password_endpoint():
 
+@app.route(post_route.SAVE_NEW_PASSWORD, methods=['POST'])
+def save_new_password_endpoint():
     return save_new_password(request)
 
-@app.route('/test', methods=['GET'])
-def test_endpoint():
 
-    return "Hello"
+# @app.route('/test', methods=['GET'])
+# def test_endpoint():
+#
+#     return "Hello"
 
-@app.route('/countries', methods=['GET'])
+
+@app.route(get_route.COUNTRIES, methods=['GET'])
 def country_endpoint():
     from api.model.providers.other import OtherProvider
 
@@ -93,7 +143,7 @@ def country_endpoint():
     return ok_response("", additional_data)
 
 
-@app.route('/countries/<int:country_id>/cities', methods=['GET'])
+@app.route(get_route.CITIES_BY_COUNTRY, methods=['GET'])
 def city_endpoint(country_id):
     from api.model.providers.other import OtherProvider
 
@@ -114,7 +164,7 @@ def get_users_endpoint(id):
     return get_users(request=request, user_id=id)
 
 
-@app.route('/bills/add_bill', methods=['POST'])
+@app.route(post_route.NEW_BILL, methods=['POST'])
 def add_new_bill_endpoint():
 
     return add_bill(request=request)
@@ -126,63 +176,87 @@ def add_new_bill_endpoint():
 #     return get_costs(request=request)
 
 @app.route('/bills/costs', methods=['POST'])
-def get_bills_endpoint():
+def get_costs_endpoint():
 
     return get_costs(request=request)
 
 
+@app.route('/bills/profits', methods=['POST'])
+def get_profits_endpoint():
+
+    return get_profits(request=request)
+
+
+@app.route(post_route.NEW_COSTS, methods=['POST'])
+def new_costs_endpoint():
+    return new_costs(request=request)
+
+
+@app.route(post_route.NEW_PROFITS, methods=['POST'])
+def new_profits_endpoint():
+    return new_profits(request=request)
+
+
 @app.route('/user/category/sub_categories', methods=['POST'])
 def get_sub_categoryes_by_category_endpoint():
-
     return get_sub_categoryes_by_category(request=request)
 
 
 @app.route('/user/<int:id>/categories', methods=['GET'])
 def get_categories_endpoint(id):
-
     return get_categories(user_id=id)
 
 
 @app.route('/user/<int:id>/category/<int:category_id>/sub_categories', methods=['GET'])
 def get_sub_categories_endpoint(id, category_id):
-
     return get_sub_categories(user_id=id, category_id=category_id)
 
 
-@app.route('/user/currencies', methods=['POST'])
+@app.route(post_route.USER_CURRENCIES, methods=['POST'])
 def get_settings_currencies_endpoint():
-
     return user_settings_currencies(request)
 
 
-@app.route('/user/categories', methods=['POST'])
+@app.route(post_route.USER_CATEGORIES, methods=['POST'])
 def get_settings_categories_endpoint():
-
     return user_settings_categories(request)
 
 
-@app.route('/user/sub_categories', methods=['POST'])
+@app.route(post_route.USER_SUB_CATEGORIES, methods=['POST'])
 def get_settings_sub_categories_endpoint():
-
     return user_settings_sub_categories(request)
 
 
-@app.route('/user/save_currency', methods=['POST'])
+@app.route(post_route.SAVE_USER_CURRENCY, methods=['POST'])
 def save_user_settings_currency_endpoint():
-
+    """
+    This method will add or delete user currencies
+    :return: user_currencies
+    """
     return save_user_settings_currency(request)
 
 
-@app.route('/user/save_category', methods=['POST'])
+@app.route(post_route.SAVE_USER_CATEGORY, methods=['POST'])
 def save_user_settings_category_endpoint():
-
+    """
+    This method will add or delete user categories
+    :return: user_categories
+    """
     return save_user_settings_category(request)
 
 
-@app.route('/user/save_sub_category', methods=['POST'])
+@app.route(post_route.SAVE_USER_SUB_CATEGORY, methods=['POST'])
 def save_user_settings_sub_category_endpoint():
-
+    """
+    This method will add or delete user sub categories
+    :return: user_sub_categories
+    """
     return save_user_settings_sub_category(request)
+
+
+@app.route(post_route.CHANGE_PASSWORD, methods=['POST'])
+def change_password_endpoint():
+    return change_password(request)
 
 
 @app.route('/user/<int:id>/currencies', methods=['GET'])
@@ -220,7 +294,7 @@ def add_subcat_endpoint():
 
 
 # @app.route('/country', methods=['GET'])
-# def country_endpoint():
+# def country_endpoint_add():
 #     from api.model.country import Country
 #     from api.helper.constants import countries
 #     for c in countries:

@@ -68,5 +68,5 @@ class BillSerializer(ma.Schema):
     currency = ma.Nested(CurrencySerializer, only=['name'])
 
     class Meta:
-        fields = ('id', 'created', 'title', 'comment', 'price', 'currency_id',
-                  'image_id', 'bill_category_id', 'bill_sub_category_id', 'user_id', 'bill_category', 'image', 'user', 'currency')
+        fields = ('id', 'created', 'title', 'comment', 'price', 'currency_id', 'image_id', 'bill_category_id',
+                  'bill_sub_category_id', 'user_id', 'bill_category', 'bill_type', 'image', 'user', 'currency')

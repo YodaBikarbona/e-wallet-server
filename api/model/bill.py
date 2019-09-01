@@ -14,6 +14,7 @@ class Bill(db.Model):
     title = Column(Unicode(255), nullable=False)
     comment = Column(Unicode(255), nullable=True)
     price = Column(Float, nullable=False)
+    bill_type = Column(Unicode(255), nullable=False)
 
     currency_id = Column(Integer, ForeignKey('currency.id', ondelete='CASCADE'), nullable=True)
     image_id = Column(Integer, ForeignKey('image.id', ondelete='CASCADE'), nullable=True)

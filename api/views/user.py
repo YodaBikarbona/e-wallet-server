@@ -22,7 +22,8 @@ from api.helper.helper import (
     error_handler,
     create_new_folder,
     ok_response,
-    check_security_token
+    check_security_token,
+    check_passwords
 )
 from api.model.config import (
     app,
@@ -368,3 +369,25 @@ def get_users(request, user_id):
         "users": UsersSerializer(many=True).dump.data(users) if users else []
     }
     return ok_response(message=messages.USERS_LIST, additional_data=additional_data)
+
+
+def change_password(request):
+    """
+    This method will change password via user interface (Change password button)
+    :param request:
+    :return: message
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+    if 'password' and 'confirmPassword' not in request.json:
+        return error_handler(400, error_messages.BAD_DATA)
+    if not check_passwords(request.json['password'], request.json['confirmPassword']):
+        return error_handler(error_status=400, message=error_messages.PASSWORDS_NOT_SAME)
+    UserProvider.save_new_password(user=usr, user_data=request.json)
+    return ok_response(message=messages.RESET_PASSWORD)
+

@@ -137,3 +137,9 @@ def create_new_folder(local_dir):
     if not os.path.exists(newpath):
         os.makedirs(newpath)
     return newpath
+
+
+def check_passwords(password, confirm_password):
+    if password != confirm_password:
+        return False
+    return True

@@ -40,15 +40,32 @@ class BillProvider:
         return currencies
 
     @classmethod
-    def get_costs(cls, category_id, sub_category_id, currency_id, user_id):
+    def get_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type):
         bills = Bill.query.filter(Bill.user_id == user_id)
-        if category_id:
+        if category_id and category_id != 'null':
             bills = bills.join(BillCategory, Bill.bill_category_id == BillCategory.id)
             bills = bills.filter(Bill.bill_category_id == category_id)
-        if sub_category_id:
+        if sub_category_id and sub_category_id != 'null':
             bills = bills.join(BillSubCategory, Bill.bill_sub_category_id == BillSubCategory.id,)
             bills = bills.filter(Bill.bill_sub_category_id == sub_category_id)
-        if currency_id:
+        if currency_id and currency_id != 'null':
             bills = bills.join(Currency, Bill.currency_id == Currency.id)
             bills = bills.filter(Bill.currency_id == currency_id)
+        bills = bills.filter(Bill.bill_type == bill_type)
         return bills.all()
+
+    @classmethod
+    def new_costs_or_profits(cls, category_id, sub_category_id, currency_id, title, comment, price, user_id, bill_type, image_id=None):
+        new_bill = Bill()
+        new_bill.user_id = user_id
+        new_bill.title = title
+        new_bill.price = float(price)
+        new_bill.currency_id = currency_id
+        new_bill.comment = comment
+        new_bill.image_id = image_id if image_id else None
+        new_bill.bill_category_id = category_id
+        new_bill.bill_sub_category_id = sub_category_id
+        new_bill.bill_type = bill_type
+        db.session.add(new_bill)
+        db.session.commit()
+        return True
