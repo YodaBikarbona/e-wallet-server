@@ -59,13 +59,9 @@ def get_currencies(user_id):
 
 def get_costs(request):
     """
-    This function will save new user password (Restart password form)
+    This function will get all bills type costs
     :param request:
-        email: string
-        password: string
-        confirmPassword: string
-    :return:
-        message
+    :return: costs
     """
     claims = check_security_token(request.headers['Authorization'])
     if claims:
@@ -90,13 +86,9 @@ def get_costs(request):
 
 def new_costs(request):
     """
-    This function will save new user password (Restart password form)
+    This function will create new bills type costs
     :param request:
-        email: string
-        password: string
-        confirmPassword: string
     :return:
-        message
     """
     claims = check_security_token(request.headers['Authorization'])
     if claims:
@@ -120,13 +112,9 @@ def new_costs(request):
 
 def new_profits(request):
     """
-    This function will save new user password (Restart password form)
+    This function will create new bills type profits
     :param request:
-        email: string
-        password: string
-        confirmPassword: string
     :return:
-        message
     """
     claims = check_security_token(request.headers['Authorization'])
     if claims:
@@ -150,13 +138,9 @@ def new_profits(request):
 
 def get_profits(request):
     """
-    This function will save new user password (Restart password form)
+    This function will get all bills type profits
     :param request:
-        email: string
-        password: string
-        confirmPassword: string
-    :return:
-        message
+    :return: profits
     """
     claims = check_security_token(request.headers['Authorization'])
     if claims:
@@ -180,6 +164,11 @@ def get_profits(request):
 
 
 def get_sub_categoryes_by_category(request):
+    """
+    This function will get all sub categories by picked category
+    :param request:
+    :return: sub_categories
+    """
     claims = check_security_token(request.headers['Authorization'])
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])

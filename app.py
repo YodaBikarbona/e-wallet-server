@@ -177,13 +177,11 @@ def add_new_bill_endpoint():
 
 @app.route('/bills/costs', methods=['POST'])
 def get_costs_endpoint():
-
     return get_costs(request=request)
 
 
 @app.route('/bills/profits', methods=['POST'])
 def get_profits_endpoint():
-
     return get_profits(request=request)
 
 
