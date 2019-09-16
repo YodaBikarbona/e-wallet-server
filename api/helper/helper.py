@@ -143,3 +143,7 @@ def check_passwords(password, confirm_password):
     if password != confirm_password:
         return False
     return True
+
+
+def date_format(date):
+    return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")

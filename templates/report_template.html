@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div style="width: 100%; font-size: 10px">E-wallet</div>
+    <h1 style="text-align: center; margin-bottom: 100px">Report</h1>
+    <div style="width: 100%">
+        Date of report: {{ report_date }}
+    </div>
+    <div style="width: 100%; margin-bottom: 100px">
+        Number of items: {{ items }}
+    </div>
+
+
+
+    <div style="width: 100%">
+        First name: {{ user.first_name }}
+    </div>
+    <div style="width: 100%">
+        Last name: {{ user.last_name }}
+    </div>
+    <div style="width: 100%">
+        Birth date: {{ user.birth_date }}
+    </div>
+    <div style="width: 100%">
+        Country: {{ user.country.name }}
+    </div>
+    <div style="width: 100%">
+        City: {{ user.city.name }}
+    </div>
+    <div style="width: 100%">
+        Address: {{ user.address }}
+    </div>
+
+    <table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr style="
+  text-align: left;">
+                <td style="border: 1px solid #000000;
+  text-align: left;
+  padding: 8px;">No.</td>
+                <td style="border: 1px solid #000000;
+  text-align: left;
+  padding: 8px;">Type</td>
+                <td style="border: 1px solid #000000;
+  text-align: left;
+  padding: 8px;">Date</td>
+                <td style="border: 1px solid #000000;
+  text-align: left;
+  padding: 8px;">Category</td>
+                <td style="border: 1px solid #000000;
+  text-align: left;
+  padding: 8px;">Subcategory</td>
+                <td style="border: 1px solid #000000;
+  text-align: left;
+  padding: 8px;">Price</td>
+                <td style="border: 1px solid #000000;
+  text-align: left;
+  padding: 8px;">Type</td>
+            </tr>
+        </thead>
+    </table>
+</body>
+</html>

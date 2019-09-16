@@ -2,7 +2,7 @@ from flask import request
 from api.model.user import User, Image
 from flask import jsonify
 from api.serializer.serializers import UsersSerializer, ImageSerializer
-from api.helper.helper import now, ValidateRequestSchema, error_handler, create_new_folder, ok_response, check_security_token
+from api.helper.helper import now, ValidateRequestSchema, error_handler, create_new_folder, ok_response, check_security_token, date_format
 import os
 from api.model.config import app, PROJECT_HOME, UPLOAD_FOLDER
 from werkzeug.utils import secure_filename
@@ -181,3 +181,28 @@ def get_sub_categoryes_by_category(request):
         'sub_categories': SubCategorySerializer(many=True).dump(sub_categories).data if sub_categories else []
     }
     return ok_response(message='', additional_data=additional_data)
+
+
+def print_pdf_report(request):
+    """
+    This function will create report as html template and convert report to pdf.
+    Consuming this function user will download report of bills
+    :return: PDF
+    """
+    from flask import render_template, make_response
+    import pdfkit
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+    user = UsersSerializer(many=False).dump(usr).data
+    items = len(BillProvider.get_costs_or_profits('null', 'null', 'null', user_id=usr.id, bill_type='costs'))
+    rendered = render_template("report_template.html", user=user, items=items, report_date=date_format(now()))
+    report = pdfkit.from_string(rendered, False)
+    response = make_response(report)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'attachment; filename=report.pdf'
+    return response

@@ -33,6 +33,7 @@ from api.views.bill import (
     get_sub_categoryes_by_category,
     new_costs,
     new_profits,
+    print_pdf_report,
 )
 from api.routes.get import get_route
 from api.routes.post import post_route
@@ -261,6 +262,11 @@ def change_password_endpoint():
 def get_currencies_endpoint(id):
 
     return get_currencies(user_id=id)
+
+
+@app.route(get_route.PRINT_REPORT, methods=['GET'])
+def print_report():
+    return print_pdf_report(request)
 
 
 @app.route('/add_cat_subcat', methods=['GET'])
