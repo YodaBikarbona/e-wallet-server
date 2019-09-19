@@ -5,63 +5,95 @@
     <title>Title</title>
 </head>
 <body>
-    <div style="width: 100%; font-size: 10px">E-wallet</div>
-    <h1 style="text-align: center; margin-bottom: 100px">Report</h1>
-    <div style="width: 100%">
-        Date of report: {{ report_date }}
-    </div>
-    <div style="width: 100%; margin-bottom: 100px">
-        Number of items: {{ items }}
-    </div>
+    <div class="e-wallet">E-wallet</div>
+    <h1 class="header">Report</h1>
 
-
-
-    <div style="width: 100%">
-        First name: {{ user.first_name }}
+    <div class="w-100">
+        <table class="w-100 no-border">
+            <tr class="no-border">
+                <td class="no-border">First name: {{ user.first_name }}</td>
+                <td class="no-border">Last name: {{ user.last_name }}</td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border">Location: {{ user.address }}, {{ user.city.name }}, {{ user.country.name }}</td>
+                <td class="no-border">E-Mail: {{ user.email }}</td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border"></td>
+                <td class="no-border"></td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border">Date of report: {{ report_date }}</td>
+                <td class="no-border">Items/Bills: {{ items }}</td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border">Currency: {{ currencies }}</td>
+                <td class="no-border"></td>
+            </tr>
+        </table>
     </div>
-    <div style="width: 100%">
-        Last name: {{ user.last_name }}
-    </div>
-    <div style="width: 100%">
-        Birth date: {{ user.birth_date }}
-    </div>
-    <div style="width: 100%">
-        Country: {{ user.country.name }}
-    </div>
-    <div style="width: 100%">
-        City: {{ user.city.name }}
-    </div>
-    <div style="width: 100%">
-        Address: {{ user.address }}
-    </div>
-
-    <table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;">
+    <div class="m-bottom20 w-100"></div>
+    <table class="w-100">
         <thead>
-            <tr style="
-  text-align: left;">
-                <td style="border: 1px solid #000000;
-  text-align: left;
-  padding: 8px;">No.</td>
-                <td style="border: 1px solid #000000;
-  text-align: left;
-  padding: 8px;">Type</td>
-                <td style="border: 1px solid #000000;
-  text-align: left;
-  padding: 8px;">Date</td>
-                <td style="border: 1px solid #000000;
-  text-align: left;
-  padding: 8px;">Category</td>
-                <td style="border: 1px solid #000000;
-  text-align: left;
-  padding: 8px;">Subcategory</td>
-                <td style="border: 1px solid #000000;
-  text-align: left;
-  padding: 8px;">Price</td>
-                <td style="border: 1px solid #000000;
-  text-align: left;
-  padding: 8px;">Type</td>
+            <tr class="text-align-left">
+                <td style="width: 20px">No.</td>
+                <td style="width: 50px">Type</td>
+                <td style="width: 160px">Date</td>
+                <td style="width: 160px">Title</td>
+                <td style="width: 70px">Category</td>
+                <td style="width: 70px">Subcategory</td>
+                <td style="width: 50px">Curr.</td>
+                <td style="width: 70px">Price</td>
             </tr>
         </thead>
+        <tbody>
+            {% for bill in bills %}
+                <tr>
+                    <td> {{ bill.sequence }} </td>
+                    <td> {{ bill.bill_type }} </td>
+                    <td> {{ bill.created }} </td>
+                    <td> {{ bill.title }} </td>
+                    <td> {{ bill.bill_category.name }} </td>
+                    <td> {{ bill.bill_sub_category.name }} </td>
+                    <td> {{ bill.currency.code }} </td>
+                    <td> {{ bill.price }} </td>
+                </tr>
+            {% endfor %}
+            <!--tr>
+                <td>  </td>
+                <td>  </td>
+                <td>  </td>
+                <td>  </td>
+                <td>  </td>
+                <td>  </td>
+                <td> Summ: </td>
+                <td> {{ summ }} </td>
+            </tr-->
+        </tbody>
+    </table>
+    <table class="w-100 no-border">
+        <tr>
+            <td class="no-border text-align-right" style="width: 590px"></td>
+            <td class="text-align-center" style="width: 120px">Recapitulation</td>
+        </tr>
+    </table>
+    <table class="w-100 no-border">
+        <thead>
+            <tr>
+                <td class="no-border text-align-right" style="width: 670px"></td>
+                <td style="width: 50px">Curr.</td>
+                <td style="width: 70px">Summ</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in summ %}
+                <tr>
+                    <td class="no-border"></td>
+                    <td> {{ s.currency }} </td>
+                    <td> {{ s.summ }} </td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </body>
 </html>

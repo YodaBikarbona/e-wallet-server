@@ -264,7 +264,7 @@ def get_currencies_endpoint(id):
     return get_currencies(user_id=id)
 
 
-@app.route(get_route.PRINT_REPORT, methods=['GET'])
+@app.route(post_route.PRINT_REPORT, methods=['POST'])
 def print_report():
     return print_pdf_report(request)
 

@@ -2,7 +2,7 @@ from flask import request
 from api.model.user import User, Image
 from flask import jsonify
 from api.serializer.serializers import UsersSerializer, ImageSerializer
-from api.helper.helper import now, ValidateRequestSchema, error_handler, create_new_folder, ok_response, check_security_token, date_format
+from api.helper.helper import now, ValidateRequestSchema, error_handler, create_new_folder, ok_response, check_security_token, date_format, date_format_string
 import os
 from api.model.config import app, PROJECT_HOME, UPLOAD_FOLDER
 from werkzeug.utils import secure_filename
@@ -199,9 +199,40 @@ def print_pdf_report(request):
     if not usr:
         return error_handler(404, error_messages.USER_NOT_FOUND)
     user = UsersSerializer(many=False).dump(usr).data
-    items = len(BillProvider.get_costs_or_profits('null', 'null', 'null', user_id=usr.id, bill_type='costs'))
-    rendered = render_template("report_template.html", user=user, items=items, report_date=date_format(now()))
-    report = pdfkit.from_string(rendered, False)
+    bills = BillProvider.get_costs_or_profits(
+        category_id=request.json['categoryId'],
+        sub_category_id=request.json['subCategoryId'],
+        currency_id=request.json['currencyId'],
+        user_id=usr.id,
+        bill_type=request.json['billType']
+    )
+    bills = BillSerializer(many=True).dump(bills).data if bills else []
+    #items = len(BillProvider.get_costs_or_profits('null', 'null', 'null', user_id=usr.id, bill_type=request.json['billType'], bills=bills))
+    summ = 0
+    list_of_currencies = []
+    for i, bill in enumerate(bills):
+        bill['sequence'] = i+1
+        if bill['bill_sub_category_id'] != False:
+            bill_sub_category = BillProvider.get_subcategory_by_sub_cat_id(bill_sub_category_id=bill['bill_sub_category_id'])
+            bill['bill_sub_category'] = SubCategorySerializer(many=False).dump(bill_sub_category).data
+        bill['created'] = date_format_string(bill['created'])
+        summ += bill['price']
+        if bill['currency']['code'] not in list_of_currencies:
+            list_of_currencies.append(bill['currency']['code'])
+    currencies = ", ".join(list_of_currencies)
+    summ_list = []
+    for c in list_of_currencies:
+        summ = 0
+        for bill in bills:
+            if c == bill['currency']['code']:
+                summ += bill['price']
+        summ_list.append({'currency': c,
+                          'summ': summ})
+    items = len(bills)
+    scss = ['static/report/report.scss']
+    rendered = render_template("report_template.html", user=user, items=items, report_date=date_format(now()),
+                               bills=bills, bill_type=request.json['billType'], currencies=currencies, summ=summ_list)
+    report = pdfkit.from_string(rendered, False, css=scss)
     response = make_response(report)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'attachment; filename=report.pdf'

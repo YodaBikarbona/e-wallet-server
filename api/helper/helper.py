@@ -147,3 +147,10 @@ def check_passwords(password, confirm_password):
 
 def date_format(date):
     return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
+
+
+def date_format_string(date):
+    date = date.split('T')
+    date = "{0} {1}".format(date[0], date[1].split('+')[0])
+    date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")

@@ -69,3 +69,7 @@ class BillProvider:
         db.session.add(new_bill)
         db.session.commit()
         return True
+
+    @classmethod
+    def get_subcategory_by_sub_cat_id(cls, bill_sub_category_id):
+        return BillSubCategory.query.filter(BillSubCategory.id == bill_sub_category_id).first()

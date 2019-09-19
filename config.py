@@ -1,4 +1,5 @@
 from flask import Flask
+#from flask.ext.scss import Scss
 import os
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
@@ -16,3 +17,4 @@ db = SQLAlchemy(app)
 
 app.config.from_pyfile('config.cfg')
 mail = Mail(app)
+#Scss(app)
