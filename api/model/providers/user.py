@@ -74,10 +74,12 @@ class UserProvider:
         return new_role
 
     @classmethod
-    def set_new_restart_code(cls, user):
-
-        user.new_password_code = random_string(6)
-        user.new_password_code_expired = now() + dt.timedelta(minutes=5)
+    def set_new_restart_code(cls, user, code=False):
+        if code:
+            user.code = random_string(6)
+        else:
+            user.new_password_code = random_string(6)
+            user.new_password_code_expired = now() + dt.timedelta(minutes=5)
         db.session.commit()
         return True
 
@@ -88,7 +90,8 @@ class UserProvider:
     @classmethod
     def save_new_password(cls, user, user_data):
         user.salt = new_salt()
-        user.password = new_psw(user.salt, user_data['password'])
+        user.password = new_psw(user.salt, user_data['newPassword'])
+        user.activated = False
         db.session.commit()
         return True
 

@@ -23,7 +23,8 @@ from api.helper.helper import (
     create_new_folder,
     ok_response,
     check_security_token,
-    check_passwords
+    check_passwords,
+    new_psw
 )
 from api.model.config import (
     app,
@@ -384,10 +385,14 @@ def change_password(request):
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
         return error_handler(404, error_messages.USER_NOT_FOUND)
-    if 'password' and 'confirmPassword' not in request.json:
+    if usr.password != new_psw(usr.salt, request.json['currentPassword']):
+        return error_handler(400, error_messages.WRONG_PASSWORD)
+    if 'newPassword' and 'confirmPassword' not in request.json:
         return error_handler(400, error_messages.BAD_DATA)
-    if not check_passwords(request.json['password'], request.json['confirmPassword']):
+    if not check_passwords(request.json['newPassword'], request.json['confirmPassword']):
         return error_handler(error_status=400, message=error_messages.PASSWORDS_NOT_SAME)
     UserProvider.save_new_password(user=usr, user_data=request.json)
+    UserProvider.set_new_restart_code(user=usr, code=True)
+    send_code_to_mail(recipient=usr.email, code=usr.code)
     return ok_response(message=messages.RESET_PASSWORD)
 
