@@ -230,3 +230,21 @@ class UserProvider:
                 db.session.delete(user_sub_category)
                 db.session.commit()
             return True
+
+    @classmethod
+    def edit_user(cls, user_data, user_email, user_id):
+        # First check new user email
+        if cls.get_user_by_email(email=user_data['email']) and user_email != user_data['email']:
+            return False
+        user = cls.get_user_by_ID(user_id == user_id)
+        user.gender = user_data['gender']
+        user.email = user_data['email']
+        user.city_id = u'{0}'.format(user_data['city_id'])
+        user.address = u'{0}'.format(user_data['address'])
+        user.birth_date = datetime.strptime(user_data['birthDate'], "%Y-%m-%d")  # .strftime("%Y-%m-%d")
+        user.first_name = u'{0}'.format(user_data['firstName'])
+        user.last_name = u'{0}'.format(user_data['lastName'])
+        user.country_id = u'{0}'.format(user_data['country_id'])
+        user.phone = u'{0}'.format(user_data['phone'])
+        db.session.commit()
+        return True

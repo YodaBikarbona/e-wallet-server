@@ -8,3 +8,4 @@ RESET_PASSWORD = "Your new password has been saved please use your new password 
 SETTINGS_CURRENCIES = "User currencies list"
 SETTINGS_CATEGORIES = "User categories list"
 SETTINGS_SUB_CATEGORIES = "User sub categories list"
+USER_EDITED = "User is successfully edited!"

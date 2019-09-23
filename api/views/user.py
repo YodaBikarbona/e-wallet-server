@@ -5,6 +5,7 @@ from api.model.config import db
 from werkzeug.utils import secure_filename
 from api.model.providers.user import UserProvider
 from api.views.register_and_login import send_code_to_mail
+from api.validation.user import EditUserSchema
 from api.model.user import (
     User,
     Image
@@ -396,3 +397,22 @@ def change_password(request):
     send_code_to_mail(recipient=usr.email, code=usr.code)
     return ok_response(message=messages.RESET_PASSWORD)
 
+
+def edit_user(request):
+    """
+    This method will edit personal user information
+    :param request:
+    :return: message
+    """
+    if not ValidateRequestSchema(request, EditUserSchema()):
+        return error_handler(400, error_messages.BAD_DATA)
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+    if not UserProvider.edit_user(user_data=request.json, user_email=usr.email, user_id=usr.id):
+        return error_handler(400, error_messages.USER_ALREADY_EXISTS)
+    return ok_response(message=messages.USER_EDITED)

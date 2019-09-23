@@ -18,6 +18,7 @@ from api.views.user import (
     save_user_settings_category,
     save_user_settings_sub_category,
     change_password,
+    edit_user,
 )
 #from api.model.config import app
 from config import app
@@ -267,6 +268,11 @@ def get_currencies_endpoint(id):
 @app.route(post_route.PRINT_REPORT, methods=['POST'])
 def print_report():
     return print_pdf_report(request)
+
+
+@app.route(put_route.EDIT_USER, methods=['PUT'])
+def edit_user_endpoint():
+    return edit_user(request)
 
 
 @app.route('/add_cat_subcat', methods=['GET'])
