@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, Boolean, DateTime, ForeignKey, Unicode, Column, Date
+from sqlalchemy import Integer, Boolean, DateTime, ForeignKey, Unicode, Column, Date, Float
 from sqlalchemy.orm import relationship
 from api.helper.helper import now, new_salt, new_psw
 from api.model.config import db
@@ -76,6 +76,7 @@ class UserCurrency(db.Model):
     __tablename__ = 'user_currency'
 
     id = Column(Integer, primary_key=True)
+    #monthly_cost_limit = Column(Float, default=1000)
 
     user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     currency_id = Column(Integer, ForeignKey('currency.id', ondelete='CASCADE'), nullable=False)

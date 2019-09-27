@@ -21,7 +21,7 @@ class ActivationSchema(Schema):
 
 
 class EditUser(object):
-    def __init__(self, firstName, lastName, birthDate, country_id, city_id, address, email, phone, gender):
+    def __init__(self, firstName, lastName, birthDate, country_id, city_id, address, email, phone, gender, currency_id):
         self.firstName = firstName
         self.lastName = lastName
         self.birthDate = birthDate
@@ -31,6 +31,7 @@ class EditUser(object):
         self.email = email
         self.phone = phone
         self.gender = gender
+        self.currency_id = currency_id
 
 
 class EditUserSchema(Schema):
@@ -43,6 +44,7 @@ class EditUserSchema(Schema):
     email = fields.String()
     phone = fields.String()
     gender = EnumField(Gender)
+    currency_id = fields.String()
 
     @post_load()
     def _edit_user(self, data):

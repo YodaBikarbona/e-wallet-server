@@ -39,7 +39,7 @@ class UsersSerializer(ma.Schema):
     image = ma.Nested(ImageSerializer, only=['file_name'])
     country = ma.Nested(CountrySerializer, only=['name'])
     city = ma.Nested(CitySerializer, only=['name'])
-    currency = ma.Nested(CurrencySerializer, only=['name'])
+    currency = ma.Nested(CurrencySerializer, only=['name', 'code'])
 
     class Meta:
         fields = ('id', 'created', 'first_name', 'last_name', 'email', 'activated',

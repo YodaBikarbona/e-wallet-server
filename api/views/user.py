@@ -404,6 +404,8 @@ def edit_user(request):
     :param request:
     :return: message
     """
+    if request.json['currency_id'] != 'null':
+        request.json['currency_id'] = "{0}".format(request.json['currency_id'])
     if not ValidateRequestSchema(request, EditUserSchema()):
         return error_handler(400, error_messages.BAD_DATA)
     claims = check_security_token(request.headers['Authorization'])

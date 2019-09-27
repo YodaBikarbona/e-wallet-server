@@ -246,5 +246,6 @@ class UserProvider:
         user.last_name = u'{0}'.format(user_data['lastName'])
         user.country_id = u'{0}'.format(user_data['country_id'])
         user.phone = u'{0}'.format(user_data['phone'])
+        user.currency_id = u'{0}'.format(user_data['currency_id']) if user_data['currency_id'] != 'null' else None
         db.session.commit()
         return True
