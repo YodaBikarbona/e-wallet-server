@@ -76,7 +76,7 @@ class UserCurrency(db.Model):
     __tablename__ = 'user_currency'
 
     id = Column(Integer, primary_key=True)
-    #monthly_cost_limit = Column(Float, default=1000)
+    monthly_cost_limit = Column(Float, default=1000)
 
     user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     currency_id = Column(Integer, ForeignKey('currency.id', ondelete='CASCADE'), nullable=False)

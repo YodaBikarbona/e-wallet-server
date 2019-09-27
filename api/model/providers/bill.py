@@ -73,3 +73,13 @@ class BillProvider:
     @classmethod
     def get_subcategory_by_sub_cat_id(cls, bill_sub_category_id):
         return BillSubCategory.query.filter(BillSubCategory.id == bill_sub_category_id).first()
+
+    @classmethod
+    def get_all_costs_and_profits(cls, costs, profits, user_id, currency_id):
+        bills = Bill.query.filter(Bill.user_id == user_id,
+                                  Bill.currency_id == currency_id)
+        if costs and not profits:
+            bills = bills.filter(Bill.bill_type == 'costs')
+        if profits and not costs:
+            bills = bills.filter(Bill.bill_type == 'profits')
+        return bills.all()

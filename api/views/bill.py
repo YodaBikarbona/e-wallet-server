@@ -2,7 +2,7 @@ from flask import request
 from api.model.user import User, Image
 from flask import jsonify
 from api.serializer.serializers import UsersSerializer, ImageSerializer
-from api.helper.helper import now, ValidateRequestSchema, error_handler, create_new_folder, ok_response, check_security_token, date_format, date_format_string
+from api.helper.helper import now, ValidateRequestSchema, error_handler, create_new_folder, ok_response, check_security_token, date_format, all_days_between_two_date
 import os
 from api.model.config import app, PROJECT_HOME, UPLOAD_FOLDER
 from werkzeug.utils import secure_filename
@@ -215,7 +215,7 @@ def print_pdf_report(request):
         if bill['bill_sub_category_id'] != False:
             bill_sub_category = BillProvider.get_subcategory_by_sub_cat_id(bill_sub_category_id=bill['bill_sub_category_id'])
             bill['bill_sub_category'] = SubCategorySerializer(many=False).dump(bill_sub_category).data
-        bill['created'] = date_format_string(bill['created'])
+        bill['created'] = date_format(bill['created'], string=True)
         summ += bill['price']
         if bill['currency']['code'] not in list_of_currencies:
             list_of_currencies.append(bill['currency']['code'])
@@ -237,3 +237,54 @@ def print_pdf_report(request):
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'attachment; filename=report.pdf'
     return response
+
+
+def get_graph(request):
+    """
+    This method will get all bills with date and prices (added for each day)
+    :param request:
+    :return: list_of_prices (cost and profit)
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+    bills = BillProvider.get_all_costs_and_profits(
+        costs=request.json['costs'],
+        profits=request.json['profits'],
+        user_id=usr.id,
+        currency_id=request.json['currency_id']
+    )
+    bills = BillSerializer(many=True).dump(bills).data if bills else []
+    bills = sorted(bills, key=lambda i: i['created'])
+    bills_dates = []
+    for i, bill in enumerate(bills):
+        bill['sequence'] = i+1
+        bill['created'] = date_format(bill['created'], string=True, graph=True)
+        if bill['created'] not in bills_dates:
+            bills_dates.append(bill['created'])
+    all_days = []
+    if bills_dates:
+        all_days = all_days_between_two_date(start_date=bills_dates[0], end_date=bills_dates[-1])
+    costs_list = [b for b in bills if b['bill_type'] == 'costs']
+    profits_list = [b for b in bills if b['bill_type'] == 'profits']
+    bills_list = []
+    for date in all_days:
+        sum_cost = 0
+        sum_profit = 0
+        for cost in costs_list:
+            if date == cost['created']:
+                sum_cost += cost['price']
+        bills_list.append([date, 'Cost', sum_cost])
+        for profit in profits_list:
+            if date == profit['created']:
+                sum_profit += profit['price']
+        bills_list.append([date, 'Profit', sum_profit])
+
+    additional_data = {
+        'bills': bills_list
+    }
+    return ok_response(message='Bills', additional_data=additional_data)

@@ -35,6 +35,7 @@ from api.views.bill import (
     new_costs,
     new_profits,
     print_pdf_report,
+    get_graph,
 )
 from api.routes.get import get_route
 from api.routes.post import post_route
@@ -124,6 +125,11 @@ def restart_password_code_endpoint():
 @app.route(post_route.SAVE_NEW_PASSWORD, methods=['POST'])
 def save_new_password_endpoint():
     return save_new_password(request)
+
+
+@app.route(post_route.GET_GRAPH, methods=['POST'])
+def get_graph_endpoint():
+    return get_graph(request)
 
 
 # @app.route('/test', methods=['GET'])

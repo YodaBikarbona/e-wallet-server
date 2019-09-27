@@ -4,7 +4,7 @@ from random import choice
 from jose import jwt
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from flask import Response
 import os
 import uuid
@@ -145,12 +145,25 @@ def check_passwords(password, confirm_password):
     return True
 
 
-def date_format(date):
-    return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
-
-
-def date_format_string(date):
+def date_format(date, string=False, graph=False):
+    if not string:
+        return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
     date = date.split('T')
-    date = "{0} {1}".format(date[0], date[1].split('+')[0])
-    date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-    return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
+    if not graph:
+        date = "{0} {1}".format(date[0], date[1].split('+')[0])
+        date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+        return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
+    date = "{0}".format(date[0])
+    date = datetime.strptime(date, "%Y-%m-%d")
+    return datetime.strftime(date, "%d-%b-%y")
+
+
+def all_days_between_two_date(start_date, end_date):
+    sdate = datetime.strptime(start_date, "%d-%b-%y")  # start date
+    edate = datetime.strptime(end_date, "%d-%b-%y")  # end date
+    delta = edate - sdate  # as timedelta
+    days_list = []
+    for i in range(delta.days + 1):
+        day = sdate + timedelta(days=i)
+        days_list.append(datetime.strftime(day, "%d-%b-%y"))
+    return days_list
