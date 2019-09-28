@@ -283,8 +283,17 @@ def get_graph(request):
             if date == profit['created']:
                 sum_profit += profit['price']
         bills_list.append([date, 'Profit', sum_profit])
-
+    bills_prices_cost = list(set([bill[-1] for bill in bills_list if bill[-2] == 'Cost' and bill[-1] != 0]))
+    min_cost = min(bills_prices_cost) if bills_prices_cost else 0
+    max_cost = max(bills_prices_cost) if bills_prices_cost else 0
+    bills_prices_profit = list(set([bill[-1] for bill in bills_list if bill[-2] == 'Profit' and bill[-1] != 0]))
+    min_profit = min(bills_prices_profit) if bills_prices_profit else 0
+    max_profit = max(bills_prices_profit) if bills_prices_profit else 0
     additional_data = {
-        'bills': bills_list
+        'bills': bills_list,
+        'min_cost': min_cost,
+        'max_cost': max_cost,
+        'min_profit': min_profit,
+        'max_profit': max_profit
     }
     return ok_response(message='Bills', additional_data=additional_data)
