@@ -289,11 +289,13 @@ def get_graph(request):
     bills_prices_profit = list(set([bill[-1] for bill in bills_list if bill[-2] == 'Profit' and bill[-1] != 0]))
     min_profit = min(bills_prices_profit) if bills_prices_profit else 0
     max_profit = max(bills_prices_profit) if bills_prices_profit else 0
+    currency = UserProvider.get_user_currency_by_currency_id(currency_id=request.json['currency_id'])
     additional_data = {
         'bills': bills_list,
         'min_cost': min_cost,
         'max_cost': max_cost,
         'min_profit': min_profit,
-        'max_profit': max_profit
+        'max_profit': max_profit,
+        'monthly_limit': currency.monthly_cost_limit
     }
     return ok_response(message='Bills', additional_data=additional_data)

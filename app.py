@@ -19,6 +19,8 @@ from api.views.user import (
     save_user_settings_sub_category,
     change_password,
     edit_user,
+    get_active_currencies_limit,
+    edit_currency_monthly_limit,
 )
 #from api.model.config import app
 from config import app
@@ -130,6 +132,17 @@ def save_new_password_endpoint():
 @app.route(post_route.GET_GRAPH, methods=['POST'])
 def get_graph_endpoint():
     return get_graph(request)
+
+
+@app.route('/news', methods=['GET'])
+def get_news_endpoint():
+    from api.model.user import News
+    from api.serializer.serializers import NewsSerializer
+    news = News.query.order_by(News.created.desc()).all()
+    additional_data = {
+        'news': NewsSerializer(many=True).dump(news).data if news else []
+    }
+    return ok_response('News', additional_data=additional_data)
 
 
 # @app.route('/test', methods=['GET'])
@@ -279,6 +292,16 @@ def print_report():
 @app.route(put_route.EDIT_USER, methods=['PUT'])
 def edit_user_endpoint():
     return edit_user(request)
+
+
+@app.route(post_route.GET_ACTIVE_CURRENCIES_LIMIT, methods=['POST'])
+def get_active_currencies_limit_endpoint():
+    return get_active_currencies_limit(request)
+
+
+@app.route(put_route.EDIT_MONTHLY_LIMIT, methods=['PUT'])
+def edit_currency_monthly_limit_endpoint():
+    return edit_currency_monthly_limit(request)
 
 
 @app.route('/add_cat_subcat', methods=['GET'])

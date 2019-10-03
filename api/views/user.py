@@ -15,7 +15,8 @@ from api.serializer.serializers import (
     ImageSerializer,
     CurrencySerializer,
     CategorySerializer,
-    SubCategorySerializer
+    SubCategorySerializer,
+    UserCirrenciesSerializer
 )
 from api.helper.helper import (
     now,
@@ -418,3 +419,44 @@ def edit_user(request):
     if not UserProvider.edit_user(user_data=request.json, user_email=usr.email, user_id=usr.id):
         return error_handler(400, error_messages.USER_ALREADY_EXISTS)
     return ok_response(message=messages.USER_EDITED)
+
+
+def get_active_currencies_limit(request):
+    """
+    This method will get all user active currencies with monthly limit
+    :param request:
+    :return: list_of_currencies
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+    active_currencies = UserProvider.get_active_user_currencies_with_limit(user_id=usr.id)
+    additional_data = {
+        'currencies': UserCirrenciesSerializer(many=True).dump(active_currencies).data if active_currencies else []
+    }
+    return ok_response(message=messages.ACTIVE_CURRENCIES, additional_data=additional_data)
+
+
+def edit_currency_monthly_limit(request):
+    """
+    This method will edit monthly limit for specific currency (only active currencies)
+    :param request:
+    :return: message
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+    UserProvider.edit_active_user_currencies_with_limit(
+        currency_id=request.json['currency_id'],
+        monthly_limit=request.json['monthly_cost_limit']
+    )
+    return ok_response(message=messages.MONTHLY_LIMIT_EDITED)
+

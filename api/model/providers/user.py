@@ -249,3 +249,20 @@ class UserProvider:
         user.currency_id = u'{0}'.format(user_data['currency_id']) if user_data['currency_id'] != 'null' else None
         db.session.commit()
         return True
+
+    @classmethod
+    def get_active_user_currencies_with_limit(cls, user_id):
+        return UserCurrency.query.filter(UserCurrency.user_id == user_id).all()
+
+    @classmethod
+    def edit_active_user_currencies_with_limit(cls, currency_id, monthly_limit):
+        currency = UserCurrency.query.filter(UserCurrency.id == currency_id).first()
+        currency.monthly_cost_limit = monthly_limit
+        db.session.commit()
+        return True
+
+    @classmethod
+    def get_user_currency_by_currency_id(cls, currency_id):
+        return UserCurrency.query\
+            .join(Currency, UserCurrency.currency_id == Currency.id)\
+            .filter(Currency.id == currency_id).first()

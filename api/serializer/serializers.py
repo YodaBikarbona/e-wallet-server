@@ -12,7 +12,6 @@ class RoleSerializer(ma.Schema):
 
 
 class ImageSerializer(ma.Schema):
-
      class Meta:
          fields = ('id', 'name', 'type', 'file_name')
 
@@ -71,3 +70,18 @@ class BillSerializer(ma.Schema):
         fields = ('id', 'created', 'title', 'comment', 'price', 'bill_type', 'currency_id', 'image_id',
                   'bill_category_id', 'bill_sub_category_id', 'user_id', 'currency', 'image',
                   'bill_category', 'bill_sub_category', 'user')
+
+
+class UserCirrenciesSerializer(ma.Schema):
+    currency = ma.Nested(CurrencySerializer, only=['name', 'code'])
+    user = ma.Nested(UsersSerializer, only=['first_name', 'last_name'])
+
+    class Meta:
+        fields = ('id', 'user_id', 'currency_id', 'monthly_cost_limit', 'user', 'currency')
+
+
+class NewsSerializer(ma.Schema):
+    user = ma.Nested(UsersSerializer, only=['first_name', 'last_name', 'role.name'])
+
+    class Meta:
+        fields = ('id', 'created', 'title', 'content', 'type', 'user_id', 'user')
