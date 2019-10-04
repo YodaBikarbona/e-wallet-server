@@ -104,3 +104,20 @@ class News(db.Model):
     def __repr__(self):
         return self.title
 
+
+class UserNews(db.Model):
+    __tablename__ = 'user_news'
+
+    id = Column(Integer, primary_key=True)
+    positive_choice = Column(Boolean)
+    hidden = Column(Boolean, default=False)
+
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    news_id = Column(Integer, ForeignKey('news.id', ondelete='CASCADE'), nullable=False)
+
+    user = relationship('User')
+    news = relationship('News')
+
+    def __repr__(self):
+        return self.title
+

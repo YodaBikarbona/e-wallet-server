@@ -81,7 +81,7 @@ class UserCirrenciesSerializer(ma.Schema):
 
 
 class NewsSerializer(ma.Schema):
-    user = ma.Nested(UsersSerializer, only=['first_name', 'last_name', 'role.name'])
+    user = ma.Nested(UsersSerializer, only=['first_name', 'last_name', 'role'])
 
     class Meta:
         fields = ('id', 'created', 'title', 'content', 'type', 'user_id', 'user')

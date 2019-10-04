@@ -299,3 +299,6 @@ def get_graph(request):
         'monthly_limit': currency.monthly_cost_limit
     }
     return ok_response(message='Bills', additional_data=additional_data)
+
+
+

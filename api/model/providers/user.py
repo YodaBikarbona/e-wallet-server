@@ -2,7 +2,7 @@ from datetime import datetime
 import datetime as dt
 from api.helper.helper import new_salt, new_psw, random_string, now
 from api.model.config import db
-from api.model.user import User, Role, UserCurrency
+from api.model.user import User, Role, UserCurrency, News, UserNews
 from api.model.bill import Currency, UserBillCategory, UserBillSubCategory, BillCategory, BillSubCategory
 
 
@@ -266,3 +266,19 @@ class UserProvider:
         return UserCurrency.query\
             .join(Currency, UserCurrency.currency_id == Currency.id)\
             .filter(Currency.id == currency_id).first()
+
+    @classmethod
+    def get_all_user_news(cls, user_id):
+        return News.query.join(UserNews, UserNews.news_id == News.id)\
+            .filter(UserNews.hidden == False,
+                    UserNews.user_id == user_id)\
+            .order_by(News.created.desc()).all()
+
+    @classmethod
+    def hide_news_by_user_id_and_news_id(cls, user_id, news_id):
+        news = UserNews.query.filter(UserNews.news_id == news_id,
+                                     UserNews.user_id == user_id).first()
+        news.hidden = True
+        db.session.commit()
+        return True
+

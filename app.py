@@ -21,6 +21,8 @@ from api.views.user import (
     edit_user,
     get_active_currencies_limit,
     edit_currency_monthly_limit,
+    get_news,
+    clear_news
 )
 #from api.model.config import app
 from config import app
@@ -134,15 +136,14 @@ def get_graph_endpoint():
     return get_graph(request)
 
 
-@app.route('/news', methods=['GET'])
+@app.route(get_route.USER_NEWS, methods=['GET'])
 def get_news_endpoint():
-    from api.model.user import News
-    from api.serializer.serializers import NewsSerializer
-    news = News.query.order_by(News.created.desc()).all()
-    additional_data = {
-        'news': NewsSerializer(many=True).dump(news).data if news else []
-    }
-    return ok_response('News', additional_data=additional_data)
+    return get_news(request)
+
+
+@app.route(put_route.CLEAR_NEWS, methods=['PUT'])
+def clear_news_endpoint():
+    return clear_news(request)
 
 
 # @app.route('/test', methods=['GET'])

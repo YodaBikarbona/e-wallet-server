@@ -11,3 +11,5 @@ SETTINGS_SUB_CATEGORIES = "User sub categories list"
 USER_EDITED = "User is successfully edited!"
 ACTIVE_CURRENCIES = "Active currencies"
 MONTHLY_LIMIT_EDITED = "Monthly limit is successfully edited!"
+NEWS_LIST = 'News list'
+NEWS_HIDDEN = 'News are successfully hidden!'

@@ -16,7 +16,8 @@ from api.serializer.serializers import (
     CurrencySerializer,
     CategorySerializer,
     SubCategorySerializer,
-    UserCirrenciesSerializer
+    UserCirrenciesSerializer,
+    NewsSerializer
 )
 from api.helper.helper import (
     now,
@@ -26,7 +27,8 @@ from api.helper.helper import (
     ok_response,
     check_security_token,
     check_passwords,
-    new_psw
+    new_psw,
+    date_format
 )
 from api.model.config import (
     app,
@@ -460,3 +462,42 @@ def edit_currency_monthly_limit(request):
     )
     return ok_response(message=messages.MONTHLY_LIMIT_EDITED)
 
+
+def get_news(request):
+    """
+    This method will get all news and information that user didn't hide
+    :param request:
+    :return:
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+    news = UserProvider.get_all_user_news(user_id=usr.id)
+    news = NewsSerializer(many=True).dump(news).data if news else []
+    for n in news:
+        n['created'] = date_format(n['created'], string=True, graph=True)
+    additional_data = {
+        'news': news
+    }
+    return ok_response(messages.NEWS_LIST, additional_data=additional_data)
+
+
+def clear_news(request):
+    """
+    This method will hide all news that user don't want to see anymore (Old news)
+    :param request:
+    :return:
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+    UserProvider.hide_news_by_user_id_and_news_id(user_id=usr.id, news_id=request.json['newsId'])
+    return ok_response(messages.NEWS_HIDDEN)
