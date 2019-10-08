@@ -78,9 +78,9 @@ app.config.from_pyfile('config.cfg')"""
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 
-@app.route('/')
-def root():
-    return app.send_static_file('index.html')
+#@app.route('/')
+#def root():
+#    return app.send_static_file('index.html')
 
 
 @app.route(post_route.REGISTER, methods=['POST'])
@@ -397,4 +397,5 @@ def create_role():
 if __name__ == '__main__':
     db.create_all()
     app.run()
+    #app.run(host="192.168.0.25", debug=True, port=5000)
 

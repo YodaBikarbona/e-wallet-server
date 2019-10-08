@@ -1,4 +1,5 @@
 key_word = "MihaelTest"
+show_bill_limit = 20
 
 countries = [
 {

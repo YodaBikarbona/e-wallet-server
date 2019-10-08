@@ -460,7 +460,11 @@ def edit_currency_monthly_limit(request):
         currency_id=request.json['currency_id'],
         monthly_limit=request.json['monthly_cost_limit']
     )
-    return ok_response(message=messages.MONTHLY_LIMIT_EDITED)
+    active_currencies = UserProvider.get_active_user_currencies_with_limit(user_id=usr.id)
+    additional_data = {
+        'currencies': UserCirrenciesSerializer(many=True).dump(active_currencies).data if active_currencies else []
+    }
+    return ok_response(message=messages.MONTHLY_LIMIT_EDITED, additional_data=additional_data)
 
 
 def get_news(request):

@@ -236,7 +236,7 @@ class UserProvider:
         # First check new user email
         if cls.get_user_by_email(email=user_data['email']) and user_email != user_data['email']:
             return False
-        user = cls.get_user_by_ID(user_id == user_id)
+        user = cls.get_user_by_ID(user_id=user_id)
         user.gender = user_data['gender']
         user.email = user_data['email']
         user.city_id = u'{0}'.format(user_data['city_id'])
@@ -246,7 +246,7 @@ class UserProvider:
         user.last_name = u'{0}'.format(user_data['lastName'])
         user.country_id = u'{0}'.format(user_data['country_id'])
         user.phone = u'{0}'.format(user_data['phone'])
-        user.currency_id = u'{0}'.format(user_data['currency_id']) if user_data['currency_id'] != 'null' else None
+        user.currency_id = u'{0}'.format(user_data['currency_id']) if user_data['currency_id'] != 'null' and user_data['currency_id'] != 'None' else None
         db.session.commit()
         return True
 
