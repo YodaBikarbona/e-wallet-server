@@ -78,8 +78,8 @@ app.config.from_pyfile('config.cfg')"""
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 
-#@app.route('/')
-#def root():
+# @app.route('/')
+# def root():
 #    return app.send_static_file('index.html')
 
 
@@ -351,11 +351,11 @@ def add_subcat_endpoint():
 #     from api.helper.constants import currencies
 #     for c, k in currencies[0].items():
 #         currency = Currency()
-#         currency.name = k['name'].encode(encoding='UTF-8', errors='strict')
+#         currency.name = k['name']#.encode(encoding='UTF-8', errors='strict')
 #         currency.symbol = ""  # k[u'symbol'].encode(encoding='UTF-8',errors='strict')
 #         currency.symbol_native = ""  # k['symbol_native'].encode(encoding='UTF-8',errors='strict')
-#         currency.code = k['code'].encode(encoding='UTF-8', errors='strict')
-#         currency.name_plural = k['name_plural'].encode(encoding='UTF-8', errors='strict')
+#         currency.code = k['code']#.encode(encoding='UTF-8', errors='strict')
+#         currency.name_plural = k['name_plural']#.encode(encoding='UTF-8', errors='strict')
 #         currency.activated = True
 #         db.session.add(currency)
 #         db.session.commit()

@@ -61,9 +61,9 @@ class SubCategorySerializer(ma.Schema):
 
 class BillSerializer(ma.Schema):
     bill_category = ma.Nested(CategorySerializer, only=['name'])
+    bill_sub_category = ma.Nested(SubCategorySerializer, only=['name'])
     image = ma.Nested(ImageSerializer, only=['file_name'])
     user = ma.Nested(UsersSerializer, only=['first_name', 'last_name'])
-    bill_sub_category = ma.Nested(SubCategorySerializer, only=['name'])
     currency = ma.Nested(CurrencySerializer, only=['name', 'code'])
 
     class Meta:

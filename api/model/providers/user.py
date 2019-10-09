@@ -247,6 +247,9 @@ class UserProvider:
         user.country_id = u'{0}'.format(user_data['country_id'])
         user.phone = u'{0}'.format(user_data['phone'])
         user.currency_id = u'{0}'.format(user_data['currency_id']) if user_data['currency_id'] != 'null' and user_data['currency_id'] != 'None' else None
+        if user.image_id < 5:
+            user.image_id = 3 if user_data['gender'] == 'male' else user.image_id
+            user.image_id = 4 if user_data['gender'] == 'female' else user.image_id
         db.session.commit()
         return True
 

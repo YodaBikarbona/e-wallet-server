@@ -29,6 +29,8 @@ class BillProvider:
 
     @classmethod
     def get_sub_categories(cls, category_id):
+        if category_id == 'null':
+            category_id = None
         sub_categories = BillSubCategory.query.filter(BillSubCategory.bill_category_id == category_id).all()
 
         return sub_categories

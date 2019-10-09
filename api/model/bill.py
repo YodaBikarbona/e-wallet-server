@@ -23,7 +23,7 @@ class Bill(db.Model):
     user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
 
     bill_category = relationship('BillCategory')
-    #bill_sub_category = relationship('BIllSubCategory')
+    bill_sub_category = relationship('BillSubCategory')
     image = relationship('Image')
     user = relationship('User')
     currency = relationship('Currency')
