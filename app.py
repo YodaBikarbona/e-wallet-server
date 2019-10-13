@@ -136,7 +136,7 @@ def restart_password_endpoint():
     return restart_password(request)
 
 
-@app.route('v1/city/add', methods=['POST'])
+@app.route('/v1/city/add', methods=['POST'])
 def add_new_city(request):
 
     from api.model.user import City
