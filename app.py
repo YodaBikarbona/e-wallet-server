@@ -147,7 +147,7 @@ def add_new_city():
     db.session.add(city)
     db.session.commit()
 
-    return True
+    return "True"
 
 
 @app.route(post_route.RESTART_PASSWORD_CODE, methods=['POST'])
