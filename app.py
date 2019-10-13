@@ -83,9 +83,9 @@ app.config.from_pyfile('config.cfg')"""
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 
-# @app.route('/')
-# def root():
-#    return app.send_static_file('index.html')
+@app.route('/')
+def root():
+   return app.send_static_file('index.html')
 
 def run_every_10_seconds():
     print("Running periodic task!")
