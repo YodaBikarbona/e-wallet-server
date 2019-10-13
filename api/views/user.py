@@ -320,13 +320,13 @@ def save_new_password(request):
 
 
 def upload_image(request): #, purpose='system_images/default_images/'):
-    claims = check_security_token(request.headers['Authorization'])
-    if claims:
-        usr = UserProvider.get_user_by_ID(claims['user_id'])
-    else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
-    if not usr:
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+    # claims = check_security_token(request.headers['Authorization'])
+    # if claims:
+    #     usr = UserProvider.get_user_by_ID(claims['user_id'])
+    # else:
+    #     return error_handler(403, error_messages.INVALID_TOKEN)
+    # if not usr:
+    #     return error_handler(404, error_messages.USER_NOT_FOUND)
     app.logger.info(PROJECT_HOME)
     if request.method == 'POST' and request.files['image']:
         app.logger.info(app.config['UPLOAD_FOLDER'])
@@ -343,9 +343,9 @@ def upload_image(request): #, purpose='system_images/default_images/'):
         new_image.file_name = img_name
         db.session.add(new_image)
         db.session.commit()
-        usr = User.query.filter(User.id == usr.id).first()
-        usr.image_id = new_image.id
-        db.session.commit()
+        # usr = User.query.filter(User.id == usr.id).first()
+        # usr.image_id = new_image.id
+        # db.session.commit()
         image = ImageSerializer(many=False).dump(new_image).data
         return jsonify(
             {

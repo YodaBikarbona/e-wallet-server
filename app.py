@@ -136,6 +136,20 @@ def restart_password_endpoint():
     return restart_password(request)
 
 
+@app.route('v1/city/add', methods=['POST'])
+def add_new_city(request):
+
+    from api.model.user import City
+    city = City()
+    city.created = now()
+    city.country_id = request.json['country_id']
+    city.name = request.json['name']
+    db.session.create(city)
+    db.session.commit()
+
+    return True
+
+
 @app.route(post_route.RESTART_PASSWORD_CODE, methods=['POST'])
 def restart_password_code_endpoint():
     return restart_password_code(request)
