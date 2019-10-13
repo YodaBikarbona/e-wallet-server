@@ -1,5 +1,5 @@
 REGISTER = '/v1/register'
-LOGIN = '/v1/login'
+LOGIN = '/login'
 LOGOUT = '/v1/logout'
 UPLOAD_IMAGE = '/v1/upload/user'
 RESTART_PASSWORD = '/v1/restartPassword'
