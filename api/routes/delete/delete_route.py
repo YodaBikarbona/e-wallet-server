@@ -1,1 +1,1 @@
-DELETE_BILL = '/bill/<int:id>/delete'
+DELETE_BILL = '/v1/bill/<int:id>/delete'

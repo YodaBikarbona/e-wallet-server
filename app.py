@@ -121,7 +121,8 @@ def upload_endpoint():
 
 @app.route(get_route.SERVE_FILE, methods=['GET'])
 def serve_file_in_dir_endpoint(path):
-    var = '/home/oem/Desktop/Projects/E-wallet/e-wallet-server/api/model/uploads/'
+    #var = '/home/oem/Desktop/Projects/E-wallet/e-wallet-server/api/model/uploads/'
+    var = '/e-wallet-server/api/model/uploads/'
     return send_from_directory(var, path)
 
 
@@ -194,7 +195,7 @@ def city_endpoint(country_id):
     return ok_response("", additional_data)
 
 
-@app.route('/user/<int:id>/users', methods=['GET'])
+@app.route('/v1/user/<int:id>/users', methods=['GET'])
 def get_users_endpoint(id):
 
     return get_users(request=request, user_id=id)
@@ -211,12 +212,12 @@ def add_new_bill_endpoint():
 #
 #     return get_costs(request=request)
 
-@app.route('/bills/costs', methods=['POST'])
+@app.route('/v1/bills/costs', methods=['POST'])
 def get_costs_endpoint():
     return get_costs(request=request)
 
 
-@app.route('/bills/profits', methods=['POST'])
+@app.route('/v1/bills/profits', methods=['POST'])
 def get_profits_endpoint():
     return get_profits(request=request)
 
@@ -231,17 +232,17 @@ def new_profits_endpoint():
     return new_profits(request=request)
 
 
-@app.route('/user/category/sub_categories', methods=['POST'])
+@app.route('/v1/user/category/sub_categories', methods=['POST'])
 def get_sub_categoryes_by_category_endpoint():
     return get_sub_categoryes_by_category(request=request)
 
 
-@app.route('/user/<int:id>/categories', methods=['GET'])
+@app.route('/v1/user/<int:id>/categories', methods=['GET'])
 def get_categories_endpoint(id):
     return get_categories(user_id=id)
 
 
-@app.route('/user/<int:id>/category/<int:category_id>/sub_categories', methods=['GET'])
+@app.route('/v1/user/<int:id>/category/<int:category_id>/sub_categories', methods=['GET'])
 def get_sub_categories_endpoint(id, category_id):
     return get_sub_categories(user_id=id, category_id=category_id)
 
@@ -293,7 +294,7 @@ def change_password_endpoint():
     return change_password(request)
 
 
-@app.route('/user/<int:id>/currencies', methods=['GET'])
+@app.route('/v1/user/<int:id>/currencies', methods=['GET'])
 def get_currencies_endpoint(id):
 
     return get_currencies(user_id=id)
@@ -324,7 +325,7 @@ def delete_bill_endpoint(id):
     return delete_bill(request, id)
 
 
-@app.route('/add_cat_subcat', methods=['GET'])
+@app.route('/v1/add_cat_subcat', methods=['GET'])
 def add_subcat_endpoint():
     from api.model.bill import BillCategory, BillSubCategory
     from api.helper.constants import categories_and_subcategories
