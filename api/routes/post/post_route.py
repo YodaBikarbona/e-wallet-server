@@ -1,4 +1,4 @@
-REGISTER = '/v1/register'
+REGISTER = '/register'
 LOGIN = '/login'
 LOGOUT = '/v1/logout'
 UPLOAD_IMAGE = '/v1/upload/user'
