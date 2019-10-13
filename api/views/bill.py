@@ -76,10 +76,19 @@ def get_costs(request):
         sub_category_id=request.json['subCategoryId'],
         currency_id=request.json['currencyId'],
         user_id=usr.id,
-        bill_type='costs'
+        bill_type='costs',
+        bills_limit=request.json['billsLimit'],
+        bills_offset=request.json['billsOffset'],
     )
     additional_data = {
-        'costs': BillSerializer(many=True).dump(costs).data if costs else []
+        'costs': BillSerializer(many=True).dump(costs).data if costs else [],
+        'costs_length_list': BillProvider.count_costs_or_profits(
+            category_id=request.json['categoryId'],
+            sub_category_id=request.json['subCategoryId'],
+            currency_id=request.json['currencyId'],
+            user_id=usr.id,
+            bill_type='costs'
+        )
     }
     return ok_response(message='', additional_data=additional_data)
 
@@ -155,10 +164,19 @@ def get_profits(request):
         sub_category_id=request.json['subCategoryId'],
         currency_id=request.json['currencyId'],
         user_id=usr.id,
-        bill_type='profits'
+        bill_type='profits',
+        bills_limit=request.json['billsLimit'],
+        bills_offset=request.json['billsOffset'],
     )
     additional_data = {
-        'profits': BillSerializer(many=True).dump(profits).data if profits else []
+        'profits': BillSerializer(many=True).dump(profits).data if profits else [],
+        'profits_length_list': BillProvider.count_costs_or_profits(
+            category_id=request.json['categoryId'],
+            sub_category_id=request.json['subCategoryId'],
+            currency_id=request.json['currencyId'],
+            user_id=usr.id,
+            bill_type='profits'
+        )
     }
     return ok_response(message='', additional_data=additional_data)
 
@@ -227,7 +245,7 @@ def print_pdf_report(request):
             if c == bill['currency']['code']:
                 summ += bill['price']
         summ_list.append({'currency': c,
-                          'summ': summ})
+                          'summ': round(summ, 2)})
     items = len(bills)
     scss = ['static/report/report.scss']
     rendered = render_template("report_template.html", user=user, items=items, report_date=date_format(now()),
@@ -301,4 +319,18 @@ def get_graph(request):
     return ok_response(message='Bills', additional_data=additional_data)
 
 
-
+def delete_bill(request, bill_id):
+    """
+    This function will delete chosen bill
+    :param request:
+    :return:
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+    BillProvider.delete_bill_by_bill_id(bill_id=bill_id)
+    return ok_response(message=messages.BILL_DELETED)

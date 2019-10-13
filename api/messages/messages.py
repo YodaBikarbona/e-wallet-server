@@ -13,3 +13,4 @@ ACTIVE_CURRENCIES = "Active currencies"
 MONTHLY_LIMIT_EDITED = "Monthly limit is successfully edited!"
 NEWS_LIST = 'News list'
 NEWS_HIDDEN = 'News are successfully hidden!'
+BILL_DELETED = 'Bill is successfully deleted!'

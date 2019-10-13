@@ -1,4 +1,8 @@
 from flask import Flask, send_from_directory
+import schedule
+import time
+from gevent.pywsgi import WSGIServer
+from threading import Thread
 from flask import request
 from api.model.user import db
 from flask_cors import CORS
@@ -26,7 +30,7 @@ from api.views.user import (
 )
 #from api.model.config import app
 from config import app
-from api.helper.helper import ok_response
+from api.helper.helper import ok_response, date_format, now
 from flask import send_from_directory
 from api.views.bill import (
     get_categories,
@@ -40,6 +44,7 @@ from api.views.bill import (
     new_profits,
     print_pdf_report,
     get_graph,
+    delete_bill,
 )
 from api.routes.get import get_route
 from api.routes.post import post_route
@@ -81,6 +86,15 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 # @app.route('/')
 # def root():
 #    return app.send_static_file('index.html')
+
+def run_every_10_seconds():
+    print("Running periodic task!")
+
+def run_schedule():
+    print('Ušao sam')
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 
 @app.route(post_route.REGISTER, methods=['POST'])
@@ -305,6 +319,11 @@ def edit_currency_monthly_limit_endpoint():
     return edit_currency_monthly_limit(request)
 
 
+@app.route(delete_route.DELETE_BILL, methods=['DELETE'])
+def delete_bill_endpoint(id):
+    return delete_bill(request, id)
+
+
 @app.route('/add_cat_subcat', methods=['GET'])
 def add_subcat_endpoint():
     from api.model.bill import BillCategory, BillSubCategory
@@ -394,8 +413,56 @@ def create_role():
     return "True"""
 
 
-if __name__ == '__main__':
-    db.create_all()
-    app.run()
-    #app.run(host="192.168.0.25", debug=True, port=5000)
+def job():
+    if date_format(now()).split('.')[0] == '1':
+        print('New month started!')
+    print("I'm working...")
+#
+# #schedule.every(10).minutes.do(job)
+# #schedule.every().hour.do(job)
+# #schedule.every().day.at("10:30").do(job)
+# #schedule.every(5).to(10).minutes.do(job)
+# #schedule.every().monday.do(job)
+# #schedule.every().wednesday.at("13:15").do(job)
+# #schedule.every().minute.at(":17").do(job)
+# schedule.every(5).seconds.do(job)
+#
+#
+# #schedule.every().day.at("00:04:00").do(job)
+#
+def run_schedule():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+# def main():
+#     db.create_all()
+#     # app.run()
+#     app.run(host="192.168.0.25", debug=True, port=5000, use_reloader=False)
+
+# def prin():
+#     print('This is function in thread')
+
+
+# if __name__ == '__main__':
+#     schedule.every(5).seconds.do(run_every_10_seconds)
+#     t = Thread(target=prin)
+#     t.start()
+#     t2 = Thread(target=main)
+#     t2.start()
+#     # db.create_all()
+#     # #app.run()
+#     # app.run(host="192.168.0.25", debug=True, port=5000, use_reloader=False)
+
+schedule.every().day.at("00:00:00").do(job)
+t = Thread(target=run_schedule)
+t.start()
+app_server = WSGIServer(("192.168.0.25", 5000), app)
+#app_server.serve_forever()
+app_server.serve_forever()
+
+
+
+
+
 

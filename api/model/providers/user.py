@@ -4,6 +4,7 @@ from api.helper.helper import new_salt, new_psw, random_string, now
 from api.model.config import db
 from api.model.user import User, Role, UserCurrency, News, UserNews
 from api.model.bill import Currency, UserBillCategory, UserBillSubCategory, BillCategory, BillSubCategory
+from api.helper.helper import date_format
 
 
 class UserProvider:
@@ -17,12 +18,14 @@ class UserProvider:
             role = UserProvider.create_role(role_name='user')
         else:
             role = Role.query.filter(Role.role_name == 'user').first()
+        print(user_data['birthDate'])
         user = User()
         user.gender = user_data['gender']
         user.email = user_data['email']
         user.city_id = u'{0}'.format(user_data['city_id'])
         user.address = u'{0}'.format(user_data['address'])
-        user.birth_date = datetime.strptime(user_data['birthDate'], "%Y-%m-%d")#.strftime("%Y-%m-%d")
+
+        user.birth_date = datetime.strptime(date_format(user_data['birthDate'], string=True, graph=False, birth_day=True), "%Y-%m-%d")#.strftime("%Y-%m-%d")
         user.first_name = u'{0}'.format(user_data['firstName'])
         user.last_name = u'{0}'.format(user_data['lastName'])
         user.country_id = u'{0}'.format(user_data['country_id'])
@@ -31,7 +34,9 @@ class UserProvider:
         user.salt = new_salt()
         user.password = new_psw(user.salt, user_data['password'])
         user.role_id = role.id
-        user.image_id = None
+        #user.image_id = None
+        user.image_id = 3 if user_data['gender'] == 'male' else user.image_id
+        user.image_id = 4 if user_data['gender'] == 'female' else user.image_id
         db.session.add(user)
         db.session.commit()
         return user
@@ -241,7 +246,7 @@ class UserProvider:
         user.email = user_data['email']
         user.city_id = u'{0}'.format(user_data['city_id'])
         user.address = u'{0}'.format(user_data['address'])
-        user.birth_date = datetime.strptime(user_data['birthDate'], "%Y-%m-%d")  # .strftime("%Y-%m-%d")
+        user.birth_date = datetime.strptime(date_format(user_data['birthDate'], string=True, graph=False, birth_day=True), "%Y-%m-%d") #.strftime("%Y-%m-%d")
         user.first_name = u'{0}'.format(user_data['firstName'])
         user.last_name = u'{0}'.format(user_data['lastName'])
         user.country_id = u'{0}'.format(user_data['country_id'])

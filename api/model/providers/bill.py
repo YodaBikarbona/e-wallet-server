@@ -42,7 +42,7 @@ class BillProvider:
         return currencies
 
     @classmethod
-    def get_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type):
+    def get_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, bills_limit=None, bills_offset=None):
         bills = Bill.query.filter(Bill.user_id == user_id)
         if category_id and category_id != 'null':
             bills = bills.join(BillCategory, Bill.bill_category_id == BillCategory.id)
@@ -54,7 +54,21 @@ class BillProvider:
             bills = bills.join(Currency, Bill.currency_id == Currency.id)
             bills = bills.filter(Bill.currency_id == currency_id)
         bills = bills.filter(Bill.bill_type == bill_type)
+        if bills_limit:
+            bills = bills.limit(bills_limit)
+        if bills_offset:
+            bills = bills.offset(bills_offset*bills_limit)
         return bills.all()
+
+    @classmethod
+    def count_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type):
+        return len(cls.get_costs_or_profits(
+            category_id=category_id,
+            sub_category_id=sub_category_id,
+            currency_id=currency_id,
+            user_id=user_id,
+            bill_type=bill_type
+        ))
 
     @classmethod
     def new_costs_or_profits(cls, category_id, sub_category_id, currency_id, title, comment, price, user_id, bill_type, image_id=None):
@@ -66,7 +80,7 @@ class BillProvider:
         new_bill.comment = comment
         new_bill.image_id = image_id if image_id else None
         new_bill.bill_category_id = category_id
-        new_bill.bill_sub_category_id = sub_category_id
+        new_bill.bill_sub_category_id = sub_category_id if sub_category_id and sub_category_id != 'null' else None
         new_bill.bill_type = bill_type
         db.session.add(new_bill)
         db.session.commit()
@@ -85,3 +99,10 @@ class BillProvider:
         if profits and not costs:
             bills = bills.filter(Bill.bill_type == 'profits')
         return bills.all()
+
+    @classmethod
+    def delete_bill_by_bill_id(cls, bill_id):
+        bill = Bill.query.filter(Bill.id == bill_id).first()
+        db.session.delete(bill)
+        db.session.commit()
+        return True

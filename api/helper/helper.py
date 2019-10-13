@@ -145,14 +145,18 @@ def check_passwords(password, confirm_password):
     return True
 
 
-def date_format(date, string=False, graph=False):
+def date_format(date, string=False, graph=False, birth_day=False):
     if not string:
         return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
     date = date.split('T')
     if not graph:
-        date = "{0} {1}".format(date[0], date[1].split('+')[0])
-        date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-        return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
+        if not birth_day:
+            date = "{0} {1}".format(date[0], date[1].split('.')[0])
+            date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+            return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
+        date = "{0}".format(date[0])
+        date = datetime.strptime(date, "%Y-%d-%m") + timedelta(days=1)
+        return datetime.strftime(date, "%Y-%m-%d")
     date = "{0}".format(date[0])
     date = datetime.strptime(date, "%Y-%m-%d")
     return datetime.strftime(date, "%d-%b-%y")
