@@ -444,22 +444,18 @@ def run_schedule():
 #     print('This is function in thread')
 
 
-# if __name__ == '__main__':
-#     schedule.every(5).seconds.do(run_every_10_seconds)
-#     t = Thread(target=prin)
-#     t.start()
-#     t2 = Thread(target=main)
-#     t2.start()
-#     # db.create_all()
-#     # #app.run()
-#     # app.run(host="192.168.0.25", debug=True, port=5000, use_reloader=False)
+if __name__ == '__main__':
+    db.create_all()
+    #app.run()
+    app.run(debug=True, use_reloader=False)
+    #app.run(host="192.168.0.25", debug=True, port=5000, use_reloader=False)
 
-schedule.every().day.at("00:00:00").do(job)
-t = Thread(target=run_schedule)
-t.start()
-app_server = WSGIServer(("192.168.0.25", 5000), app)
-#app_server.serve_forever()
-app_server.serve_forever()
+# schedule.every().day.at("00:00:00").do(job)
+# t = Thread(target=run_schedule)
+# t.start()
+# #app_server = WSGIServer(("192.168.0.25", 5000), app)
+# #app_server.serve_forever()
+# app_server.serve_forever()
 
 
 
