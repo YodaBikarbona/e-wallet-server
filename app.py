@@ -144,7 +144,7 @@ def add_new_city():
     city.created = now()
     city.country_id = request.json['country_id']
     city.name = request.json['name']
-    db.session.create(city)
+    db.session.add(city)
     db.session.commit()
 
     return True
