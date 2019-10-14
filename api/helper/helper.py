@@ -155,6 +155,8 @@ def date_format(date, string=False, graph=False, birth_day=False):
             date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
             return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
         date = "{0}".format(date[0])
+        print(type(date))
+        print('Ovo je novi datum')
         date = datetime.strptime(date, "%Y-%d-%m") + timedelta(days=1)
         return datetime.strftime(date, "%Y-%m-%d")
     date = "{0}".format(date[0])
