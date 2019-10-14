@@ -333,6 +333,7 @@ def upload_image(request): #, purpose='system_images/default_images/'):
         img = request.files['image']
         img_name = secure_filename(img.filename)
         folder = create_new_folder(app.config['UPLOAD_FOLDER']) #+ purpose if purpose else app.config['UPLOAD_FOLDER'])
+        app.config['UPLOADED_PHOTOS_DEST'] = '/uploads'
         print(folder)
         saved_path = os.path.join(folder, img_name)
         print (saved_path)
