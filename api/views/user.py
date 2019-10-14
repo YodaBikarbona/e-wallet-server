@@ -337,7 +337,7 @@ def upload_image(request): #, purpose='system_images/default_images/'):
         saved_path = os.path.join(folder, img_name)
         print (saved_path)
         app.logger.info("saving {}".format(saved_path))
-        img.save(saved_path)
+        #img.save(saved_path)
         # new_image = Image()
         # new_image.type = img_name.split('.')[1]
         # new_image.name = img_name.split('.')[0]
