@@ -333,16 +333,18 @@ def upload_image(request): #, purpose='system_images/default_images/'):
         img = request.files['image']
         img_name = secure_filename(img.filename)
         folder = create_new_folder(app.config['UPLOAD_FOLDER']) #+ purpose if purpose else app.config['UPLOAD_FOLDER'])
+        print(folder)
         saved_path = os.path.join(folder, img_name)
         print (saved_path)
         app.logger.info("saving {}".format(saved_path))
         img.save(saved_path)
-        new_image = Image()
-        new_image.type = img_name.split('.')[1]
-        new_image.name = img_name.split('.')[0]
-        new_image.file_name = img_name
-        db.session.add(new_image)
-        db.session.commit()
+        # new_image = Image()
+        # new_image.type = img_name.split('.')[1]
+        # new_image.name = img_name.split('.')[0]
+        # new_image.file_name = img_name
+        # db.session.add(new_image)
+        # db.session.commit()
+
         # usr = User.query.filter(User.id == usr.id).first()
         # usr.image_id = new_image.id
         # db.session.commit()
