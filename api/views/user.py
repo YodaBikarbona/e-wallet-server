@@ -348,14 +348,14 @@ def upload_image(request): #, purpose='system_images/default_images/'):
         # usr = User.query.filter(User.id == usr.id).first()
         # usr.image_id = new_image.id
         # db.session.commit()
-        image = ImageSerializer(many=False).dump(new_image).data
+        #image = ImageSerializer(many=False).dump(new_image).data
         return jsonify(
             {
                 'status': 'OK',
                 'server_time': now().strftime("%Y-%m-%dT%H:%M:%S"),
                 'code': 200,
                 'msg': "Image is added!",
-                'image': image
+                #'image': image
             }
         )
         #return send_from_directory(app.config['UPLOAD_FOLDER'],img_name, as_attachment=True)
