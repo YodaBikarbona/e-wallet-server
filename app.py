@@ -122,7 +122,8 @@ def upload_endpoint():
 @app.route(get_route.SERVE_FILE, methods=['GET'])
 def serve_file_in_dir_endpoint(path):
     #var = '/home/oem/Desktop/Projects/E-wallet/e-wallet-server/api/model/uploads/'
-    var = '/api/model/uploads/'
+    print(path)
+    var = 'api/model/uploads/'
     return send_from_directory(var, path)
 
 
