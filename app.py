@@ -82,8 +82,8 @@ app.config.from_pyfile('config.cfg')"""
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-
-@app.route('/')
+@app.route('/login', strict_slashes=False)
+@app.route('/', strict_slashes=False)
 def root():
    return app.send_static_file('index.html')
 
