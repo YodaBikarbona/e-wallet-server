@@ -84,12 +84,12 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/login', strict_slashes=False)
 @app.route('/register', strict_slashes=False)
-@app.route('/profile', strict_slashes=False)
+@app.route('/dashboard/profile', strict_slashes=False)
 @app.route('/dashboard', strict_slashes=False)
 @app.route('/restartPassword', strict_slashes=False)
-@app.route('/bills', strict_slashes=False)
-@app.route('/graph', strict_slashes=False)
-@app.route('/settings', strict_slashes=False)
+@app.route('/dashboard/bills', strict_slashes=False)
+@app.route('/dashboard/graph', strict_slashes=False)
+@app.route('/dashboard/settings', strict_slashes=False)
 @app.route('/', strict_slashes=False)
 def root():
    return app.send_static_file('index.html')
@@ -129,7 +129,10 @@ def upload_endpoint():
 @app.route(get_route.SERVE_FILE, methods=['GET'])
 def serve_file_in_dir_endpoint(path):
     #var = '/home/oem/Desktop/Projects/E-wallet/e-wallet-server/api/model/uploads/'
+    print("--------------------------------------")
     var = '/app/api/model/uploads/'
+    print(path)
+    print(send_from_directory(var, path))
     return send_from_directory(var, path)
 
 
