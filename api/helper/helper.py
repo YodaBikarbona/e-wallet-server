@@ -156,6 +156,8 @@ def date_format(date, string=False, graph=False, birth_day=False):
             return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
         date = "{0}".format(date[0])
         date_list = date.split('-')
+        print('Ovo je novi datum', date)
+        print("Ovo je lista", date_list)
         date = "{0}/{0}/{0}".format(date_list[0], date_list[2], date_list[1])
         print(type(date))
         print('Ovo je novi datum', date)
