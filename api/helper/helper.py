@@ -145,7 +145,7 @@ def check_passwords(password, confirm_password):
     return True
 
 
-def date_format(date, string=False, graph=False, birth_day=False, register=None):
+def date_format(date, string=False, graph=False, birth_day=False, register=False):
     if not string:
         return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
     date = date.split('T')
