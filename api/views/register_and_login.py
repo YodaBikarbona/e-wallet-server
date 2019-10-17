@@ -62,7 +62,8 @@ def login(request):
     db.session.commit()
     additional_data = {
         'user_id': user.id,
-        'token': security_token(user.email, user.role.role_name, user.id)
+        'token': security_token(user.email, user.role.role_name, user.id),
+        'role_id': user.role_id,
     }
     return ok_response(messages.LOGIN, additional_data)
 
