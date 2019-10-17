@@ -63,8 +63,8 @@ def login(request):
     additional_data = {
         'user_id': user.id,
         'token': security_token(user.email, user.role.role_name, user.id),
-        'role_id': user.role_id,
     }
+    print("This is role id", user.role_id)
     return ok_response(messages.LOGIN, additional_data)
 
 
