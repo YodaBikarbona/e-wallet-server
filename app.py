@@ -423,7 +423,9 @@ def user_route():
     from api.model.user import User
     user = User.query.filter().first()
     if user:
-        print(user.first_name)
+        user.activated = True
+        user.code = None
+        db.session.commit()
     return 'True'
 
 # @app.route('/currency', methods=['GET'])
