@@ -418,15 +418,15 @@ def update_user_role():
 #
 #     return "True"
 
-@app.route('/user_route', methods=['GET'])
-def user_route():
-    from api.model.user import User
-    user = User.query.filter().first()
-    if user:
-        user.activated = True
-        user.code = None
-        db.session.commit()
-    return 'True'
+# @app.route('/user_route', methods=['GET'])
+# def user_route():
+#     from api.model.user import User
+#     user = User.query.filter().first()
+#     if user:
+#         user.activated = True
+#         user.code = None
+#         db.session.commit()
+#     return 'True'
 
 # @app.route('/currency', methods=['GET'])
 # def currency_endpoint():
