@@ -421,7 +421,7 @@ def update_user_role():
 #     return "True"
 
 @app.route('/v1/city/add', methods=['POST'])
-def add_new_city(request):
+def add_new_city():
     from api.model.user import City
     e_city = City.query.filter(City.name == request.json['name'],
                                City.country_id == request.json['country_id']).first()
