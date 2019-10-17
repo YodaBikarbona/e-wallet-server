@@ -209,8 +209,7 @@ def print_pdf_report(request):
     """
     from flask import render_template, make_response
     import pdfkit
-    import pydf
-
+    #import pydf
 
     claims = check_security_token(request.headers['Authorization'])
     if claims:
@@ -253,8 +252,8 @@ def print_pdf_report(request):
     scss = ['static/report/report.scss']
     rendered = render_template("report_template.html", user=user, items=items, report_date=date_format(now()),
                                bills=bills, bill_type=request.json['billType'], currencies=currencies, summ=summ_list)
-    #report = pdfkit.from_string(rendered, False, css=scss)
-    report = pydf.generate_pdf(html=rendered)
+    report = pdfkit.from_string(rendered, False, css=scss)
+    #report = pydf.generate_pdf(html=rendered)
     response = make_response(report)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'attachment; filename=report.pdf'
