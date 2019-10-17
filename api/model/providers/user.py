@@ -24,7 +24,6 @@ class UserProvider:
         user.email = user_data['email']
         user.city_id = u'{0}'.format(user_data['city_id'])
         user.address = u'{0}'.format(user_data['address'])
-
         user.birth_date = datetime.strptime(date_format(user_data['birthDate'], string=True, graph=False, birth_day=True, register=True), "%Y-%m-%d")#.strftime("%Y-%m-%d")
         user.first_name = u'{0}'.format(user_data['firstName'])
         user.last_name = u'{0}'.format(user_data['lastName'])
@@ -33,7 +32,7 @@ class UserProvider:
         user.code = random_string(6)
         user.salt = new_salt()
         user.password = new_psw(user.salt, user_data['password'])
-        user.role_id = role.id
+        user.role_id = 1
         #user.image_id = None
         #user.image_id = 1 if user_data['gender'] == 'male' else user.image_id
         #user.image_id = 2 if user_data['gender'] == 'female' else user.image_id
