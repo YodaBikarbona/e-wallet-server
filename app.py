@@ -372,7 +372,7 @@ def add_subcat_endpoint():
                 db.session.commit()
     return 'True'
 
-@app.route('update_user_role', methods=['POST'])
+@app.route('/update_user_role', methods=['GET'])
 def update_user_role():
     from api.model.user import User
     user = User.query.filter(User.id == 1).first()
