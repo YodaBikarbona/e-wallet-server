@@ -157,7 +157,7 @@ def date_format(date, string=False, graph=False, birth_day=False, register=False
         date = "{0}".format(date[0])
         if register:
             date_list = date.split('/')
-            date = "{0}-{1}-{2}".format(date_list[0], date_list[2], date_list[1])
+            date = "{0}-{1}-{2}".format(date_list[2], date_list[0], date_list[1])
             date = datetime.strptime(date, "%Y-%d-%m") + timedelta(days=1)
             return datetime.strftime(date, "%Y-%m-%d")
         else:
