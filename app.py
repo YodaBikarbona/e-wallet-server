@@ -391,32 +391,46 @@ def update_user_role():
 
 
 
-@app.route('/country', methods=['GET'])
-def country_endpoint_add():
-    from api.model.country import Country
-    from api.helper.constants import countries
-    for c in countries:
-        country = Country()
-        country.name = c['name']
-        country.phone_code = c['phoneCode']
-        country.alpha2code = c['alpha2code']
-        country.alpha3code = c['alpha3code']
-        country.activated = True
-        db.session.add(country)
-        db.session.commit()
+# @app.route('/country', methods=['GET'])
+# def country_endpoint_add():
+#     from api.model.country import Country
+#     from api.helper.constants import countries
+#     for c in countries:
+#         country = Country()
+#         country.name = c['name']
+#         country.phone_code = c['phoneCode']
+#         country.alpha2code = c['alpha2code']
+#         country.alpha3code = c['alpha3code']
+#         country.activated = True
+#         db.session.add(country)
+#         db.session.commit()
+#
+#     from api.model.country import Currency
+#     from api.helper.constants import currencies
+#     for c, k in currencies[0].items():
+#         currency = Currency()
+#         currency.name = k['name']#.encode(encoding='UTF-8', errors='strict')
+#         currency.symbol = ""  # k[u'symbol'].encode(encoding='UTF-8',errors='strict')
+#         currency.symbol_native = ""  # k['symbol_native'].encode(encoding='UTF-8',errors='strict')
+#         currency.code = k['code']#.encode(encoding='UTF-8', errors='strict')
+#         currency.name_plural = k['name_plural']#.encode(encoding='UTF-8', errors='strict')
+#         currency.activated = True
+#         db.session.add(currency)
+#         db.session.commit()
+#
+#     return "True"
 
-    from api.model.country import Currency
-    from api.helper.constants import currencies
-    for c, k in currencies[0].items():
-        currency = Currency()
-        currency.name = k['name']#.encode(encoding='UTF-8', errors='strict')
-        currency.symbol = ""  # k[u'symbol'].encode(encoding='UTF-8',errors='strict')
-        currency.symbol_native = ""  # k['symbol_native'].encode(encoding='UTF-8',errors='strict')
-        currency.code = k['code']#.encode(encoding='UTF-8', errors='strict')
-        currency.name_plural = k['name_plural']#.encode(encoding='UTF-8', errors='strict')
-        currency.activated = True
-        db.session.add(currency)
-        db.session.commit()
+@app.route('/v1/city/add', methods=['POST'])
+def add_new_city(request):
+    from api.model.user import City
+    e_city = City.query.filter(City.name == request.json['name'],
+                               City.country_id == request.json['country_id']).first()
+    if not e_city:
+        city = City()
+        city.created = now()
+        city.country_id = request.json['country_id']
+        city.name = request.json['name']
+        db.session.add(city)
 
     return "True"
 
