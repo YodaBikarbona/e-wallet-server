@@ -11,6 +11,7 @@ from api.validation.user import ActivationSchema
 
 def register(request):
 
+    print(request.json)
     result = ValidateRequestSchema(request, RegisterSchema())
     if not result:
         return error_handler(400, error_messages.BAD_DATA)
