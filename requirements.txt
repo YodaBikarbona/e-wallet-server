@@ -37,4 +37,5 @@ SQLAlchemy==1.2.18
 tzlocal==2.0.0
 Werkzeug==0.14.1
 wkhtmltopdf-pack-ng==0.12.3.0
+git+git://github.com/johnfraney/wkhtmltopdf-pack.git
 
