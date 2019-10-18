@@ -23,4 +23,4 @@ def _get_pdfkit_config():
     if platform.system() == 'Windows':
         return pdfkit.configuration()
     else:
-        return pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+        return pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
