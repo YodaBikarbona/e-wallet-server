@@ -36,12 +36,9 @@ class UserProvider:
         #user.image_id = None
         #user.image_id = 1 if user_data['gender'] == 'male' else user.image_id
         #user.image_id = 2 if user_data['gender'] == 'female' else user.image_id
-
-
-        # db.session.add(user)
-        # db.session.commit()
-        # return user
-        return True
+        db.session.add(user)
+        db.session.commit()
+        return user
 
     @classmethod
     def get_user_by_ID(cls, user_id):
