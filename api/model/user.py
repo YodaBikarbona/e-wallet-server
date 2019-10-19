@@ -6,7 +6,7 @@ from api.model.country import Country, Currency, City
 
 
 class User(db.Model):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
     created = Column(DateTime, nullable=True, default=now())
@@ -78,7 +78,7 @@ class UserCurrency(db.Model):
     id = Column(Integer, primary_key=True)
     monthly_cost_limit = Column(Float, default=1000)
 
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     currency_id = Column(Integer, ForeignKey('currency.id', ondelete='CASCADE'), nullable=False)
 
     user = relationship('User')
@@ -97,7 +97,7 @@ class News(db.Model):
     content = Column(Unicode(255), nullable=False)
     type = Column(Unicode(255), nullable=False)
 
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
     user = relationship('User')
 
@@ -112,7 +112,7 @@ class UserNews(db.Model):
     positive_choice = Column(Boolean)
     hidden = Column(Boolean, default=False)
 
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     news_id = Column(Integer, ForeignKey('news.id', ondelete='CASCADE'), nullable=False)
 
     user = relationship('User')

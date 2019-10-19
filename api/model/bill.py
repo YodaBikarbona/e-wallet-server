@@ -22,7 +22,7 @@ class Bill(db.Model):
     image_id = Column(Integer, ForeignKey('image.id', ondelete='CASCADE'), nullable=True)
     bill_category_id = Column(Integer, ForeignKey('bill_category.id', ondelete='CASCADE'), nullable=True)
     bill_sub_category_id = Column(Integer, ForeignKey('bill_sub_category.id', ondelete='CASCADE'), nullable=True)
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
     bill_category = relationship('BillCategory')
     bill_sub_category = relationship('BillSubCategory')
@@ -67,7 +67,7 @@ class UserBillCategory(db.Model):
 
     id = Column(Integer, primary_key=True)
 
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     bill_category_id = Column(Integer, ForeignKey('bill_category.id', ondelete='CASCADE'), nullable=False)
 
     user = relationship('User')
@@ -82,7 +82,7 @@ class UserBillSubCategory(db.Model):
 
     id = Column(Integer, primary_key=True)
 
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     bill_sub_category_id = Column(Integer, ForeignKey('bill_sub_category.id', ondelete='CASCADE'), nullable=False)
 
     user = relationship('User')
