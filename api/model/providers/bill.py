@@ -25,7 +25,6 @@ class BillProvider:
     @classmethod
     def get_categories(cls):
         categories = BillCategory.query.filter().all()
-        db.session.close()
         return categories
 
     @classmethod
@@ -33,13 +32,11 @@ class BillProvider:
         if category_id == 'null':
             category_id = None
         sub_categories = BillSubCategory.query.filter(BillSubCategory.bill_category_id == category_id).all()
-        db.session.close()
         return sub_categories
 
     @classmethod
     def get_currencies(cls):
         currencies = Currency.query.filter().all()
-        db.session.close()
         return currencies
 
     @classmethod
@@ -60,7 +57,6 @@ class BillProvider:
         if bills_offset:
             bills = bills.offset(bills_offset*bills_limit)
         bills = bills.all()
-        db.session.close()
         return bills
 
     @classmethod
@@ -93,7 +89,6 @@ class BillProvider:
     @classmethod
     def get_subcategory_by_sub_cat_id(cls, bill_sub_category_id):
         subcategory = BillSubCategory.query.filter(BillSubCategory.id == bill_sub_category_id).first()
-        db.session.close()
         return subcategory
 
     @classmethod
@@ -105,7 +100,6 @@ class BillProvider:
         if profits and not costs:
             bills = bills.filter(Bill.bill_type == 'profits')
         bills = bills.all()
-        db.session.close()
         return bills
 
     @classmethod
