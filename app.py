@@ -193,15 +193,10 @@ def country_endpoint():
 @app.route(get_route.CITIES_BY_COUNTRY, methods=['GET'])
 def city_endpoint(country_id):
     from api.model.providers.other import OtherProvider
-
     cities = OtherProvider.get_cities(country_id)
-
     additional_data = {
         'cities': CitySerializer(many=True).dump(cities).data
     }
-
-    print(additional_data)
-
     return ok_response("", additional_data)
 
 
