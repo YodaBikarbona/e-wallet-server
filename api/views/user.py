@@ -28,7 +28,8 @@ from api.helper.helper import (
     check_security_token,
     check_passwords,
     new_psw,
-    date_format
+    date_format,
+    password_regex,
 )
 from api.model.config import (
     app,
@@ -315,6 +316,8 @@ def save_new_password(request):
         return error_handler(404, message=error_messages.EMAIL_USER_NOT_FOUND)
     if request.json['password'] != request.json['confirmPassword']:
         return error_handler(error_status=400, message=error_messages.PASSWORDS_NOT_SAME)
+    if not password_regex(request.json['password']):
+        return error_handler(400, error_messages.PASSWORD_NOT_VALID)
     UserProvider.save_new_password(user=usr, user_data=request.json)
     return ok_response(message=messages.RESET_PASSWORD)
 
@@ -398,6 +401,8 @@ def change_password(request):
         return error_handler(400, error_messages.BAD_DATA)
     if not check_passwords(request.json['newPassword'], request.json['confirmPassword']):
         return error_handler(error_status=400, message=error_messages.PASSWORDS_NOT_SAME)
+    if not password_regex(request.json['password']):
+        return error_handler(400, error_messages.PASSWORD_NOT_VALID)
     UserProvider.save_new_password(user=usr, user_data=request.json)
     UserProvider.set_new_restart_code(user=usr, code=True)
     send_code_to_mail(recipient=usr.email, code=usr.code)

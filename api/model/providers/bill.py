@@ -19,12 +19,13 @@ class BillProvider:
         new_bill.bill_sub_category_id = bill_data['bill_sub_category_id'] if 'bill_sub_category_id' in bill_data else None
         db.session.add(new_bill)
         db.session.commit()
+        db.session.close()
         return new_bill
 
     @classmethod
     def get_categories(cls):
         categories = BillCategory.query.filter().all()
-
+        db.session.close()
         return categories
 
     @classmethod
@@ -32,13 +33,13 @@ class BillProvider:
         if category_id == 'null':
             category_id = None
         sub_categories = BillSubCategory.query.filter(BillSubCategory.bill_category_id == category_id).all()
-
+        db.session.close()
         return sub_categories
 
     @classmethod
     def get_currencies(cls):
         currencies = Currency.query.filter().all()
-
+        db.session.close()
         return currencies
 
     @classmethod
@@ -58,7 +59,9 @@ class BillProvider:
             bills = bills.limit(bills_limit)
         if bills_offset:
             bills = bills.offset(bills_offset*bills_limit)
-        return bills.all()
+        bills = bills.all()
+        db.session.close()
+        return bills
 
     @classmethod
     def count_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type):
@@ -84,11 +87,14 @@ class BillProvider:
         new_bill.bill_type = bill_type
         db.session.add(new_bill)
         db.session.commit()
+        db.session.close()
         return True
 
     @classmethod
     def get_subcategory_by_sub_cat_id(cls, bill_sub_category_id):
-        return BillSubCategory.query.filter(BillSubCategory.id == bill_sub_category_id).first()
+        subcategory = BillSubCategory.query.filter(BillSubCategory.id == bill_sub_category_id).first()
+        db.session.close()
+        return subcategory
 
     @classmethod
     def get_all_costs_and_profits(cls, costs, profits, user_id, currency_id):
@@ -98,11 +104,14 @@ class BillProvider:
             bills = bills.filter(Bill.bill_type == 'costs')
         if profits and not costs:
             bills = bills.filter(Bill.bill_type == 'profits')
-        return bills.all()
+        bills = bills.all()
+        db.session.close()
+        return bills
 
     @classmethod
     def delete_bill_by_bill_id(cls, bill_id):
         bill = Bill.query.filter(Bill.id == bill_id).first()
         db.session.delete(bill)
         db.session.commit()
+        db.session.close()
         return True

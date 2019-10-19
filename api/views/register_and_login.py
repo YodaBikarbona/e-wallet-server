@@ -1,6 +1,16 @@
 from flask import jsonify
 from flask_mail import Message
-from api.helper.helper import now, ValidateRequestSchema, error_handler, check_security_token, new_psw, security_token, random_string, ok_response
+from api.helper.helper import (
+    now,
+    ValidateRequestSchema,
+    error_handler,
+    check_security_token,
+    new_psw,
+    security_token,
+    random_string,
+    ok_response,
+    password_regex,
+)
 from api.model.config import mail, db
 from api.model.user import User
 from api.validation.register import RegisterSchema, LoginSchema
@@ -22,6 +32,8 @@ def register(request):
     #check_user = User.query.filter(User.deleted != False, User.email == request.json['email']).first()
     if UserProvider.get_user_by_email(request.json['email']):
         return error_handler(400, error_messages.USER_ALREADY_EXISTS)
+    if not password_regex(request.json['password']):
+        return error_handler(400, error_messages.PASSWORD_NOT_VALID)
     user = UserProvider.create_register_user(request.json)
     code = user.code
     recipient = request.json['email']

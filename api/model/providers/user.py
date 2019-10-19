@@ -38,16 +38,19 @@ class UserProvider:
         #user.image_id = 2 if user_data['gender'] == 'female' else user.image_id
         db.session.add(user)
         db.session.commit()
+        db.session.close()
         return user
 
     @classmethod
     def get_user_by_ID(cls, user_id):
         user = User.query.filter(User.id == user_id).first()
+        db.session.close()
         return user
 
     @classmethod
     def get_user_by_email(cls, email):
         user = User.query.filter(User.email == email).first()
+        db.session.close()
         return user
 
     @classmethod
@@ -55,18 +58,20 @@ class UserProvider:
         user.code = ''
         user.activated = True
         db.session.commit()
+        db.session.close()
         return True
 
     @classmethod
     def update_key_word(cls, user):
         user.key_word = random_string(255)
         db.session.commit()
+        db.session.close()
         return True
 
     @classmethod
     def get_all_users(cls, user_id, filters=None):
         users = User.query.filter(User.id != user_id).all()
-
+        db.session.close()
         return users
 
     @classmethod
@@ -75,6 +80,7 @@ class UserProvider:
         new_role.role_name = role_name
         db.session.add(new_role)
         db.session.commit()
+        db.session.close()
         return new_role
 
     @classmethod
@@ -85,6 +91,7 @@ class UserProvider:
             user.new_password_code = random_string(6)
             user.new_password_code_expired = now() + dt.timedelta(minutes=5)
         db.session.commit()
+        db.session.close()
         return True
 
     @classmethod
@@ -97,6 +104,7 @@ class UserProvider:
         user.password = new_psw(user.salt, user_data['newPassword'])
         user.activated = False
         db.session.commit()
+        db.session.close()
         return True
 
     @classmethod
@@ -111,21 +119,26 @@ class UserProvider:
                 .filter(UserCurrency.user_id == user_id)
         if search:
             bill_currencies = bill_currencies.filter(Currency.code.ilike('%{0}%'.format(search)))
-        return bill_currencies.all()
+        bill_currencies = bill_currencies.all()
+        db.session.close()
+        return bill_currencies
 
     @classmethod
     def check_user_currencies_number(cls, user_id):
         currencies_number = UserCurrency.query.filter(UserCurrency.user_id == user_id).count()
+        db.session.close()
         return currencies_number
 
     @classmethod
     def check_user_categories_number(cls, user_id):
         categories_number = UserBillCategory.query.filter(UserBillCategory.user_id == user_id).count()
+        db.session.close()
         return categories_number
 
     @classmethod
     def check_user_sub_categories_number(cls, user_id):
         sub_categories_number = UserBillSubCategory.query.filter(UserBillSubCategory.user_id == user_id).count()
+        db.session.close()
         return sub_categories_number
 
     @classmethod
@@ -136,13 +149,16 @@ class UserProvider:
             new_currency.currency_id = currency_id
             db.session.add(new_currency)
             db.session.commit()
+            db.session.close()
             return True
         else:
             user_currency = UserCurrency.query.filter(UserCurrency.user_id == user_id,
                                                       UserCurrency.currency_id == currency_id).first()
+            db.session.close()
             if user_currency:
                 db.session.delete(user_currency)
                 db.session.commit()
+                db.session.close()
             return True
 
     @classmethod
@@ -156,7 +172,9 @@ class UserProvider:
                 filter(UserBillCategory.user_id == user_id)
         if search:
             bill_categories = bill_categories.filter(BillCategory.name.ilike('%{0}%'.format(search)))
-        return bill_categories.all()
+        bill_categories = bill_categories.all()
+        db.session.close()
+        return bill_categories
 
     @classmethod
     def user_settings_sub_categories(cls, active, user_id, search):
@@ -166,12 +184,14 @@ class UserProvider:
         sub_cats = BillSubCategory.query.filter(
             BillSubCategory.bill_category_id.in_([cat.id for cat in user_categories])
         ).all() if user_categories else []
+        db.session.close()
         if not active:
             # Get all active subcategories
             user_sub_categories = UserBillSubCategory.query.filter(
                 UserBillSubCategory.user_id == user_id,
                 UserBillSubCategory.bill_sub_category_id.in_([sub.id for sub in sub_cats])
             ).all() if sub_cats else []
+            db.session.close()
             # If not active subcategories for active categories return all subcategories for active categories
             if not user_sub_categories:
                 return sub_cats
@@ -191,7 +211,9 @@ class UserProvider:
                         UserBillSubCategory.bill_sub_category_id.in_([sub.id for sub in sub_cats]))
         if search:
             bill_sub_categories = bill_sub_categories.filter(BillSubCategory.name.ilike('%{0}%'.format(search)))
-        return bill_sub_categories.all()
+        bill_sub_categories = bill_sub_categories.all()
+        db.session.close()
+        return bill_sub_categories
 
     @classmethod
     def save_or_delete_user_settings_category(cls, active, category_id, user_id):
@@ -201,20 +223,25 @@ class UserProvider:
             new_category.bill_category_id = category_id
             db.session.add(new_category)
             db.session.commit()
+            db.session.close()
             return True
         else:
             user_category = UserBillCategory.query.filter(UserBillCategory.user_id == user_id,
                                                           UserBillCategory.bill_category_id == category_id).first()
+            db.session.close()
             user_sub_categories = UserBillSubCategory.query \
                 .join(BillSubCategory, UserBillSubCategory.bill_sub_category_id == BillSubCategory.id) \
                 .filter(BillSubCategory.id == category_id).all()
+            db.session.close()
             if user_category:
                 db.session.delete(user_category)
                 db.session.commit()
+                db.session.close()
             if user_sub_categories:
                 for sub_category in user_sub_categories:
                     db.session.delete(sub_category)
                     db.session.commit()
+                    db.session.close()
             return True
 
     @classmethod
@@ -225,14 +252,17 @@ class UserProvider:
             new_sub_category.bill_sub_category_id = sub_category_id
             db.session.add(new_sub_category)
             db.session.commit()
+            db.session.close()
             return True
         else:
             user_sub_category = UserBillSubCategory.query\
                 .filter(UserBillSubCategory.user_id == user_id,
                         UserBillSubCategory.bill_sub_category_id == sub_category_id).first()
+            db.session.close()
             if user_sub_category:
                 db.session.delete(user_sub_category)
                 db.session.commit()
+                db.session.close()
             return True
 
     @classmethod
@@ -255,31 +285,39 @@ class UserProvider:
         #     user.image_id = 1 if user_data['gender'] == 'male' else user.image_id
         #     user.image_id = 2 if user_data['gender'] == 'female' else user.image_id
         db.session.commit()
+        db.session.close()
         return True
 
     @classmethod
     def get_active_user_currencies_with_limit(cls, user_id):
-        return UserCurrency.query.filter(UserCurrency.user_id == user_id).all()
+        user_currencies = UserCurrency.query.filter(UserCurrency.user_id == user_id).all()
+        db.session.close()
+        return user_currencies
 
     @classmethod
     def edit_active_user_currencies_with_limit(cls, currency_id, monthly_limit):
         currency = UserCurrency.query.filter(UserCurrency.id == currency_id).first()
         currency.monthly_cost_limit = monthly_limit
         db.session.commit()
+        db.session.close()
         return True
 
     @classmethod
     def get_user_currency_by_currency_id(cls, currency_id):
-        return UserCurrency.query\
+        user_currency = UserCurrency.query\
             .join(Currency, UserCurrency.currency_id == Currency.id)\
             .filter(Currency.id == currency_id).first()
+        db.session.close()
+        return user_currency
 
     @classmethod
     def get_all_user_news(cls, user_id):
-        return News.query.join(UserNews, UserNews.news_id == News.id)\
+        user_news = News.query.join(UserNews, UserNews.news_id == News.id)\
             .filter(UserNews.hidden == False,
                     UserNews.user_id == user_id)\
             .order_by(News.created.desc()).all()
+        db.session.close()
+        return user_news
 
     @classmethod
     def hide_news_by_user_id_and_news_id(cls, user_id, news_id):
@@ -287,5 +325,6 @@ class UserProvider:
                                      UserNews.user_id == user_id).first()
         news.hidden = True
         db.session.commit()
+        db.session.close()
         return True
 

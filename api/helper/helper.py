@@ -11,6 +11,7 @@ import uuid
 import string
 import random
 from api.helper.constants import key_word
+import re
 
 #from api.model.user import User
 import api.model.user
@@ -171,3 +172,9 @@ def all_days_between_two_date(start_date, end_date):
         day = sdate + timedelta(days=i)
         days_list.append(datetime.strftime(day, "%d-%b-%y"))
     return days_list
+
+
+def password_regex(password):
+    if re.match(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
+        return True
+    return False
