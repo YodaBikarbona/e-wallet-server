@@ -38,4 +38,4 @@ tzlocal==2.0.0
 Werkzeug==0.14.1
 wkhtmltopdf-pack-ng==0.12.3.0
 zope.interface==4.6.0
-zope.sqlalchemy==1.2
+zope-sqlalchemy==0.7.6
