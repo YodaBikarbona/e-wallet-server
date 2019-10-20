@@ -68,7 +68,7 @@ class BillSerializer(ma.Schema):
 
     class Meta:
         fields = ('id', 'created', 'title', 'comment', 'price', 'bill_type', 'currency_id', 'image_id',
-                  'bill_category_id', 'bill_sub_category_id', 'user_id', 'currency', 'image',
+                  'bill_category_id', 'bill_sub_category_id', 'user_id', 'quantity', 'not_my_city', 'currency', 'image',
                   'bill_category', 'bill_sub_category', 'user')
 
 

@@ -70,7 +70,7 @@ class BillProvider:
         ))
 
     @classmethod
-    def new_costs_or_profits(cls, category_id, sub_category_id, currency_id, title, comment, price, user_id, bill_type, image_id=None):
+    def new_costs_or_profits(cls, category_id, sub_category_id, currency_id, title, comment, price, user_id, bill_type, quantity, not_my_city, image_id=None):
         new_bill = Bill()
         new_bill.user_id = user_id
         new_bill.title = title
@@ -81,6 +81,8 @@ class BillProvider:
         new_bill.bill_category_id = category_id
         new_bill.bill_sub_category_id = sub_category_id if sub_category_id and sub_category_id != 'null' else None
         new_bill.bill_type = bill_type
+        new_bill.quantity = quantity
+        new_bill.not_my_city = not_my_city
         db.session.add(new_bill)
         db.session.commit()
         db.session.close()

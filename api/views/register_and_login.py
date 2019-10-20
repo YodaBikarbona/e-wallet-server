@@ -27,14 +27,13 @@ def register(request):
         return error_handler(400, error_messages.BAD_DATA)
     if request.json['password'] != request.json['confirmPassword']:
         return error_handler(400, error_messages.PASSWORDS_NOT_SAME)
-
+    if not password_regex(request.json['password']):
+        return error_handler(400, error_messages.PASSWORD_NOT_VALID)
     #check_user = UserProvider.get_user_by_email(request.json['email'])
     #check_user = User.query.filter(User.deleted != False, User.email == request.json['email']).first()
     if UserProvider.get_user_by_email(request.json['email']):
         db.session.close()
         return error_handler(400, error_messages.USER_ALREADY_EXISTS)
-    if not password_regex(request.json['password']):
-        return error_handler(400, error_messages.PASSWORD_NOT_VALID)
     user = UserProvider.create_register_user(request.json)
     code = user.code
     recipient = request.json['email']
@@ -93,8 +92,10 @@ def activate_user(request):
         return error_handler(400, error_messages.BAD_DATA)
     user = UserProvider.get_user_by_email(request.json['email'])
     if not user:
+        db.session.close()
         return error_handler(400, error_messages.BAD_DATA)
     if user.code != request.json['code']:
+        db.session.close()
         return error_handler(400, error_messages.INVALID_CODE)
     UserProvider.activate_user(user)
     #user.activated = True

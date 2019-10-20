@@ -38,7 +38,6 @@ class UserProvider:
         #user.image_id = 2 if user_data['gender'] == 'female' else user.image_id
         db.session.add(user)
         db.session.commit()
-        db.session.close()
         return user
 
     @classmethod
@@ -122,6 +121,7 @@ class UserProvider:
     @classmethod
     def check_user_currencies_number(cls, user_id):
         currencies_number = UserCurrency.query.filter(UserCurrency.user_id == user_id).count()
+        db.session.close()
         return currencies_number
 
     @classmethod
@@ -175,6 +175,8 @@ class UserProvider:
         sub_cats = BillSubCategory.query.filter(
             BillSubCategory.bill_category_id.in_([cat.id for cat in user_categories])
         ).all() if user_categories else []
+        if not sub_cats:
+            db.session.close()
         if not active:
             # Get all active subcategories
             user_sub_categories = UserBillSubCategory.query.filter(
@@ -192,6 +194,7 @@ class UserProvider:
             bill_sub_categories = BillSubCategory.query.filter(
                 BillSubCategory.id.in_(sub_categories_ids_filter))
             if not sub_categories_ids_filter:
+                db.session.close()
                 return []
         else:
             bill_sub_categories = BillSubCategory.query\
@@ -228,6 +231,7 @@ class UserProvider:
                     db.session.delete(sub_category)
                     db.session.commit()
                     db.session.close()
+            db.session.close()
             return True
 
     @classmethod
@@ -248,6 +252,7 @@ class UserProvider:
                 db.session.delete(user_sub_category)
                 db.session.commit()
                 db.session.close()
+            db.session.close()
             return True
 
     @classmethod

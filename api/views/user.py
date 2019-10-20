@@ -60,6 +60,7 @@ def user(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     additional_data = {
         'user': UsersSerializer(many=False).dump(usr).data,
@@ -71,6 +72,7 @@ def user(request):
     additional_data['user']['currencies'] = user_currencies if user_currencies else 0
     additional_data['user']['categories'] = user_categories
     additional_data['user']['sub_categories'] = user_sub_categories
+    db.session.close()
     return ok_response("", additional_data)
 
 
@@ -84,9 +86,11 @@ def restart_password(request):
     """
     usr = UserProvider.get_user_by_email(request.json['email'])
     if not usr:
+        db.session.close()
         return error_handler(404, message=error_messages.EMAIL_USER_NOT_FOUND)
     UserProvider.set_new_restart_code(user=usr)
     send_code_to_mail(recipient=usr.email, code=usr.new_password_code)
+    db.session.close()
     return ok_response(message=messages.RESTART_PASSWORD_CODE)
 
 
@@ -113,6 +117,7 @@ def user_settings_currencies(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     currencies = UserProvider.user_settings_currencies(
         active=currency_active,
@@ -122,6 +127,7 @@ def user_settings_currencies(request):
     additional_data = {
         "currencies": CurrencySerializer(many=True).dump(currencies).data if currencies else []
     }
+    db.session.close()
     return ok_response(message=messages.SETTINGS_CURRENCIES, additional_data=additional_data)
 
 
@@ -148,6 +154,7 @@ def user_settings_categories(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     categories = UserProvider.user_settings_categories(
         active=category_active,
@@ -157,6 +164,7 @@ def user_settings_categories(request):
     additional_data = {
         "categories": CategorySerializer(many=True).dump(categories).data if categories else []
     }
+    db.session.close()
     return ok_response(message=messages.SETTINGS_CATEGORIES, additional_data=additional_data)
 
 
@@ -184,6 +192,7 @@ def user_settings_sub_categories(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     sub_categories = UserProvider.user_settings_sub_categories(
         active=sub_category_active,
@@ -193,6 +202,7 @@ def user_settings_sub_categories(request):
     additional_data = {
         "sub_categories": SubCategorySerializer(many=True).dump(sub_categories).data if sub_categories else []
     }
+    db.session.close()
     return ok_response(message=messages.SETTINGS_SUB_CATEGORIES, additional_data=additional_data)
 
 
@@ -216,14 +226,17 @@ def save_user_settings_currency(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     if UserProvider.check_user_currencies_number(user_id=usr.id) == 10 and not currency_active:
+        db.session.close()
         return error_handler(error_status=403, message=error_messages.MAX_CURRENCIES)
     UserProvider.save_or_delete_user_settings_currency(
         active=currency_active,
         currency_id=currency_id,
         user_id=usr.id
     )
+    db.session.close()
     return ok_response(message='')
 
 
@@ -246,12 +259,14 @@ def save_user_settings_category(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     UserProvider.save_or_delete_user_settings_category(
         active=category_active,
         category_id=category_id,
         user_id=usr.id
     )
+    db.session.close()
     return ok_response(message='')
 
 
@@ -274,12 +289,14 @@ def save_user_settings_sub_category(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     UserProvider.save_or_delete_user_settings_sub_category(
         active=sub_category_active,
         sub_category_id=sub_category_id,
         user_id=usr.id
     )
+    db.session.close()
     return ok_response(message='')
 
 
@@ -293,11 +310,15 @@ def restart_password_code(request):
     """
     usr = UserProvider.get_user_by_email(request.json['email'])
     if not usr:
+        db.session.close()
         return error_handler(404, message=error_messages.EMAIL_USER_NOT_FOUND)
     if usr.new_password_code != request.json['code']:
+        db.session.close()
         return error_handler(403, message=error_messages.INVALID_CODE)
     if not UserProvider.check_expired_restart_code(user=usr, user_data=request.json):
+        db.session.close()
         return error_handler(error_status=400, message=error_messages.INVALID_CODE)
+    db.session.close()
     return ok_response(message='')
 
 
@@ -313,12 +334,16 @@ def save_new_password(request):
     """
     usr = UserProvider.get_user_by_email(request.json['email'])
     if not usr:
+        db.session.close()
         return error_handler(404, message=error_messages.EMAIL_USER_NOT_FOUND)
     if request.json['password'] != request.json['confirmPassword']:
+        db.session.close()
         return error_handler(error_status=400, message=error_messages.PASSWORDS_NOT_SAME)
     if not password_regex(request.json['password']):
+        db.session.close()
         return error_handler(400, error_messages.PASSWORD_NOT_VALID)
     UserProvider.save_new_password(user=usr, user_data=request.json)
+    db.session.close()
     return ok_response(message=messages.RESET_PASSWORD)
 
 
@@ -370,15 +395,19 @@ def upload_image(request): #, purpose='system_images/default_images/'):
 def get_users(request, user_id):
     usr = UserProvider.get_user_by_ID(user_id=user_id)
     if not usr:
+        db.session.close()
         return error_handler(400, error_messages.BAD_DATA)
     if not check_security_token(token=request.headers['Authorization'], user=usr):
+        db.session.close()
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr.role.role_name == 'admin':
+        db.session.close()
         return error_handler(403, error_messages.NOT_PERMISSION)
     users = UserProvider.get_all_users(user_id=user_id)
     additional_data = {
         "users": UsersSerializer(many=True).dump.data(users) if users else []
     }
+    db.session.close()
     return ok_response(message=messages.USERS_LIST, additional_data=additional_data)
 
 
@@ -394,18 +423,24 @@ def change_password(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     if usr.password != new_psw(usr.salt, request.json['currentPassword']):
+        db.session.close()
         return error_handler(400, error_messages.WRONG_PASSWORD)
     if 'newPassword' and 'confirmPassword' not in request.json:
+        db.session.close()
         return error_handler(400, error_messages.BAD_DATA)
     if not check_passwords(request.json['newPassword'], request.json['confirmPassword']):
+        db.session.close()
         return error_handler(error_status=400, message=error_messages.PASSWORDS_NOT_SAME)
     if not password_regex(request.json['password']):
+        db.session.close()
         return error_handler(400, error_messages.PASSWORD_NOT_VALID)
     UserProvider.save_new_password(user=usr, user_data=request.json)
     UserProvider.set_new_restart_code(user=usr, code=True)
     send_code_to_mail(recipient=usr.email, code=usr.code)
+    db.session.close()
     return ok_response(message=messages.RESET_PASSWORD)
 
 
@@ -425,9 +460,12 @@ def edit_user(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     if not UserProvider.edit_user(user_data=request.json, user_email=usr.email, user_id=usr.id):
+        db.session.close()
         return error_handler(400, error_messages.USER_ALREADY_EXISTS)
+    db.session.close()
     return ok_response(message=messages.USER_EDITED)
 
 
@@ -443,11 +481,13 @@ def get_active_currencies_limit(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     active_currencies = UserProvider.get_active_user_currencies_with_limit(user_id=usr.id)
     additional_data = {
         'currencies': UserCirrenciesSerializer(many=True).dump(active_currencies).data if active_currencies else []
     }
+    db.session.close()
     return ok_response(message=messages.ACTIVE_CURRENCIES, additional_data=additional_data)
 
 
@@ -463,6 +503,7 @@ def edit_currency_monthly_limit(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     UserProvider.edit_active_user_currencies_with_limit(
         currency_id=request.json['currency_id'],
@@ -472,6 +513,7 @@ def edit_currency_monthly_limit(request):
     additional_data = {
         'currencies': UserCirrenciesSerializer(many=True).dump(active_currencies).data if active_currencies else []
     }
+    db.session.close()
     return ok_response(message=messages.MONTHLY_LIMIT_EDITED, additional_data=additional_data)
 
 
@@ -487,6 +529,7 @@ def get_news(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     news = UserProvider.get_all_user_news(user_id=usr.id)
     news = NewsSerializer(many=True).dump(news).data if news else []
@@ -495,6 +538,7 @@ def get_news(request):
     additional_data = {
         'news': news
     }
+    db.session.close()
     return ok_response(messages.NEWS_LIST, additional_data=additional_data)
 
 
@@ -510,6 +554,8 @@ def clear_news(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     UserProvider.hide_news_by_user_id_and_news_id(user_id=usr.id, news_id=request.json['newsId'])
+    db.session.close()
     return ok_response(messages.NEWS_HIDDEN)

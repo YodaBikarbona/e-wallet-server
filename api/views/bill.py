@@ -19,8 +19,10 @@ def add_bill(request):
         return error_handler(400, error_messages.BAD_DATA)
     user = UserProvider.get_user_by_ID(request.json['user_id'])
     if not check_security_token(token=request.headers['Authorization'], user=user):
+        db.session.close()
         return error_handler(403, error_messages.INVALID_TOKEN)
     BillProvider.add_new_bill(bill_data=request.json)
+    db.session.close()
     return ok_response(message=messages.BILL_ADDED)
 
 
@@ -72,6 +74,7 @@ def get_costs(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
 
     costs = BillProvider.get_costs_or_profits(
@@ -109,6 +112,7 @@ def new_costs(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
 
     BillProvider.new_costs_or_profits(
@@ -139,6 +143,7 @@ def new_profits(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
 
     BillProvider.new_costs_or_profits(
@@ -169,6 +174,7 @@ def get_profits(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
 
     profits = BillProvider.get_costs_or_profits(
@@ -206,6 +212,7 @@ def get_sub_categoryes_by_category(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     sub_categories = BillProvider.get_sub_categories(category_id=request.json['category_id'])
     additional_data = {
@@ -234,6 +241,7 @@ def print_pdf_report(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     user = UsersSerializer(many=False).dump(usr).data
     bills = BillProvider.get_costs_or_profits(
@@ -291,6 +299,7 @@ def get_graph(request):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     bills = BillProvider.get_all_costs_and_profits(
         costs=request.json['costs'],
@@ -354,6 +363,8 @@ def delete_bill(request, bill_id):
     else:
         return error_handler(403, error_messages.INVALID_TOKEN)
     if not usr:
+        db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     BillProvider.delete_bill_by_bill_id(bill_id=bill_id)
+    db.session.close()
     return ok_response(message=messages.BILL_DELETED)
