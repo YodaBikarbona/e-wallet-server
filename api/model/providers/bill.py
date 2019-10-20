@@ -1,6 +1,6 @@
 from api.model.bill import Bill, BillCategory, BillSubCategory
 from api.model.country import Currency
-from api.model.config import db, Session
+from api.model.config import db
 
 
 class BillProvider:
