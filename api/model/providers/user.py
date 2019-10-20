@@ -55,7 +55,6 @@ class UserProvider:
         user = User.query.filter(User.id == user_id).first()
         user.last_login = now()
         db.session.commit()
-        db.session.close()
         return True
 
     @classmethod
