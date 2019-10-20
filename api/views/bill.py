@@ -115,6 +115,11 @@ def new_costs(request):
         db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     print(request.json)
+    try:
+        request.json['quantity'] = int(request.json['quantity'])
+    except Exception as ex:
+        print(ex)
+        request.json['quantity'] = 1
     BillProvider.new_costs_or_profits(
         category_id=request.json['categoryId'],
         sub_category_id=request.json['subCategoryId'],
@@ -145,7 +150,11 @@ def new_profits(request):
     if not usr:
         db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
-
+    try:
+        request.json['quantity'] = int(request.json['quantity'])
+    except Exception as ex:
+        print(ex)
+        request.json['quantity'] = 1
     BillProvider.new_costs_or_profits(
         category_id=request.json['categoryId'],
         sub_category_id=request.json['subCategoryId'],
