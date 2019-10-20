@@ -48,7 +48,7 @@ class UserProvider:
 
     @classmethod
     def get_user_by_email(cls, email):
-        user = Session.query(User).filter(User.email == email).first()
+        user = Session.query(User).filter(User.email == email).all()
         #user = User.query.filter(User.email == email).first()
         return user
 

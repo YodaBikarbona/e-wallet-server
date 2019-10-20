@@ -3,8 +3,6 @@ from flask import Flask
 import os
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
-from sqlalchemy.orm import sessionmaker, scoped_session
-from zope.sqlalchemy.datamanager import ZopeTransactionExtension
 
 # ----- Config -----
 app = Flask(__name__, static_url_path='')
@@ -21,7 +19,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = SQLAlchemy(app)
 
-Session = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
 app.config.from_pyfile('config.cfg')
 mail = Mail(app)
