@@ -31,6 +31,7 @@ def register(request):
     #check_user = UserProvider.get_user_by_email(request.json['email'])
     #check_user = User.query.filter(User.deleted != False, User.email == request.json['email']).first()
     if UserProvider.get_user_by_email(request.json['email']):
+        db.session.close()
         return error_handler(400, error_messages.USER_ALREADY_EXISTS)
     if not password_regex(request.json['password']):
         return error_handler(400, error_messages.PASSWORD_NOT_VALID)
@@ -39,6 +40,7 @@ def register(request):
     recipient = request.json['email']
     send_mail = send_code_to_mail(recipient=recipient, code=code)
     if send_mail:
+        db.session.close()
         return ok_response(messages.USER_CREATED)
         """return jsonify(
             {
@@ -48,6 +50,7 @@ def register(request):
                 'msg': "User is successfully created!"
             }
         )"""
+    db.session.close()
     return error_handler(400, 'Something is wrong!')
 
 
@@ -66,10 +69,13 @@ def login(request):
         return error_handler(400, error_messages.BAD_DATA)
     user = UserProvider.get_user_by_email(request.json['email'])
     if not user:
+        db.session.close()
         return error_handler(400, error_messages.USER_NOT_EXISTS)
     if user.password != new_psw(user.salt, request.json['password']):
+        db.session.close()
         return error_handler(400, error_messages.WRONG_USERNAME_OR_PASSWORD)
     if not user.activated:
+        db.session.close()
         return error_handler(403, error_messages.USER_NOT_ACTIVATED)
     user.last_login = now()
     db.session.commit()
@@ -78,6 +84,7 @@ def login(request):
         'token': security_token(user.email, user.role.role_name, user.id),
     }
     print("This is role id", user.role_id)
+    db.session.close()
     return ok_response(messages.LOGIN, additional_data)
 
 
