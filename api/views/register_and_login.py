@@ -17,7 +17,6 @@ from api.validation.register import RegisterSchema, LoginSchema
 from api.model.providers.user import UserProvider
 from api.messages import error_messages, messages
 from api.validation.user import ActivationSchema
-from config import Session
 
 
 def register(request):
@@ -74,10 +73,7 @@ def login(request):
         return error_handler(400, error_messages.WRONG_USERNAME_OR_PASSWORD)
     if not user.activated:
         return error_handler(403, error_messages.USER_NOT_ACTIVATED)
-    user.last_login = now()
-    Session.commit()
-    Session.flush()
-    #db.session.commit()
+    UserProvider.update_last_login(user_id=user.id)
     additional_data = {
         'user_id': user.id,
         'token': security_token(user.email, user.role.role_name, user.id),

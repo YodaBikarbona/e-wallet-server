@@ -5,7 +5,6 @@ from api.model.config import db
 from api.model.user import User, Role, UserCurrency, News, UserNews
 from api.model.bill import Currency, UserBillCategory, UserBillSubCategory, BillCategory, BillSubCategory
 from api.helper.helper import date_format
-from config import Session
 
 
 class UserProvider:
@@ -48,9 +47,16 @@ class UserProvider:
 
     @classmethod
     def get_user_by_email(cls, email):
-        user = Session.query(User).filter(User.email == email).all()
-        #user = User.query.filter(User.email == email).first()
+        user = User.query.filter(User.email == email).first()
         return user
+
+    @classmethod
+    def update_last_login(cls, user_id):
+        user = User.query.filter(User.id == user_id).first()
+        user.last_login = now()
+        db.session.commit()
+        db.session.close()
+        return True
 
     @classmethod
     def activate_user(cls, user):
