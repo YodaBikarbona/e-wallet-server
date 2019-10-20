@@ -11,12 +11,13 @@ from api.helper.helper import (
     ok_response,
     password_regex,
 )
-from api.model.config import mail, db, Session
+from api.model.config import mail, db
 from api.model.user import User
 from api.validation.register import RegisterSchema, LoginSchema
 from api.model.providers.user import UserProvider
 from api.messages import error_messages, messages
 from api.validation.user import ActivationSchema
+from config import Session
 
 
 def register(request):
