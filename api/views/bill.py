@@ -114,7 +114,7 @@ def new_costs(request):
     if not usr:
         db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
-
+    print(request.json)
     BillProvider.new_costs_or_profits(
         category_id=request.json['categoryId'],
         sub_category_id=request.json['subCategoryId'],
