@@ -1,7 +1,7 @@
 from datetime import datetime
 import datetime as dt
 from api.helper.helper import new_salt, new_psw, random_string, now
-from api.model.config import db
+from api.model.config import db, Session
 from api.model.user import User, Role, UserCurrency, News, UserNews
 from api.model.bill import Currency, UserBillCategory, UserBillSubCategory, BillCategory, BillSubCategory
 from api.helper.helper import date_format
@@ -47,7 +47,8 @@ class UserProvider:
 
     @classmethod
     def get_user_by_email(cls, email):
-        user = User.query.filter(User.email == email).first()
+        user = Session.query(User).filter(User.email == email).first()
+        #user = User.query.filter(User.email == email).first()
         return user
 
     @classmethod

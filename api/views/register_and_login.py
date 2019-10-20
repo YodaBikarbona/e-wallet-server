@@ -11,7 +11,7 @@ from api.helper.helper import (
     ok_response,
     password_regex,
 )
-from api.model.config import mail, db
+from api.model.config import mail, db, Session
 from api.model.user import User
 from api.validation.register import RegisterSchema, LoginSchema
 from api.model.providers.user import UserProvider
@@ -68,22 +68,20 @@ def login(request):
         return error_handler(400, error_messages.BAD_DATA)
     user = UserProvider.get_user_by_email(request.json['email'])
     if not user:
-        db.session.close()
         return error_handler(400, error_messages.USER_NOT_EXISTS)
     if user.password != new_psw(user.salt, request.json['password']):
-        db.session.close()
         return error_handler(400, error_messages.WRONG_USERNAME_OR_PASSWORD)
     if not user.activated:
-        db.session.close()
         return error_handler(403, error_messages.USER_NOT_ACTIVATED)
     user.last_login = now()
-    db.session.commit()
+    Session.commit()
+    Session.flush()
+    #db.session.commit()
     additional_data = {
         'user_id': user.id,
         'token': security_token(user.email, user.role.role_name, user.id),
     }
     print("This is role id", user.role_id)
-    db.session.close()
     return ok_response(messages.LOGIN, additional_data)
 
 
