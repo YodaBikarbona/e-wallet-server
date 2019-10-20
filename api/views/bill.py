@@ -32,6 +32,7 @@ def get_categories(user_id):
     additional_data = {
         'categories': CategorySerializer(many=True).dump(categories).data if categories else []
     }
+    db.session.close()
     return ok_response(message='', additional_data=additional_data)
 
 
@@ -43,6 +44,7 @@ def get_sub_categories(user_id, category_id):
     additional_data = {
         'sub_categories': SubCategorySerializer(many=True).dump(sub_categories).data if sub_categories else []
     }
+    db.session.close()
     return ok_response(message='', additional_data=additional_data)
 
 
@@ -54,6 +56,7 @@ def get_currencies(user_id):
     additional_data = {
         'currencies': CurrencySerializer(many=True).dump(currencies).data if currencies else []
     }
+    db.session.close()
     return ok_response(message='', additional_data=additional_data)
 
 
@@ -90,6 +93,7 @@ def get_costs(request):
             bill_type='costs'
         )
     }
+    db.session.close()
     return ok_response(message='', additional_data=additional_data)
 
 
@@ -115,7 +119,11 @@ def new_costs(request):
         comment = request.json['comment'] if 'comment' in request.json else "",
         price = request.json['price'],
         user_id=usr.id,
-        bill_type='costs')
+        bill_type='costs',
+        quantity=request.json['quantity'],
+        not_my_city=request.json['notMyCity']
+    )
+    db.session.close()
     return ok_response(message='')
 
 
@@ -141,7 +149,11 @@ def new_profits(request):
         comment = request.json['comment'] if 'comment' in request.json else "",
         price = request.json['price'],
         user_id=usr.id,
-        bill_type='profits')
+        bill_type='profits',
+        quantity=request.json['quantity'],
+        not_my_city=request.json['notMyCity']
+    )
+    db.session.close()
     return ok_response(message='')
 
 
@@ -178,6 +190,7 @@ def get_profits(request):
             bill_type='profits'
         )
     }
+    db.session.close()
     return ok_response(message='', additional_data=additional_data)
 
 
@@ -198,6 +211,7 @@ def get_sub_categoryes_by_category(request):
     additional_data = {
         'sub_categories': SubCategorySerializer(many=True).dump(sub_categories).data if sub_categories else []
     }
+    db.session.close()
     return ok_response(message='', additional_data=additional_data)
 
 
@@ -261,6 +275,7 @@ def print_pdf_report(request):
     response = make_response(report)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'attachment; filename=report.pdf'
+    db.session.close()
     return response
 
 
@@ -323,6 +338,7 @@ def get_graph(request):
         'max_profit': max_profit,
         'monthly_limit': currency.monthly_cost_limit
     }
+    db.session.close()
     return ok_response(message='Bills', additional_data=additional_data)
 
 
