@@ -14,6 +14,7 @@ from api.views.user import (
     get_users,
     restart_password,
     restart_password_code,
+    restart_login_code,
     save_new_password,
     user_settings_currencies,
     save_user_settings_currency,
@@ -144,6 +145,11 @@ def logout_endpoint():
 @app.route(post_route.RESTART_PASSWORD, methods=['POST'])
 def restart_password_endpoint():
     return restart_password(request)
+
+
+@app.route(post_route.RESTART_LOGIN_CODE, methods=['POST'])
+def restart_login_code_endpoint():
+    return restart_login_code(request)
 
 
 @app.route(post_route.RESTART_PASSWORD_CODE, methods=['POST'])

@@ -12,6 +12,7 @@ from api.helper.helper import (
     password_regex,
 )
 from api.model.config import mail, db
+from config import session as Session
 from api.model.user import User
 from api.validation.register import RegisterSchema, LoginSchema
 from api.model.providers.user import UserProvider
@@ -32,14 +33,15 @@ def register(request):
     #check_user = UserProvider.get_user_by_email(request.json['email'])
     #check_user = User.query.filter(User.deleted != False, User.email == request.json['email']).first()
     if UserProvider.get_user_by_email(request.json['email']):
-        db.session.close()
+        #db.session.close()
+        Session.close()
         return error_handler(400, error_messages.USER_ALREADY_EXISTS)
     user = UserProvider.create_register_user(request.json)
     code = user.code
     recipient = request.json['email']
     send_mail = send_code_to_mail(recipient=recipient, code=code)
     if send_mail:
-        db.session.close()
+        Session.close()
         return ok_response(messages.USER_CREATED)
         """return jsonify(
             {
@@ -49,7 +51,7 @@ def register(request):
                 'msg': "User is successfully created!"
             }
         )"""
-    db.session.close()
+    Session.close()
     return error_handler(400, 'Something is wrong!')
 
 

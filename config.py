@@ -19,6 +19,14 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = SQLAlchemy(app)
 
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+from sqlalchemy.pool import NullPool
+
+engine = create_engine('postgres://ugftsmjcvosxdd:3d967a02c309165ebec9090710f7b62b9475b382a2e01fa5fceb27e6b673fb56@ec2-54-228-243-29.eu-west-1.compute.amazonaws.com:5432/d96bbod69lq3u7', poolclass=NullPool)
+#engine = create_engine('postgresql://Mihael:Mihael0110.@localhost:5432/e_wallet', poolclass=NullPool)
+session = sessionmaker(bind=engine)()
+
 
 app.config.from_pyfile('config.cfg')
 mail = Mail(app)

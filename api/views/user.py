@@ -2,6 +2,7 @@ from flask import request
 from flask import jsonify
 import os
 from api.model.config import db
+from config import session as Session
 from werkzeug.utils import secure_filename
 from api.model.providers.user import UserProvider
 from api.views.register_and_login import send_code_to_mail
@@ -78,7 +79,7 @@ def user(request):
 
 def restart_password(request):
     """
-    This function will send new restart code to user email (Restart password form)
+    This function will send new restarted code to user email (Restart password form)
     :param request:
         email: string
     :return:
@@ -91,6 +92,24 @@ def restart_password(request):
     UserProvider.set_new_restart_code(user=usr)
     send_code_to_mail(recipient=usr.email, code=usr.new_password_code)
     db.session.close()
+    return ok_response(message=messages.RESTART_PASSWORD_CODE)
+
+
+def restart_login_code(request):
+    """
+    This function will send new restarted code to user email if user doesn't get first time
+    :param request:
+        email: string
+    :return:
+        message
+    """
+    usr = UserProvider.get_user_by_email(request.json['email'])
+    if not usr:
+        Session.close()
+        return error_handler(404, message=error_messages.EMAIL_USER_NOT_FOUND)
+    UserProvider.set_new_login_code(user=usr)
+    send_code_to_mail(recipient=usr.email, code=usr.code)
+    Session.close()
     return ok_response(message=messages.RESTART_PASSWORD_CODE)
 
 
@@ -538,7 +557,7 @@ def get_news(request):
     additional_data = {
         'news': news
     }
-    db.session.close()
+    Session.commit()
     return ok_response(messages.NEWS_LIST, additional_data=additional_data)
 
 
