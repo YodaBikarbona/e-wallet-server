@@ -2,6 +2,7 @@ from api.model.bill import Bill, BillCategory, BillSubCategory
 from api.model.country import Currency
 from api.model.config import db
 from config import session as Session
+from api.model.bill import UserBillSubCategory
 
 
 class BillProvider:
@@ -32,11 +33,17 @@ class BillProvider:
         return categories.all()
 
     @classmethod
-    def get_sub_categories(cls, category_id):
+    def get_sub_categories(cls, category_id, user_id):
         if category_id == 'null':
             category_id = None
+        user_subcategories = Session.query(UserBillSubCategory).filter(UserBillSubCategory.user_id == user_id).all()
+        if user_subcategories:
+            user_subcategories = [user_sub.bill_sub_category_id for user_sub in user_subcategories]
+        else:
+            return []
         sub_categories = Session.query(BillSubCategory)\
-            .filter(BillSubCategory.bill_category_id == category_id)
+            .filter(BillSubCategory.bill_category_id == category_id,
+                    BillSubCategory.id.in_(user_subcategories))
         return sub_categories.all()
 
     @classmethod

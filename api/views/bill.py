@@ -223,7 +223,7 @@ def get_sub_categoryes_by_category(request):
     if not usr:
         db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
-    sub_categories = BillProvider.get_sub_categories(category_id=request.json['category_id'])
+    sub_categories = BillProvider.get_sub_categories(category_id=request.json['category_id'], user_id=usr.id)
     additional_data = {
         'sub_categories': SubCategorySerializer(many=True).dump(sub_categories).data if sub_categories else []
     }
