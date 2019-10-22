@@ -355,10 +355,10 @@ def save_new_password(request):
     if not usr:
         db.session.close()
         return error_handler(404, message=error_messages.EMAIL_USER_NOT_FOUND)
-    if request.json['password'] != request.json['confirmPassword']:
+    if request.json['newPassword'] != request.json['confirmPassword']:
         db.session.close()
         return error_handler(error_status=400, message=error_messages.PASSWORDS_NOT_SAME)
-    if not password_regex(request.json['password']):
+    if not password_regex(request.json['newPassword']):
         db.session.close()
         return error_handler(400, error_messages.PASSWORD_NOT_VALID)
     UserProvider.save_new_password(user=usr, user_data=request.json)
@@ -453,7 +453,7 @@ def change_password(request):
     if not check_passwords(request.json['newPassword'], request.json['confirmPassword']):
         db.session.close()
         return error_handler(error_status=400, message=error_messages.PASSWORDS_NOT_SAME)
-    if not password_regex(request.json['password']):
+    if not password_regex(request.json['newPassword']):
         db.session.close()
         return error_handler(400, error_messages.PASSWORD_NOT_VALID)
     UserProvider.save_new_password(user=usr, user_data=request.json)
