@@ -198,7 +198,8 @@ class UserProvider:
                 .first()
             if user_currency:
                 user = cls.get_user_by_ID(user_id=user_id)
-                user.currency_id = None
+                if user.currency_id == currency_id:
+                    user.currency_id = None
                 # db.session.delete(user_currency)
                 # db.session.commit()
                 Session.delete(user_currency)
