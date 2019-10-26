@@ -21,10 +21,10 @@ class ActivationSchema(Schema):
 
 
 class EditUser(object):
-    def __init__(self, firstName, lastName, birthDate, country_id, city_id, address, email, phone, gender, currency_id):
+    def __init__(self, firstName, lastName, country_id, city_id, address, email, phone, gender, currency_id):
         self.firstName = firstName
         self.lastName = lastName
-        self.birthDate = birthDate
+        #self.birthDate = birthDate
         self.country_id = country_id
         self.city_id = city_id
         self.address = address
@@ -37,7 +37,7 @@ class EditUser(object):
 class EditUserSchema(Schema):
     firstName = fields.String()
     lastName = fields.String()
-    birthDate = fields.String()
+    #birthDate = fields.String()
     country_id = fields.Integer()
     city_id = fields.Integer()
     address = fields.String()

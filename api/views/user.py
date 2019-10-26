@@ -477,6 +477,8 @@ def edit_user(request):
     """
     if request.json['currency_id'] != 'null':
         request.json['currency_id'] = "{0}".format(request.json['currency_id'])
+    if request.json['birthDate'] == 'null':
+        request.json['birthDate'] = None
     if not ValidateRequestSchema(request, EditUserSchema()):
         return error_handler(400, error_messages.BAD_DATA)
     claims = check_security_token(request.headers['Authorization'])

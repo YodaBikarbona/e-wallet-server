@@ -365,7 +365,8 @@ class UserProvider:
             user.email = user_data['email']
             user.city_id = u'{0}'.format(user_data['city_id'])
             user.address = u'{0}'.format(user_data['address'])
-            user.birth_date = datetime.strptime(date_format(user_data['birthDate'], string=True, graph=False, birth_day=True), "%Y-%m-%d") #.strftime("%Y-%m-%d")
+            if user_data['birthDate']:
+                user.birth_date = datetime.strptime(date_format(user_data['birthDate'], string=True, graph=False, birth_day=True), "%Y-%m-%d") #.strftime("%Y-%m-%d")
             user.first_name = u'{0}'.format(user_data['firstName'])
             user.last_name = u'{0}'.format(user_data['lastName'])
             user.country_id = u'{0}'.format(user_data['country_id'])
