@@ -71,13 +71,24 @@
             </tr-->
         </tbody>
     </table>
+    <br/>
     <table class="w-100 no-border">
-        <tr>
-            <td class="no-border text-align-right" style="width: 590px"></td>
-            <td class="text-align-center" style="width: 120px">TOTAL</td>
-        </tr>
+        <thead>
+            <tr>
+                <!--td class="no-border text-align-right" style="width: 590px"></td-->
+                <td colspan="2" class="text-align-center">TOTAL</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in summ %}
+                <tr>
+                    <td style="width: 50%"> {{ s.currency }} </td>
+                    <td style="width: 50%"> {{ s.summ }} </td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
-    <table class="w-100 no-border">
+    <!--table class="w-100 no-border">
         <thead>
             <tr>
                 <td class="no-border text-align-right" style="width: 670px"></td>
@@ -94,6 +105,6 @@
                 </tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table-->
 </body>
 </html>
