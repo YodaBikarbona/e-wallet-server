@@ -12,3 +12,9 @@ NOT_PERMISSION = "You don't have permission!"
 WRONG_USERNAME_OR_PASSWORD = "Invalid username or password!"
 MAX_CURRENCIES = "You already have maximum number of currencies!"
 PASSWORD_NOT_VALID = "Password is not valid!"
+EXIST_CATEGORY_BILLS = "Not possible! Bills with that category already exist! " \
+                       "To delete this category please delete bills with this category."
+EXIST_SUBCATEGORY_BILLS = "Not possible! Bills with that subcategory already exist! " \
+                          "To delete this subcategory please delete bills with this subcategory."
+EXIST_CURRENCY_BILLS = "Not possible! Bills with that currency already exist! " \
+                       "To delete this currency please delete bills with this currency."

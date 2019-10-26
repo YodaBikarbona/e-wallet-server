@@ -250,11 +250,13 @@ def save_user_settings_currency(request):
     if UserProvider.check_user_currencies_number(user_id=usr.id) == 10 and not currency_active:
         db.session.close()
         return error_handler(error_status=403, message=error_messages.MAX_CURRENCIES)
-    UserProvider.save_or_delete_user_settings_currency(
+    if not UserProvider.save_or_delete_user_settings_currency(
         active=currency_active,
         currency_id=currency_id,
         user_id=usr.id
-    )
+    ):
+        db.session.close()
+        return error_handler(403, error_messages.EXIST_CURRENCY_BILLS)
     db.session.close()
     return ok_response(message='')
 
@@ -280,11 +282,13 @@ def save_user_settings_category(request):
     if not usr:
         db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
-    UserProvider.save_or_delete_user_settings_category(
+    if not UserProvider.save_or_delete_user_settings_category(
         active=category_active,
         category_id=category_id,
         user_id=usr.id
-    )
+    ):
+        db.session.close()
+        return error_handler(403, error_messages.EXIST_CATEGORY_BILLS)
     db.session.close()
     return ok_response(message='')
 
@@ -310,11 +314,13 @@ def save_user_settings_sub_category(request):
     if not usr:
         db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
-    UserProvider.save_or_delete_user_settings_sub_category(
+    if not UserProvider.save_or_delete_user_settings_sub_category(
         active=sub_category_active,
         sub_category_id=sub_category_id,
         user_id=usr.id
-    )
+    ):
+        db.session.close()
+        return error_handler(403, error_messages.EXIST_SUBCATEGORY_BILLS)
     db.session.close()
     return ok_response(message='')
 

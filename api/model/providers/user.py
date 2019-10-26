@@ -6,6 +6,7 @@ from api.model.user import User, Role, UserCurrency, News, UserNews
 from api.model.bill import Currency, UserBillCategory, UserBillSubCategory, BillCategory, BillSubCategory
 from api.helper.helper import date_format
 from config import session as Session
+from api.model.providers.bill import BillProvider
 
 
 class UserProvider:
@@ -169,6 +170,16 @@ class UserProvider:
 
     @classmethod
     def save_or_delete_user_settings_currency(cls, active, currency_id, user_id):
+        costs = len(BillProvider.get_costs_or_profits(
+            category_id=None, sub_category_id=None, currency_id=currency_id,
+            user_id=user_id, bill_type='costs', bills_limit=None,
+            bills_offset=None))
+        profits = len(BillProvider.get_costs_or_profits(
+            category_id=None, sub_category_id=None, currency_id=currency_id,
+            user_id=user_id, bill_type='profits', bills_limit=None,
+            bills_offset=None))
+        if costs or profits:
+            return False
         if not active:
             new_currency = UserCurrency()
             new_currency.user_id = user_id
@@ -186,6 +197,8 @@ class UserProvider:
                         UserCurrency.currency_id == currency_id)\
                 .first()
             if user_currency:
+                user = cls.get_user_by_ID(user_id=user_id)
+                user.currency_id = None
                 # db.session.delete(user_currency)
                 # db.session.commit()
                 Session.delete(user_currency)
@@ -254,6 +267,16 @@ class UserProvider:
 
     @classmethod
     def save_or_delete_user_settings_category(cls, active, category_id, user_id):
+        costs = len(BillProvider.get_costs_or_profits(
+            category_id=category_id, sub_category_id=None, currency_id=None,
+            user_id=user_id, bill_type='costs', bills_limit=None,
+            bills_offset=None))
+        profits = len(BillProvider.get_costs_or_profits(
+            category_id=category_id, sub_category_id=None, currency_id=None,
+            user_id=user_id, bill_type='profits', bills_limit=None,
+            bills_offset=None))
+        if costs or profits:
+            return False
         if not active:
             new_category = UserBillCategory()
             new_category.user_id = user_id
@@ -272,7 +295,7 @@ class UserProvider:
                 .first()
             user_sub_categories = Session.query(UserBillSubCategory)\
                 .join(BillSubCategory, UserBillSubCategory.bill_sub_category_id == BillSubCategory.id) \
-                .filter(BillSubCategory.id == category_id)\
+                .filter(BillSubCategory.bill_category_id == category_id)\
                 .all()
             if user_category:
                 # db.session.delete(user_category)
@@ -293,6 +316,16 @@ class UserProvider:
 
     @classmethod
     def save_or_delete_user_settings_sub_category(cls, active, sub_category_id, user_id):
+        costs = len(BillProvider.get_costs_or_profits(
+            category_id=None, sub_category_id=sub_category_id, currency_id=None,
+            user_id=user_id, bill_type='costs', bills_limit=None,
+            bills_offset=None))
+        profits = len(BillProvider.get_costs_or_profits(
+            category_id=None, sub_category_id=sub_category_id, currency_id=None,
+            user_id=user_id, bill_type='profits', bills_limit=None,
+            bills_offset=None))
+        if costs or profits:
+            return False
         if not active:
             new_sub_category = UserBillSubCategory()
             new_sub_category.user_id = user_id
