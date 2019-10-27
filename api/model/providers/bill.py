@@ -65,10 +65,12 @@ class BillProvider:
             bills = bills.join(Currency, Bill.currency_id == Currency.id)
             bills = bills.filter(Bill.currency_id == currency_id)
         bills = bills.filter(Bill.bill_type == bill_type)
+        bills = bills.order_by(Bill.created.desc())
         if bills_limit:
             bills = bills.limit(bills_limit)
         if bills_offset:
             bills = bills.offset(bills_offset*bills_limit)
+
         return bills.all()
 
     @classmethod
