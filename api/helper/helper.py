@@ -18,6 +18,7 @@ import api.model.user
 
 
 def random_string(size):
+    #No longer used (for now), implemented different way of creating security token
     return ''.join([random.choice(string.ascii_letters + string.digits) for n in range(size)])
 
 
@@ -28,39 +29,20 @@ def now():
 def new_salt():
     source = [chr(x) for x in range(32, 127)]
     salt = u''.join(choice(source) for x in range(0, 32))
-
     return salt
 
 
 def new_psw(salt, password):
-
     password = str(sha512(u'{0}{1}'.format(password, salt).encode('utf-8', 'ignore')).hexdigest())
-
     return password
 
 
-def security_token(username, role_name):
+def security_token2(username, role_name):
     signed = jwt.encode(
         {'userName': '{0}'.format(username),
          'role': '{0}'.format(role_name)
          }, 'miha_zmaj', algorithm='HS256')
-
     return signed
-
-
-"""def ok_response(message, additional_data=None):
-    data = {
-        'status': 'OK',
-        'server_time': now().strftime("%Y-%m-%dT%H:%M:%S"),
-        'code': 200,
-        'message': message,
-        'data': additional_data if additional_data else {}
-    }
-    response = Response(json.dumps(data),
-                        mimetype='application/json',
-                        status=200)
-
-    return response"""
 
 
 def error_handler(error_status, message):
@@ -70,7 +52,6 @@ def error_handler(error_status, message):
             'code': error_status,
             'message': message
     }
-
     response = Response(json.dumps(data),
                         mimetype='application/json',
                         status=error_status)
@@ -109,7 +90,7 @@ def create_random_uuid():
 
 def check_security_token_2(token, user):
 
-    if not token == security_token(user.email, user.role.role_name, user.id, user.key_word):
+    if not token == security_token2(user.email, user.role.role_name, user.id, user.key_word):
         return False
     return True
 
@@ -134,6 +115,7 @@ def security_token(username, role_name, user_id):
 
 
 def create_new_folder(local_dir):
+    #No longer used (heroku doesn't support upload images)
     newpath = local_dir
     if not os.path.exists(newpath):
         os.makedirs(newpath)

@@ -1,6 +1,7 @@
 from api.model.country import Country, Currency, City
 from config import session as Session
 
+
 class OtherProvider:
 
     @classmethod

@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, render_template, make_response
 from api.model.user import User, Image
 from flask import jsonify
 from api.serializer.serializers import UsersSerializer, ImageSerializer
@@ -12,6 +12,8 @@ from api.model.providers.bill import BillProvider
 from api.messages import error_messages, messages
 from api.validation.bill import NewBillSchema
 from api.serializer.serializers import BillSerializer, CategorySerializer, SubCategorySerializer, CurrencySerializer
+import pdfkit
+from manage import _get_pdfkit_config
 
 
 def add_bill(request):
@@ -237,13 +239,6 @@ def print_pdf_report(request):
     Consuming this function user will download report of bills
     :return: PDF
     """
-    from flask import render_template, make_response
-    import pdfkit
-    from manage import _get_pdfkit_config
-    #import pydf
-
-    static_path = "/static/pdfs/out.pdf"
-
     claims = check_security_token(request.headers['Authorization'])
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
@@ -258,7 +253,7 @@ def print_pdf_report(request):
         sub_category_id=request.json['subCategoryId'],
         currency_id=request.json['currencyId'],
         user_id=usr.id,
-        bill_type=request.json['billType']
+        bill_type=request.json['billType'],
     )
     bills = BillSerializer(many=True).dump(bills).data if bills else []
     #items = len(BillProvider.get_costs_or_profits('null', 'null', 'null', user_id=usr.id, bill_type=request.json['billType'], bills=bills))
@@ -286,9 +281,8 @@ def print_pdf_report(request):
     scss = ['static/report/report.scss']
     rendered = render_template("report_template.html", user=user, items=items, report_date=date_format(now()),
                                bills=bills, bill_type=request.json['billType'], currencies=currencies, summ=summ_list)
-    print(rendered)
     report = pdfkit.from_string(rendered, False, css=scss, configuration=_get_pdfkit_config())
-    #report = pydf.generate_pdf(html=rendered)
+    #report = pdfkit.from_string(rendered, False, css=scss)
     response = make_response(report)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'attachment; filename=report.pdf'

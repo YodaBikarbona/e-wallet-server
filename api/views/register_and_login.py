@@ -21,8 +21,6 @@ from api.validation.user import ActivationSchema
 
 
 def register(request):
-
-    print(request.json)
     result = ValidateRequestSchema(request, RegisterSchema())
     if not result:
         return error_handler(400, error_messages.BAD_DATA)
@@ -43,14 +41,6 @@ def register(request):
     if send_mail:
         Session.close()
         return ok_response(messages.USER_CREATED)
-        """return jsonify(
-            {
-                'status': 'OK',
-                'server_time': now().strftime("%Y-%m-%dT%H:%M:%S"),
-                'code': 200,
-                'msg': "User is successfully created!"
-            }
-        )"""
     Session.close()
     return error_handler(400, 'Something is wrong!')
 
@@ -80,7 +70,6 @@ def login(request):
         'user_id': user.id,
         'token': security_token(user.email, user.role.role_name, user.id),
     }
-    print("This is role id", user.role_id)
     return ok_response(messages.LOGIN, additional_data)
 
 
@@ -102,7 +91,7 @@ def activate_user(request):
 
 
 def logout(request):
-
+    #This function is no longer used (Frontend function is on now)
     user = UserProvider.get_user_by_ID(request.json['user_id'])
     if not user:
         return error_handler(400, error_messages.BAD_DATA)

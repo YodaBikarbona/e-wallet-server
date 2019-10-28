@@ -7,6 +7,8 @@ from api.model.bill import UserBillSubCategory
 
 class BillProvider:
 
+    # Need remove all db.session.remove() parts, sesion cannot be closed in different scope
+    # Need remove all db.session.add or .commit with Session()
 
     @classmethod
     def add_new_bill(cls, bill_data):

@@ -83,6 +83,7 @@ app.config.from_pyfile('config.cfg')"""
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
+
 @app.route('/login', strict_slashes=False)
 @app.route('/register', strict_slashes=False)
 @app.route('/dashboard/profile', strict_slashes=False)
@@ -94,15 +95,6 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 @app.route('/', strict_slashes=False)
 def root():
    return app.send_static_file('index.html')
-
-def run_every_10_seconds():
-    print("Running periodic task!")
-
-def run_schedule():
-    print('Ušao sam')
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
 
 
 @app.route(post_route.REGISTER, methods=['POST'])
@@ -129,6 +121,7 @@ def upload_endpoint():
 
 @app.route(get_route.SERVE_FILE, methods=['GET'])
 def serve_file_in_dir_endpoint(path):
+    #This endpoint is removed from production (Heroku doesn't support upload images on their servers)
     #var = '/home/oem/Desktop/Projects/E-wallet/e-wallet-server/api/model/uploads/'
     print("--------------------------------------")
     var = '/app/api/model/uploads/'
@@ -139,6 +132,7 @@ def serve_file_in_dir_endpoint(path):
 
 @app.route(post_route.LOGOUT, methods=['POST'])
 def logout_endpoint():
+    #This endpoint is no longer used (frontend function is on now)
     return logout(request)
 
 
@@ -177,22 +171,13 @@ def clear_news_endpoint():
     return clear_news(request)
 
 
-# @app.route('/test', methods=['GET'])
-# def test_endpoint():
-#
-#     return "Hello"
-
-
 @app.route(get_route.COUNTRIES, methods=['GET'])
 def country_endpoint():
     from api.model.providers.other import OtherProvider
-
     countries = OtherProvider.get_countries()
-
     additional_data = {
         'countries': CountrySerializer(many=True).dump(countries).data
     }
-
     return ok_response("", additional_data)
 
 
@@ -208,20 +193,18 @@ def city_endpoint(country_id):
 
 @app.route('/v1/user/<int:id>/users', methods=['GET'])
 def get_users_endpoint(id):
-
     return get_users(request=request, user_id=id)
 
 
 @app.route(post_route.NEW_BILL, methods=['POST'])
 def add_new_bill_endpoint():
-
     return add_bill(request=request)
 
 
 # @app.route('/bills/costs', methods=['GET'])
 # def get_bills_endpoint(id):
-#
 #     return get_costs(request=request)
+
 
 @app.route('/v1/bills/costs', methods=['POST'])
 def get_costs_endpoint():
@@ -338,6 +321,7 @@ def delete_bill_endpoint(id):
 
 @app.route('/v1/add_cat_subcat', methods=['GET'])
 def add_subcat_endpoint():
+    # One of admin endpoints (later will be admin panel implemented and this will be moved)
     from api.model.bill import BillCategory, BillSubCategory
     from api.helper.constants import categories_and_subcategories
     for data in categories_and_subcategories:
@@ -356,6 +340,7 @@ def add_subcat_endpoint():
 
 @app.route('/update_user_role', methods=['GET'])
 def update_user_role():
+    # One of admin endpoints (later will be admin panel implemented and this will be moved)
     from api.model.user import User
     user = User.query.filter(User.id == 1).first()
     user.role_id = 1
@@ -363,18 +348,10 @@ def update_user_role():
 
     return 'True'
 
-# @app.route('/add_categories', methods=['GET'])
-# def add_cat_endpoint():
-#
-#
-#     return 'True'
-
-
-
-
 
 # @app.route('/country', methods=['GET'])
 # def country_endpoint_add():
+#     One of admin endpoints (later will be admin panel implemented and this will be moved)
 #     from api.model.country import Country
 #     from api.helper.constants import countries
 #     for c in countries:
@@ -399,13 +376,13 @@ def update_user_role():
 #         currency.activated = True
 #         db.session.add(currency)
 #         db.session.commit()
-#
 #     return "True"
 
 
 # Add new city
 # @app.route('/v1/city/add', methods=['POST'])
 # def add_new_city():
+#     One of admin endpoints (later will be admin panel implemented and this will be moved)
 #     from api.model.user import City
 #     e_city = City.query.filter(City.name == request.json['name'],
 #                                City.country_id == request.json['country_id']).first()
@@ -416,7 +393,6 @@ def update_user_role():
 #         city.name = request.json['name']
 #         db.session.add(city)
 #         db.session.commit()
-#
 #     return "True"
 
 # @app.route('/user_route', methods=['GET'])
@@ -431,6 +407,7 @@ def update_user_role():
 
 # @app.route('/currency', methods=['GET'])
 # def currency_endpoint():
+#     One of admin endpoints (later will be admin panel implemented and this will be moved)
 #     from api.model.country import Currency
 #     from api.helper.constants import currencies
 #     for c, k in currencies[0].items():
@@ -443,21 +420,7 @@ def update_user_role():
 #         currency.activated = True
 #         db.session.add(currency)
 #         db.session.commit()
-#
 #     return "True"
-
-
-
-
-"""@app.route('/role', methods=['GET'])
-def create_role():
-
-    role = Role()
-    role.role_name = 'user'
-    role.deleted = False
-    db.session.add(role)
-    db.session.commit()
-    return "True"""
 
 
 def job():
@@ -493,9 +456,7 @@ def run_schedule():
 
 if __name__ == '__main__':
     db.create_all()
-    #app.run()
     app.run(debug=True, use_reloader=False)
-    #app.run(host="192.168.0.25", debug=True, port=5000, use_reloader=False)
 
 # schedule.every().day.at("00:00:00").do(job)
 # t = Thread(target=run_schedule)
@@ -503,6 +464,10 @@ if __name__ == '__main__':
 # #app_server = WSGIServer(("192.168.0.25", 5000), app)
 # #app_server.serve_forever()
 # app_server.serve_forever()
+
+"""
+Schedule not working, investigate why.
+"""
 
 
 

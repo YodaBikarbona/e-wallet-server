@@ -11,6 +11,9 @@ from api.model.providers.bill import BillProvider
 
 class UserProvider:
 
+    #Need remove all db.session.remove() parts, sesion cannot be closed in different scope
+    #Need remove all db.session.add or .commit with Session()
+
     @classmethod
     def create_register_user(cls, user_data):
         role = Session.query(Role).filter().all()
