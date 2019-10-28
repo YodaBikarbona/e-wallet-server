@@ -78,13 +78,14 @@ class BillProvider:
         return bills.all()
 
     @classmethod
-    def count_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type):
+    def count_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, search):
         return len(cls.get_costs_or_profits(
             category_id=category_id,
             sub_category_id=sub_category_id,
             currency_id=currency_id,
             user_id=user_id,
-            bill_type=bill_type
+            bill_type=bill_type,
+            search=search
         ))
 
     @classmethod
