@@ -87,6 +87,7 @@ def get_costs(request):
         bill_type='costs',
         bills_limit=request.json['billsLimit'],
         bills_offset=request.json['billsOffset'],
+        search=request.json['search']
     )
     additional_data = {
         'costs': BillSerializer(many=True).dump(costs).data if costs else [],
@@ -196,6 +197,7 @@ def get_profits(request):
         bill_type='profits',
         bills_limit=request.json['billsLimit'],
         bills_offset=request.json['billsOffset'],
+        search=request.json['search']
     )
     additional_data = {
         'profits': BillSerializer(many=True).dump(profits).data if profits else [],
@@ -254,6 +256,7 @@ def print_pdf_report(request):
         currency_id=request.json['currencyId'],
         user_id=usr.id,
         bill_type=request.json['billType'],
+        search=request.json['search']
     )
     bills = BillSerializer(many=True).dump(bills).data if bills else []
     #items = len(BillProvider.get_costs_or_profits('null', 'null', 'null', user_id=usr.id, bill_type=request.json['billType'], bills=bills))

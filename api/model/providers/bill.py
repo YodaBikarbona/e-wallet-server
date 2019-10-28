@@ -54,18 +54,20 @@ class BillProvider:
         return currencies.all()
 
     @classmethod
-    def get_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, bills_limit=None, bills_offset=None):
+    def get_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, bills_limit=None, bills_offset=None, search=None):
         bills = Session.query(Bill)\
             .filter(Bill.user_id == user_id)
         if category_id and category_id != 'null':
             bills = bills.join(BillCategory, Bill.bill_category_id == BillCategory.id)
             bills = bills.filter(Bill.bill_category_id == category_id)
         if sub_category_id and sub_category_id != 'null':
-            bills = bills.join(BillSubCategory, Bill.bill_sub_category_id == BillSubCategory.id,)
+            bills = bills.join(BillSubCategory, Bill.bill_sub_category_id == BillSubCategory.id)
             bills = bills.filter(Bill.bill_sub_category_id == sub_category_id)
         if currency_id and currency_id != 'null':
             bills = bills.join(Currency, Bill.currency_id == Currency.id)
             bills = bills.filter(Bill.currency_id == currency_id)
+        if search:
+            bills = bills.filter(Bill.title.ilike('%{0}%'.format(search)))
         bills = bills.filter(Bill.bill_type == bill_type)
         bills = bills.order_by(Bill.created.desc())
         if bills_limit:
