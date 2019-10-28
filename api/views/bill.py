@@ -96,7 +96,8 @@ def get_costs(request):
             sub_category_id=request.json['subCategoryId'],
             currency_id=request.json['currencyId'],
             user_id=usr.id,
-            bill_type='costs'
+            bill_type='costs',
+            search=request.json['search']
         )
     }
     db.session.close()
@@ -206,7 +207,8 @@ def get_profits(request):
             sub_category_id=request.json['subCategoryId'],
             currency_id=request.json['currencyId'],
             user_id=usr.id,
-            bill_type='profits'
+            bill_type='profits',
+            search=request.json['search']
         )
     }
     db.session.close()
