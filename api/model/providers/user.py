@@ -181,8 +181,6 @@ class UserProvider:
             category_id=None, sub_category_id=None, currency_id=currency_id,
             user_id=user_id, bill_type='profits', bills_limit=None,
             bills_offset=None))
-        if costs or profits:
-            return False
         if not active:
             new_currency = UserCurrency()
             new_currency.user_id = user_id
@@ -195,6 +193,8 @@ class UserProvider:
             #Session.close()
             return True
         else:
+            if costs or profits:
+                return False
             user_currency = Session.query(UserCurrency)\
                 .filter(UserCurrency.user_id == user_id,
                         UserCurrency.currency_id == currency_id)\
@@ -279,8 +279,6 @@ class UserProvider:
             category_id=category_id, sub_category_id=None, currency_id=None,
             user_id=user_id, bill_type='profits', bills_limit=None,
             bills_offset=None))
-        if costs or profits:
-            return False
         if not active:
             new_category = UserBillCategory()
             new_category.user_id = user_id
@@ -293,13 +291,16 @@ class UserProvider:
             #Session.close()
             return True
         else:
+            if costs or profits:
+                return False
             user_category = Session.query(UserBillCategory)\
                 .filter(UserBillCategory.user_id == user_id,
                         UserBillCategory.bill_category_id == category_id)\
                 .first()
             user_sub_categories = Session.query(UserBillSubCategory)\
                 .join(BillSubCategory, UserBillSubCategory.bill_sub_category_id == BillSubCategory.id) \
-                .filter(BillSubCategory.bill_category_id == category_id)\
+                .filter(BillSubCategory.bill_category_id == category_id,
+                        UserBillSubCategory.user_id == user_id)\
                 .all()
             if user_category:
                 # db.session.delete(user_category)
@@ -328,8 +329,6 @@ class UserProvider:
             category_id=None, sub_category_id=sub_category_id, currency_id=None,
             user_id=user_id, bill_type='profits', bills_limit=None,
             bills_offset=None))
-        if costs or profits:
-            return False
         if not active:
             new_sub_category = UserBillSubCategory()
             new_sub_category.user_id = user_id
@@ -342,6 +341,8 @@ class UserProvider:
             #Session.close()
             return True
         else:
+            if costs or profits:
+                return False
             user_sub_category = Session.query(UserBillSubCategory)\
                 .filter(UserBillSubCategory.user_id == user_id,
                         UserBillSubCategory.bill_sub_category_id == sub_category_id)\
