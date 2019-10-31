@@ -3,6 +3,7 @@ from api.model.country import Currency
 from api.model.config import db
 from config import session as Session
 from api.model.bill import UserBillSubCategory
+from api.helper.helper import date_format
 
 
 class BillProvider:
@@ -89,7 +90,7 @@ class BillProvider:
         ))
 
     @classmethod
-    def new_costs_or_profits(cls, category_id, sub_category_id, currency_id, title, comment, price, user_id, bill_type, quantity, not_my_city, image_id=None):
+    def new_costs_or_profits(cls, category_id, sub_category_id, currency_id, title, comment, price, user_id, bill_type, quantity, not_my_city, created, image_id=None):
         new_bill = Bill()
         new_bill.user_id = user_id
         new_bill.title = title
@@ -102,6 +103,7 @@ class BillProvider:
         new_bill.bill_type = bill_type
         new_bill.quantity = quantity
         new_bill.not_my_city = not_my_city
+        new_bill.created = date_format(created, string=True, create_bill=True)
         # db.session.add(new_bill)
         # db.session.commit()
         # db.session.close()

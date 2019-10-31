@@ -128,11 +128,11 @@ def check_passwords(password, confirm_password):
     return True
 
 
-def date_format(date, string=False, graph=False, birth_day=False, register=False):
+def date_format(date, string=False, graph=False, birth_day=False, register=False, create_bill=False):
     if not string:
         return datetime.strftime(date, "%d.%m.%Y %H:%M:%S")
     date = date.split('T')
-    if not graph:
+    if not graph and not create_bill:
         if not birth_day:
             date = "{0} {1}".format(date[0], date[1].split('.')[0])
             date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
@@ -140,9 +140,13 @@ def date_format(date, string=False, graph=False, birth_day=False, register=False
         date = "{0}".format(date[0])
         date = datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1)
         return datetime.strftime(date, "%Y-%m-%d")
-    date = "{0}".format(date[0])
-    date = datetime.strptime(date, "%Y-%m-%d")
-    return datetime.strftime(date, "%d-%b-%y")
+    if not create_bill:
+        date = "{0}".format(date[0])
+        date = datetime.strptime(date, "%Y-%m-%d")
+        return datetime.strftime(date, "%d-%b-%y")
+    else:
+        date = "{0} {1}".format(date[0], date[1])
+        return datetime.strptime(date, "%Y-%m-%d %H:%M:%S.%f")
 
 
 def all_days_between_two_date(start_date, end_date):

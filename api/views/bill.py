@@ -134,7 +134,8 @@ def new_costs(request):
         user_id=usr.id,
         bill_type='costs',
         quantity=request.json['quantity'],
-        not_my_city=request.json['notMyCity']
+        not_my_city=request.json['notMyCity'],
+        created=request.json['created']
     )
     db.session.close()
     return ok_response(message='')
@@ -169,7 +170,8 @@ def new_profits(request):
         user_id=usr.id,
         bill_type='profits',
         quantity=request.json['quantity'],
-        not_my_city=request.json['notMyCity']
+        not_my_city=request.json['notMyCity'],
+        created=request.json['created']
     )
     db.session.close()
     return ok_response(message='')
