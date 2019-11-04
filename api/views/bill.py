@@ -120,17 +120,19 @@ def new_costs(request):
         return error_handler(404, error_messages.USER_NOT_FOUND)
     print(request.json)
     try:
-        request.json['quantity'] = int(request.json['quantity'])
+        request.json['quantity'] = float(request.json['quantity'])
+        if request.json['quantity'] <= 0:
+            request.json['quantity'] = 1.00
     except Exception as ex:
         print(ex)
-        request.json['quantity'] = 1
+        request.json['quantity'] = 1.00
     BillProvider.new_costs_or_profits(
         category_id=request.json['categoryId'],
         sub_category_id=request.json['subCategoryId'],
         currency_id=request.json['currencyId'],
         title=request.json['title'],
-        comment = request.json['comment'] if 'comment' in request.json else "",
-        price = request.json['price'],
+        comment=request.json['comment'] if 'comment' in request.json else "",
+        price=request.json['price'],
         user_id=usr.id,
         bill_type='costs',
         quantity=request.json['quantity'],
@@ -156,17 +158,19 @@ def new_profits(request):
         db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
     try:
-        request.json['quantity'] = int(request.json['quantity'])
+        request.json['quantity'] = float(request.json['quantity'])
+        if request.json['quantity'] <= 0:
+            request.json['quantity'] = 1.00
     except Exception as ex:
         print(ex)
-        request.json['quantity'] = 1
+        request.json['quantity'] = 1.00
     BillProvider.new_costs_or_profits(
         category_id=request.json['categoryId'],
         sub_category_id=request.json['subCategoryId'],
         currency_id=request.json['currencyId'],
         title=request.json['title'],
-        comment = request.json['comment'] if 'comment' in request.json else "",
-        price = request.json['price'],
+        comment=request.json['comment'] if 'comment' in request.json else "",
+        price=request.json['price'],
         user_id=usr.id,
         bill_type='profits',
         quantity=request.json['quantity'],
