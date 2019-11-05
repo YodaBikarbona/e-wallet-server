@@ -55,7 +55,7 @@ class BillProvider:
         return currencies.all()
 
     @classmethod
-    def get_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, bills_limit=None, bills_offset=None, search=None):
+    def get_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, bills_limit=None, bills_offset=None, search=None, date_from = '', date_to = ''):
         bills = Session.query(Bill)\
             .filter(Bill.user_id == user_id)
         if category_id and category_id != 'null':
@@ -69,6 +69,10 @@ class BillProvider:
             bills = bills.filter(Bill.currency_id == currency_id)
         if search:
             bills = bills.filter(Bill.title.ilike('%{0}%'.format(search)))
+        if date_from:
+            bills = bills.filter(Bill.created >= date_from)
+        if date_to:
+            bills = bills.filter(Bill.created < date_to)
         bills = bills.filter(Bill.bill_type == bill_type)
         bills = bills.order_by(Bill.created.desc())
         if bills_limit:
@@ -79,14 +83,16 @@ class BillProvider:
         return bills.all()
 
     @classmethod
-    def count_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, search):
+    def count_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, search, date_from, date_to):
         return len(cls.get_costs_or_profits(
             category_id=category_id,
             sub_category_id=sub_category_id,
             currency_id=currency_id,
             user_id=user_id,
             bill_type=bill_type,
-            search=search
+            search=search,
+            date_from=date_from,
+            date_to=date_to
         ))
 
     @classmethod

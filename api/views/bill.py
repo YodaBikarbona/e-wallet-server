@@ -87,7 +87,9 @@ def get_costs(request):
         bill_type='costs',
         bills_limit=request.json['billsLimit'],
         bills_offset=request.json['billsOffset'],
-        search=request.json['search']
+        search=request.json['search'],
+        date_from=request.json['dateFrom'],
+        date_to=request.json['dateTo']
     )
     additional_data = {
         'costs': BillSerializer(many=True).dump(costs).data if costs else [],
@@ -97,7 +99,9 @@ def get_costs(request):
             currency_id=request.json['currencyId'],
             user_id=usr.id,
             bill_type='costs',
-            search=request.json['search']
+            search=request.json['search'],
+            date_from=request.json['dateFrom'],
+            date_to=request.json['dateTo']
         )
     }
     db.session.close()
@@ -204,7 +208,9 @@ def get_profits(request):
         bill_type='profits',
         bills_limit=request.json['billsLimit'],
         bills_offset=request.json['billsOffset'],
-        search=request.json['search']
+        search=request.json['search'],
+        date_from=request.json['dateFrom'],
+        date_to=request.json['dateTo']
     )
     additional_data = {
         'profits': BillSerializer(many=True).dump(profits).data if profits else [],
@@ -214,7 +220,9 @@ def get_profits(request):
             currency_id=request.json['currencyId'],
             user_id=usr.id,
             bill_type='profits',
-            search=request.json['search']
+            search=request.json['search'],
+            date_from=request.json['dateFrom'],
+            date_to=request.json['dateTo']
         )
     }
     db.session.close()
@@ -264,7 +272,9 @@ def print_pdf_report(request):
         currency_id=request.json['currencyId'],
         user_id=usr.id,
         bill_type=request.json['billType'],
-        search=request.json['search']
+        search=request.json['search'],
+        date_from=request.json['dateFrom'],
+        date_to=request.json['dateTo']
     )
     bills = BillSerializer(many=True).dump(bills).data if bills else []
     #items = len(BillProvider.get_costs_or_profits('null', 'null', 'null', user_id=usr.id, bill_type=request.json['billType'], bills=bills))
