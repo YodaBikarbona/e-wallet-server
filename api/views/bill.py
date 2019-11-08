@@ -389,6 +389,29 @@ def delete_bill(request, bill_id):
     if not usr:
         db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
-    BillProvider.delete_bill_by_bill_id(bill_id=bill_id)
+    if not BillProvider.delete_bill_by_bill_id(bill_id=bill_id):
+        db.session.close()
+        return error_handler(400, error_messages.BAD_DATA)
+    db.session.close()
+    return ok_response(message=messages.BILL_DELETED)
+
+
+def edit_bill(request, bill_id):
+    """
+    This function will edit chosen bill
+    :param request:
+    :return:
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(403, error_messages.INVALID_TOKEN)
+    if not usr:
+        db.session.close()
+        return error_handler(404, error_messages.USER_NOT_FOUND)
+    if not BillProvider.edit_bill_by_bill_id(bill_id=bill_id, data=request.json):
+        db.session.close()
+        return error_handler(400, error_messages.BAD_DATA)
     db.session.close()
     return ok_response(message=messages.BILL_DELETED)

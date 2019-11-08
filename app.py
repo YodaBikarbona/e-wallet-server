@@ -46,6 +46,7 @@ from api.views.bill import (
     print_pdf_report,
     get_graph,
     delete_bill,
+    edit_bill,
 )
 from api.routes.get import get_route
 from api.routes.post import post_route
@@ -317,6 +318,11 @@ def edit_currency_monthly_limit_endpoint():
 @app.route(delete_route.DELETE_BILL, methods=['DELETE'])
 def delete_bill_endpoint(id):
     return delete_bill(request, id)
+
+
+@app.route(post_route.EDIT_BILL, methods=['POST'])
+def edit_bill_endpoint(id):
+    return edit_bill(request, id)
 
 
 @app.route('/v1/add_cat_subcat', methods=['GET'])

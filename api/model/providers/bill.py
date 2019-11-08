@@ -137,13 +137,41 @@ class BillProvider:
 
     @classmethod
     def delete_bill_by_bill_id(cls, bill_id):
-        bill = Session.query(Bill)\
-            .filter(Bill.id == bill_id)\
-            .first()
+        bill = cls.get_bill_by_bill_id(bill_id=bill_id)
+
+        # bill = Session.query(Bill)\
+        #     .filter(Bill.id == bill_id)\
+        #     .first()
+
         # db.session.delete(bill)
         # db.session.commit()
         # db.session.close()
-        Session.delete(bill)
-        Session.commit()
+        if bill:
+            Session.delete(bill)
+            Session.commit()
+            return True
         #Session.close()
-        return True
+        return False
+
+    @classmethod
+    def get_bill_by_bill_id(cls, bill_id):
+        bill = Session.query(Bill)\
+            .filter(Bill.id == bill_id)\
+            .first()
+        return bill
+
+    @classmethod
+    def edit_bill_by_bill_id(cls, bill_id, data):
+        bill = cls.get_bill_by_bill_id(bill_id=bill_id)
+        if bill:
+            bill.title = data['title']
+            bill.comment = data['comment']
+            bill.currency_id = data['currencyId']
+            bill.bill_category_id = data['categoryId']
+            bill.bill_sub_category_id = data['subCategoryId']
+            bill.price = data['price']
+            bill.not_my_city = data['notMyCity']
+            bill.quantity = data['quantity']
+            Session.commit()
+            return True
+        return False
