@@ -24,8 +24,8 @@ class Login(object):
 
 
 class Gender(Enum):
-    male = "m"
-    female = "f"
+    Male = "m"
+    Female = "f"
 
 
 class RegisterSchema(Schema):

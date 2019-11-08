@@ -25,7 +25,7 @@ class UserProvider:
             role = Session.query(Role).filter(Role.role_name == 'user').first()
         print(user_data['birthDate'])
         user = User()
-        user.gender = user_data['gender'].title()
+        user.gender = user_data['gender']
         user.email = user_data['email']
         user.city_id = u'{0}'.format(user_data['city_id'])
         user.address = u'{0}'.format(user_data['address'])
@@ -365,7 +365,7 @@ class UserProvider:
             return False
         user = cls.get_user_by_ID(user_id=user_id)
         if user:
-            user.gender = user_data['gender'].title()
+            user.gender = user_data['gender']
             user.email = user_data['email']
             user.city_id = u'{0}'.format(user_data['city_id'])
             user.address = u'{0}'.format(user_data['address'])
