@@ -329,7 +329,9 @@ def get_graph(request):
         costs=request.json['costs'],
         profits=request.json['profits'],
         user_id=usr.id,
-        currency_id=request.json['currency_id']
+        currency_id=request.json['currency_id'],
+        date_from=request.json['dateFrom'],
+        date_to=request.json['dateTo']
     )
     bills = BillSerializer(many=True).dump(bills).data if bills else []
     bills = sorted(bills, key=lambda i: i['created'])
@@ -344,7 +346,16 @@ def get_graph(request):
         all_days = all_days_between_two_date(start_date=bills_dates[0], end_date=bills_dates[-1])
     costs_list = [b for b in bills if b['bill_type'] == 'costs']
     profits_list = [b for b in bills if b['bill_type'] == 'profits']
+    bill_categories = []
+    bill_sub_categories = []
+    category_list = list(set([b['bill_category']['name'] for b in bills]))
+    sub_category_list = list(set([b['bill_sub_category']['name'] for b in bills if b['bill_sub_category']]))
     bills_list = []
+    # Four pie graphs
+    bill_categories_list_cost = []
+    bill_categories_list_profit = []
+    bill_sub_categories_list_cost = []
+    bill_sub_categories_list_profit = []
     for date in all_days:
         sum_cost = 0
         sum_profit = 0
@@ -356,6 +367,34 @@ def get_graph(request):
             if date == profit['created']:
                 sum_profit += profit['price']
         bills_list.append([date, 'Profit', sum_profit])
+    # Pie category graph
+    for cat in category_list:
+        sum_cost = 0
+        sum_profit = 0
+        for cost in costs_list:
+            if cat == cost['bill_category']['name']:
+                sum_cost += cost['price']
+        if sum_cost > 0:
+            bill_categories_list_cost.append({"label": "{0}".format(cat), "value": sum_cost})
+        for profit in profits_list:
+            if cat == profit['bill_category']['name']:
+                sum_profit += profit['price']
+        if sum_profit > 0:
+            bill_categories_list_profit.append({"label": "{0}".format(cat), "value": sum_profit})
+    # Pie sub category graph
+    for sub_cat in sub_category_list:
+        sum_cost = 0
+        sum_profit = 0
+        for cost in costs_list:
+            if cost['bill_sub_category'] and sub_cat == cost['bill_sub_category']['name']:
+                sum_cost += cost['price']
+        if sum_cost > 0:
+            bill_sub_categories_list_cost.append({"label": "{0}".format(sub_cat), "value": sum_cost})
+        for profit in profits_list:
+            if profit['bill_sub_category'] and sub_cat == profit['bill_sub_category']['name']:
+                sum_profit += profit['price']
+        if sum_profit > 0:
+            bill_sub_categories_list_profit.append({"label": "{0}".format(sub_cat), "value": sum_profit})
     bills_prices_cost = list(set([bill[-1] for bill in bills_list if bill[-2] == 'Cost' and bill[-1] != 0]))
     min_cost = min(bills_prices_cost) if bills_prices_cost else 0
     max_cost = max(bills_prices_cost) if bills_prices_cost else 0
@@ -369,7 +408,11 @@ def get_graph(request):
         'max_cost': max_cost,
         'min_profit': min_profit,
         'max_profit': max_profit,
-        'monthly_limit': currency.monthly_cost_limit
+        'monthly_limit': currency.monthly_cost_limit,
+        'bill_categories_list_cost': bill_categories_list_cost,
+        'bill_categories_list_profit': bill_categories_list_profit,
+        'bill_sub_categories_list_cost': bill_sub_categories_list_cost,
+        'bill_sub_categories_list_profit': bill_sub_categories_list_profit
     }
     db.session.close()
     return ok_response(message='Bills', additional_data=additional_data)

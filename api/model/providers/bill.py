@@ -125,7 +125,7 @@ class BillProvider:
         return subcategory.first()
 
     @classmethod
-    def get_all_costs_and_profits(cls, costs, profits, user_id, currency_id):
+    def get_all_costs_and_profits(cls, costs, profits, user_id, currency_id, date_from, date_to):
         bills = Session.query(Bill)\
             .filter(Bill.user_id == user_id,
                     Bill.currency_id == currency_id)
@@ -133,6 +133,10 @@ class BillProvider:
             bills = bills.filter(Bill.bill_type == 'costs')
         if profits and not costs:
             bills = bills.filter(Bill.bill_type == 'profits')
+        if date_from:
+            bills = bills.filter(Bill.created >= date_from)
+        if date_to:
+            bills = bills.filter(Bill.created < date_to)
         return bills.all()
 
     @classmethod
