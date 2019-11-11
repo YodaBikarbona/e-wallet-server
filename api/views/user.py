@@ -489,9 +489,13 @@ def edit_user(request):
     if not usr:
         db.session.close()
         return error_handler(404, error_messages.USER_NOT_FOUND)
-    if not UserProvider.edit_user(user_data=request.json, user_email=usr.email, user_id=usr.id):
+    status, response = UserProvider.edit_user(user_data=request.json, user_email=usr.email, user_id=usr.id)
+    if not status:
         db.session.close()
-        return error_handler(400, error_messages.USER_ALREADY_EXISTS)
+        if response == 'email':
+            return error_handler(400, error_messages.USER_ALREADY_EXISTS)
+        else:
+            return error_handler(400, error_messages.REGEX_ERROR)
     db.session.close()
     return ok_response(message=messages.USER_EDITED)
 

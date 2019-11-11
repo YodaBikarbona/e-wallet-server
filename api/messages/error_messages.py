@@ -18,3 +18,5 @@ EXIST_SUBCATEGORY_BILLS = "Not possible! Bills with that subcategory already exi
                           "To delete this subcategory please delete bills with this subcategory."
 EXIST_CURRENCY_BILLS = "Not possible! Bills with that currency already exist! " \
                        "To delete this currency please delete bills with this currency."
+REGEX_ERROR = "Action is not possible, you use some prohibited symbols!"
+PRINT_PDF_ERROR = "Action is not possible, you don't have bills! To see report please add bills first."

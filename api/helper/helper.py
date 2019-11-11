@@ -164,3 +164,27 @@ def password_regex(password):
     if re.match(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
         return True
     return False
+
+
+def regex(regex_string, first_name=None, last_name=None, email=None, title=None, comment=None):
+    """
+    This function will use right regex depends on column
+    Only letters: first_name, last_name
+    Only letters, numbers, underscore and dashes: email
+    Only letters, numbers and dashes: title, comment
+    :param regex_string:
+    :param first_name:
+    :param last_name:
+    :param email:
+    :param title:
+    :param comment:
+    :return:
+    """
+    if (first_name or last_name) and re.match("^[A-Za-z]*$", regex_string):
+        return True
+    elif email and re.match("^[A-Za-z0-9@_-]*$", regex_string):
+        return True
+    elif (title or comment) and re.match("^[A-Za-z0-9-]*$", regex_string):
+        return True
+    else:
+        return False

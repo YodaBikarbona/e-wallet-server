@@ -1,6 +1,12 @@
 from datetime import datetime
 import datetime as dt
-from api.helper.helper import new_salt, new_psw, random_string, now
+from api.helper.helper import (
+    new_salt,
+    new_psw,
+    random_string,
+    now,
+    regex,
+)
 from api.model.config import db
 from api.model.user import User, Role, UserCurrency, News, UserNews
 from api.model.bill import Currency, UserBillCategory, UserBillSubCategory, BillCategory, BillSubCategory
@@ -24,27 +30,35 @@ class UserProvider:
         else:
             role = Session.query(Role).filter(Role.role_name == 'user').first()
         print(user_data['birthDate'])
-        user = User()
-        user.gender = user_data['gender']
-        user.email = user_data['email']
-        user.city_id = u'{0}'.format(user_data['city_id'])
-        user.address = u'{0}'.format(user_data['address'])
-        user.birth_date = datetime.strptime(date_format(user_data['birthDate'], string=True, graph=False, birth_day=True, register=True), "%Y-%m-%d")#.strftime("%Y-%m-%d")
-        user.first_name = u'{0}'.format(user_data['firstName'])
-        user.last_name = u'{0}'.format(user_data['lastName'])
-        user.country_id = u'{0}'.format(user_data['country_id'])
-        user.key_word = random_string(255)
-        user.code = random_string(6)
-        user.salt = new_salt()
-        user.password = new_psw(user.salt, user_data['password'])
-        user.role_id = role.id
-        #user.image_id = None
-        #user.image_id = 1 if user_data['gender'] == 'male' else user.image_id
-        #user.image_id = 2 if user_data['gender'] == 'female' else user.image_id
-        Session.add(user)
-        Session.commit()
-        #db.session.add(user)
-        #db.session.commit()
+        try:
+            user = User()
+            user.gender = user_data['gender']
+            user.email = user_data['email'] if regex(regex_string=user_data['email'],
+                                                     email=True) else None
+            user.city_id = u'{0}'.format(user_data['city_id'])
+            user.address = u'{0}'.format(user_data['address'])
+            user.birth_date = datetime.strptime(date_format(user_data['birthDate'], string=True, graph=False, birth_day=True, register=True), "%Y-%m-%d")#.strftime("%Y-%m-%d")
+            user.first_name = u'{0}'.format(user_data['firstName']) if regex(regex_string=user_data['firstName'],
+                                                                             first_name=True) else None
+            user.last_name = u'{0}'.format(user_data['lastName']) if regex(regex_string=user_data['lastName'],
+                                                                           last_name=True) else None
+            user.country_id = u'{0}'.format(user_data['country_id'])
+            user.key_word = random_string(255)
+            user.code = random_string(6)
+            user.salt = new_salt()
+            user.password = new_psw(user.salt, user_data['password'])
+            user.role_id = role.id
+            #user.image_id = None
+            #user.image_id = 1 if user_data['gender'] == 'male' else user.image_id
+            #user.image_id = 2 if user_data['gender'] == 'female' else user.image_id
+            Session.add(user)
+            Session.commit()
+            #db.session.add(user)
+            #db.session.commit()
+        except Exception as ex:
+            Session.rollback()
+            print(ex)
+            return False
         return user
 
     @classmethod
@@ -362,21 +376,29 @@ class UserProvider:
         # First check new user email
         if cls.get_user_by_email(email=user_data['email']) and user_email != user_data['email']:
             #Session.close()
-            return False
+            return False, 'email'
         user = cls.get_user_by_ID(user_id=user_id)
         if user:
-            user.gender = user_data['gender']
-            user.email = user_data['email']
-            user.city_id = u'{0}'.format(user_data['city_id'])
-            user.address = u'{0}'.format(user_data['address'])
-            if user_data['birthDate']:
-                user.birth_date = datetime.strptime(date_format(user_data['birthDate'], string=True, graph=False, birth_day=True), "%Y-%m-%d") #.strftime("%Y-%m-%d")
-            user.first_name = u'{0}'.format(user_data['firstName'])
-            user.last_name = u'{0}'.format(user_data['lastName'])
-            user.country_id = u'{0}'.format(user_data['country_id'])
-            user.phone = u'{0}'.format(user_data['phone'])
-            user.currency_id = u'{0}'.format(user_data['currency_id']) if user_data['currency_id'] != 'null' and user_data['currency_id'] != 'None' else None
-            Session.commit()
+            try:
+                user.gender = user_data['gender']
+                user.email = user_data['email'] if regex(regex_string=user_data['email'],
+                                                         email=True) else None
+                user.city_id = u'{0}'.format(user_data['city_id'])
+                user.address = u'{0}'.format(user_data['address'])
+                if user_data['birthDate']:
+                    user.birth_date = datetime.strptime(date_format(user_data['birthDate'], string=True, graph=False, birth_day=True), "%Y-%m-%d") #.strftime("%Y-%m-%d")
+                user.first_name = u'{0}'.format(user_data['firstName']) if regex(regex_string=user_data['firstName'],
+                                                                                 first_name=True) else None
+                user.last_name = u'{0}'.format(user_data['lastName']) if regex(regex_string=user_data['lastName'],
+                                                                               last_name=True) else None
+                user.country_id = u'{0}'.format(user_data['country_id'])
+                user.phone = u'{0}'.format(user_data['phone'])
+                user.currency_id = u'{0}'.format(user_data['currency_id']) if user_data['currency_id'] != 'null' and user_data['currency_id'] != 'None' else None
+                Session.commit()
+            except Exception as ex:
+                Session.rollback()
+                print(ex)
+                return False, 'regex'
         # if user.image_id < 5:
         #     user.image_id = 1 if user_data['gender'] == 'male' else user.image_id
         #     user.image_id = 2 if user_data['gender'] == 'female' else user.image_id
@@ -384,7 +406,7 @@ class UserProvider:
         # db.session.commit()
         # db.session.close()
         #Session.close()
-        return True
+        return True, None
 
     @classmethod
     def get_active_user_currencies_with_limit(cls, user_id):

@@ -35,6 +35,9 @@ def register(request):
         Session.close()
         return error_handler(400, error_messages.USER_ALREADY_EXISTS)
     user = UserProvider.create_register_user(request.json)
+    if not user:
+        Session.close()
+        return error_handler(400, message=error_messages.REGEX_ERROR)
     code = user.code
     recipient = request.json['email']
     send_mail = send_code_to_mail(recipient=recipient, code=code)

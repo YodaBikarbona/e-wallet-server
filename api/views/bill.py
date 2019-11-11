@@ -23,7 +23,9 @@ def add_bill(request):
     if not check_security_token(token=request.headers['Authorization'], user=user):
         db.session.close()
         return error_handler(403, error_messages.INVALID_TOKEN)
-    BillProvider.add_new_bill(bill_data=request.json)
+    if not BillProvider.add_new_bill(bill_data=request.json):
+        db.session.close()
+        return error_handler(error_status=400, message=error_messages.REGEX_ERROR)
     db.session.close()
     return ok_response(message=messages.BILL_ADDED)
 
@@ -130,7 +132,7 @@ def new_costs(request):
     except Exception as ex:
         print(ex)
         request.json['quantity'] = 1.00
-    BillProvider.new_costs_or_profits(
+    if not BillProvider.new_costs_or_profits(
         category_id=request.json['categoryId'],
         sub_category_id=request.json['subCategoryId'],
         currency_id=request.json['currencyId'],
@@ -142,7 +144,9 @@ def new_costs(request):
         quantity=request.json['quantity'],
         not_my_city=request.json['notMyCity'],
         created=request.json['created']
-    )
+    ):
+        db.session.close()
+        return error_handler(error_status=400, message=error_messages.REGEX_ERROR)
     db.session.close()
     return ok_response(message='')
 
@@ -168,7 +172,7 @@ def new_profits(request):
     except Exception as ex:
         print(ex)
         request.json['quantity'] = 1.00
-    BillProvider.new_costs_or_profits(
+    if not BillProvider.new_costs_or_profits(
         category_id=request.json['categoryId'],
         sub_category_id=request.json['subCategoryId'],
         currency_id=request.json['currencyId'],
@@ -180,7 +184,9 @@ def new_profits(request):
         quantity=request.json['quantity'],
         not_my_city=request.json['notMyCity'],
         created=request.json['created']
-    )
+    ):
+        db.session.close()
+        return error_handler(error_status=400, message=error_messages.REGEX_ERROR)
     db.session.close()
     return ok_response(message='')
 
@@ -305,10 +311,13 @@ def print_pdf_report(request):
     report = pdfkit.from_string(rendered, False, css=scss, configuration=_get_pdfkit_config())
     #report = pdfkit.from_string(rendered, False, css=scss)
     response = make_response(report)
-    response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = 'attachment; filename=report.pdf'
     db.session.close()
-    return response
+    if bills:
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'attachment; filename=report.pdf'
+        return response
+    else:
+        return error_handler(error_status=404, message=error_messages.PRINT_PDF_ERROR)
 
 
 def get_graph(request):
