@@ -14,6 +14,7 @@ from api.validation.bill import NewBillSchema
 from api.serializer.serializers import BillSerializer, CategorySerializer, SubCategorySerializer, CurrencySerializer
 import pdfkit
 from manage import _get_pdfkit_config
+from api.helper.translations import _translation
 
 
 def add_bill(request):
@@ -73,13 +74,16 @@ def get_costs(request):
     :return: costs
     """
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
 
     costs = BillProvider.get_costs_or_profits(
         category_id=request.json['categoryId'],
@@ -117,13 +121,16 @@ def new_costs(request):
     :return:
     """
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     print(request.json)
     try:
         request.json['quantity'] = float(request.json['quantity'])
@@ -146,7 +153,8 @@ def new_costs(request):
         created=request.json['created']
     ):
         db.session.close()
-        return error_handler(error_status=400, message=error_messages.REGEX_ERROR)
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.REGEX_ERROR,
+                                                                    lang_code=lang))
     db.session.close()
     return ok_response(message='')
 
@@ -158,13 +166,16 @@ def new_profits(request):
     :return:
     """
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     try:
         request.json['quantity'] = float(request.json['quantity'])
         if request.json['quantity'] <= 0:
@@ -186,7 +197,8 @@ def new_profits(request):
         created=request.json['created']
     ):
         db.session.close()
-        return error_handler(error_status=400, message=error_messages.REGEX_ERROR)
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.REGEX_ERROR,
+                                                                    lang_code=lang))
     db.session.close()
     return ok_response(message='')
 
@@ -198,13 +210,16 @@ def get_profits(request):
     :return: profits
     """
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
 
     profits = BillProvider.get_costs_or_profits(
         category_id=request.json['categoryId'],
@@ -242,13 +257,16 @@ def get_sub_categoryes_by_category(request):
     :return: sub_categories
     """
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     sub_categories = BillProvider.get_sub_categories(category_id=request.json['category_id'], user_id=usr.id)
     additional_data = {
         'sub_categories': SubCategorySerializer(many=True).dump(sub_categories).data if sub_categories else []
@@ -263,14 +281,17 @@ def print_pdf_report(request):
     Consuming this function user will download report of bills
     :return: PDF
     """
+    lang = request.headers['Lang']
     claims = check_security_token(request.headers['Authorization'])
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     user = UsersSerializer(many=False).dump(usr).data
     bills = BillProvider.get_costs_or_profits(
         category_id=request.json['categoryId'],
@@ -317,7 +338,8 @@ def print_pdf_report(request):
         response.headers['Content-Disposition'] = 'attachment; filename=report.pdf'
         return response
     else:
-        return error_handler(error_status=404, message=error_messages.PRINT_PDF_ERROR)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.PRINT_PDF_ERROR,
+                                                                    lang_code=lang))
 
 
 def get_graph(request):
@@ -327,13 +349,16 @@ def get_graph(request):
     :return: list_of_prices (cost and profit)
     """
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     bills = BillProvider.get_all_costs_and_profits(
         costs=request.json['costs'],
         profits=request.json['profits'],
@@ -434,18 +459,22 @@ def delete_bill(request, bill_id):
     :return:
     """
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     if not BillProvider.delete_bill_by_bill_id(bill_id=bill_id):
         db.session.close()
-        return error_handler(400, error_messages.BAD_DATA)
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.BAD_DATA,
+                                                                    lang_code=lang))
     db.session.close()
-    return ok_response(message=messages.BILL_DELETED)
+    return ok_response(message=_translation(original_string=messages.BILL_DELETED, lang_code=lang))
 
 
 def edit_bill(request, bill_id):
@@ -454,16 +483,20 @@ def edit_bill(request, bill_id):
     :param request:
     :return:
     """
+    lang = request.headers['Lang']
     claims = check_security_token(request.headers['Authorization'])
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     if not BillProvider.edit_bill_by_bill_id(bill_id=bill_id, data=request.json):
         db.session.close()
-        return error_handler(400, error_messages.BAD_DATA)
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.BAD_DATA,
+                                                                    lang_code=lang))
     db.session.close()
-    return ok_response(message=messages.BILL_DELETED)
+    return ok_response(message=_translation(original_string=messages.BILL_DELETED, lang_code=lang))

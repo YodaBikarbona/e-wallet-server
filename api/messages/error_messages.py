@@ -9,14 +9,11 @@ USER_ALREADY_EXISTS = "User with that email already exists!"
 USER_NOT_FOUND = "User not found!"
 EMAIL_USER_NOT_FOUND = "Email is wrong!"
 NOT_PERMISSION = "You don't have permission!"
-WRONG_USERNAME_OR_PASSWORD = "Invalid username or password!"
+WRONG_USERNAME_OR_PASSWORD = "Invalid email or password!"
 MAX_CURRENCIES = "You already have maximum number of currencies!"
 PASSWORD_NOT_VALID = "Password is not valid!"
-EXIST_CATEGORY_BILLS = "Not possible! Bills with that category already exist! " \
-                       "To delete this category please delete bills with this category."
-EXIST_SUBCATEGORY_BILLS = "Not possible! Bills with that subcategory already exist! " \
-                          "To delete this subcategory please delete bills with this subcategory."
-EXIST_CURRENCY_BILLS = "Not possible! Bills with that currency already exist! " \
-                       "To delete this currency please delete bills with this currency."
+EXIST_CATEGORY_BILLS = "Not possible! Bills with that category already exist! To delete this category please delete bills with this category or change category of bills."
+EXIST_SUBCATEGORY_BILLS = "Not possible! Bills with that subcategory already exist! To delete this subcategory please delete bills with this subcategory or change subcategory of bills."
+EXIST_CURRENCY_BILLS = "Not possible! Bills with that currency already exist! To delete this currency please delete bills with this currency or change currency of bills."
 REGEX_ERROR = "Action is not possible, you use some prohibited symbols!"
 PRINT_PDF_ERROR = "Action is not possible, you don't have bills! To see report please add bills first."

@@ -32,6 +32,7 @@ from api.helper.helper import (
     date_format,
     password_regex,
 )
+from api.helper.translations import _translation
 from api.model.config import (
     app,
     PROJECT_HOME,
@@ -59,10 +60,10 @@ def user(request):
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=error_messages.INVALID_TOKEN)
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=error_messages.USER_NOT_FOUND)
     additional_data = {
         'user': UsersSerializer(many=False).dump(usr).data,
         'user_id': usr.id,
@@ -88,7 +89,7 @@ def restart_password(request):
     usr = UserProvider.get_user_by_email(request.json['email'])
     if not usr:
         db.session.close()
-        return error_handler(404, message=error_messages.EMAIL_USER_NOT_FOUND)
+        return error_handler(error_status=404, message=error_messages.EMAIL_USER_NOT_FOUND)
     UserProvider.set_new_restart_code(user=usr)
     send_code_to_mail(recipient=usr.email, code=usr.new_password_code)
     db.session.close()
@@ -106,7 +107,7 @@ def restart_login_code(request):
     usr = UserProvider.get_user_by_email(request.json['email'])
     if not usr:
         Session.close()
-        return error_handler(404, message=error_messages.EMAIL_USER_NOT_FOUND)
+        return error_handler(error_status=404, message=error_messages.EMAIL_USER_NOT_FOUND)
     UserProvider.set_new_login_code(user=usr)
     send_code_to_mail(recipient=usr.email, code=usr.code)
     Session.close()
@@ -131,13 +132,16 @@ def user_settings_currencies(request):
     currency_active = request.json['active']
     search = request.json['search']
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     currencies = UserProvider.user_settings_currencies(
         active=currency_active,
         user_id=usr.id,
@@ -147,7 +151,8 @@ def user_settings_currencies(request):
         "currencies": CurrencySerializer(many=True).dump(currencies).data if currencies else []
     }
     db.session.close()
-    return ok_response(message=messages.SETTINGS_CURRENCIES, additional_data=additional_data)
+    return ok_response(message=_translation(original_string=messages.SETTINGS_CURRENCIES, lang_code=lang),
+                       additional_data=additional_data)
 
 
 def user_settings_categories(request):
@@ -168,13 +173,16 @@ def user_settings_categories(request):
     category_active = request.json['active']
     search = request.json['search']
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     categories = UserProvider.user_settings_categories(
         active=category_active,
         user_id=usr.id,
@@ -184,7 +192,8 @@ def user_settings_categories(request):
         "categories": CategorySerializer(many=True).dump(categories).data if categories else []
     }
     db.session.close()
-    return ok_response(message=messages.SETTINGS_CATEGORIES, additional_data=additional_data)
+    return ok_response(message=_translation(original_string=messages.SETTINGS_CATEGORIES, lang_code=lang),
+                       additional_data=additional_data)
 
 
 def user_settings_sub_categories(request):
@@ -206,13 +215,16 @@ def user_settings_sub_categories(request):
     sub_category_active = request.json['active']
     search = request.json['search']
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     sub_categories = UserProvider.user_settings_sub_categories(
         active=sub_category_active,
         user_id=usr.id,
@@ -222,7 +234,8 @@ def user_settings_sub_categories(request):
         "sub_categories": SubCategorySerializer(many=True).dump(sub_categories).data if sub_categories else []
     }
     db.session.close()
-    return ok_response(message=messages.SETTINGS_SUB_CATEGORIES, additional_data=additional_data)
+    return ok_response(message=_translation(original_string=messages.SETTINGS_SUB_CATEGORIES, lang_code=lang),
+                       additional_data=additional_data)
 
 
 def save_user_settings_currency(request):
@@ -240,23 +253,28 @@ def save_user_settings_currency(request):
     currency_active = request.json['active']
     currency_id = request.json['currencyId']
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     if UserProvider.check_user_currencies_number(user_id=usr.id) == 10 and not currency_active:
         db.session.close()
-        return error_handler(error_status=403, message=error_messages.MAX_CURRENCIES)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.MAX_CURRENCIES,
+                                                                    lang_code=lang))
     if not UserProvider.save_or_delete_user_settings_currency(
         active=currency_active,
         currency_id=currency_id,
         user_id=usr.id
     ):
         db.session.close()
-        return error_handler(403, error_messages.EXIST_CURRENCY_BILLS)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.EXIST_CURRENCY_BILLS,
+                                                                    lang_code=lang))
     db.session.close()
     return ok_response(message='')
 
@@ -275,20 +293,24 @@ def save_user_settings_category(request):
     category_active = request.json['active']
     category_id = request.json['categoryId']
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     if not UserProvider.save_or_delete_user_settings_category(
         active=category_active,
         category_id=category_id,
         user_id=usr.id
     ):
         db.session.close()
-        return error_handler(403, error_messages.EXIST_CATEGORY_BILLS)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.EXIST_CATEGORY_BILLS,
+                                                                    lang_code=lang))
     db.session.close()
     return ok_response(message='')
 
@@ -307,20 +329,25 @@ def save_user_settings_sub_category(request):
     sub_category_active = request.json['active']
     sub_category_id = request.json['subCategoryId']
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     if not UserProvider.save_or_delete_user_settings_sub_category(
         active=sub_category_active,
         sub_category_id=sub_category_id,
         user_id=usr.id
     ):
         db.session.close()
-        return error_handler(403, error_messages.EXIST_SUBCATEGORY_BILLS)
+        return error_handler(error_status=403, message=_translation(
+            original_string=error_messages.EXIST_SUBCATEGORY_BILLS,
+            lang_code=lang))
     db.session.close()
     return ok_response(message='')
 
@@ -334,15 +361,19 @@ def restart_password_code(request):
         message: empty message
     """
     usr = UserProvider.get_user_by_email(request.json['email'])
+    lang = request.headers['Lang']
     if not usr:
         db.session.close()
-        return error_handler(404, message=error_messages.EMAIL_USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.EMAIL_USER_NOT_FOUND,
+                                                                    lang_code=lang))
     if usr.new_password_code != request.json['code']:
         db.session.close()
-        return error_handler(403, message=error_messages.INVALID_CODE)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_CODE,
+                                                                    lang_code=lang))
     if not UserProvider.check_expired_restart_code(user=usr, user_data=request.json):
         db.session.close()
-        return error_handler(error_status=400, message=error_messages.INVALID_CODE)
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.INVALID_CODE,
+                                                                    lang_code=lang))
     db.session.close()
     return ok_response(message='')
 
@@ -358,18 +389,22 @@ def save_new_password(request):
         message
     """
     usr = UserProvider.get_user_by_email(request.json['email'])
+    lang = request.headers['Lang']
     if not usr:
         db.session.close()
-        return error_handler(404, message=error_messages.EMAIL_USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.EMAIL_USER_NOT_FOUND,
+                                                                    lang_code=lang))
     if request.json['newPassword'] != request.json['confirmPassword']:
         db.session.close()
-        return error_handler(error_status=400, message=error_messages.PASSWORDS_NOT_SAME)
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.PASSWORDS_NOT_SAME,
+                                                                    lang_code=lang))
     if not password_regex(request.json['newPassword']):
         db.session.close()
-        return error_handler(400, error_messages.PASSWORD_NOT_VALID)
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.PASSWORD_NOT_VALID,
+                                                                    lang_code=lang))
     UserProvider.save_new_password(user=usr, user_data=request.json)
     db.session.close()
-    return ok_response(message=messages.RESET_PASSWORD)
+    return ok_response(message=_translation(original_string=messages.RESET_PASSWORD, lang_code=lang))
 
 
 def upload_image(request): #, purpose='system_images/default_images/'):
@@ -443,22 +478,28 @@ def change_password(request):
     :return: message
     """
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     if usr.password != new_psw(usr.salt, request.json['currentPassword']):
         db.session.close()
-        return error_handler(400, error_messages.WRONG_PASSWORD)
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.WRONG_PASSWORD,
+                                                                    lang_code=lang))
     if 'newPassword' and 'confirmPassword' not in request.json:
         db.session.close()
-        return error_handler(400, error_messages.BAD_DATA)
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.BAD_DATA,
+                                                                    lang_code=lang))
     if not check_passwords(request.json['newPassword'], request.json['confirmPassword']):
         db.session.close()
-        return error_handler(error_status=400, message=error_messages.PASSWORDS_NOT_SAME)
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.PASSWORDS_NOT_SAME,
+                                                                    lang_code=lang))
     if not password_regex(request.json['newPassword']):
         db.session.close()
         return error_handler(400, error_messages.PASSWORD_NOT_VALID)
@@ -466,7 +507,7 @@ def change_password(request):
     UserProvider.set_new_restart_code(user=usr, code=True)
     send_code_to_mail(recipient=usr.email, code=usr.code)
     db.session.close()
-    return ok_response(message=messages.RESET_PASSWORD)
+    return ok_response(message=_translation(original_string=messages.RESET_PASSWORD, lang_code=lang))
 
 
 def edit_user(request):
@@ -475,27 +516,34 @@ def edit_user(request):
     :param request:
     :return: message
     """
+    lang = request.headers['Lang']
     if request.json['currency_id'] != 'null':
         request.json['currency_id'] = "{0}".format(request.json['currency_id'])
     if request.json['birthDate'] == 'null':
         request.json['birthDate'] = None
     if not ValidateRequestSchema(request, EditUserSchema()):
-        return error_handler(400, error_messages.BAD_DATA)
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.BAD_DATA,
+                                                                    lang_code=lang))
     claims = check_security_token(request.headers['Authorization'])
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     status, response = UserProvider.edit_user(user_data=request.json, user_email=usr.email, user_id=usr.id)
     if not status:
         db.session.close()
         if response == 'email':
-            return error_handler(400, error_messages.USER_ALREADY_EXISTS)
+            return error_handler(error_status=400, message=_translation(
+                original_string=error_messages.USER_ALREADY_EXISTS,
+                lang_code=lang))
         else:
-            return error_handler(400, error_messages.REGEX_ERROR)
+            return error_handler(error_status=400, message=_translation(original_string=error_messages.REGEX_ERROR,
+                                                                        lang_code=lang))
     db.session.close()
     return ok_response(message=messages.USER_EDITED)
 
@@ -507,13 +555,16 @@ def get_active_currencies_limit(request):
     :return: list_of_currencies
     """
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     active_currencies = UserProvider.get_active_user_currencies_with_limit(user_id=usr.id)
     additional_data = {
         'currencies': UserCirrenciesSerializer(many=True).dump(active_currencies).data if active_currencies else []
@@ -529,13 +580,16 @@ def edit_currency_monthly_limit(request):
     :return: message
     """
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     UserProvider.edit_active_user_currencies_with_limit(
         currency_id=request.json['currency_id'],
         monthly_limit=request.json['monthly_cost_limit']
@@ -555,13 +609,16 @@ def get_news(request):
     :return:
     """
     claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     news = UserProvider.get_all_user_news(user_id=usr.id)
     news = NewsSerializer(many=True).dump(news).data if news else []
     for n in news:
@@ -570,7 +627,7 @@ def get_news(request):
         'news': news
     }
     Session.commit()
-    return ok_response(messages.NEWS_LIST, additional_data=additional_data)
+    return ok_response(message=messages.NEWS_LIST, additional_data=additional_data)
 
 
 def clear_news(request):
@@ -579,14 +636,17 @@ def clear_news(request):
     :param request:
     :return:
     """
+    lang = request.headers['Lang']
     claims = check_security_token(request.headers['Authorization'])
     if claims:
         usr = UserProvider.get_user_by_ID(claims['user_id'])
     else:
-        return error_handler(403, error_messages.INVALID_TOKEN)
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
     if not usr:
         db.session.close()
-        return error_handler(404, error_messages.USER_NOT_FOUND)
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
     UserProvider.hide_news_by_user_id_and_news_id(user_id=usr.id, news_id=request.json['newsId'])
     db.session.close()
-    return ok_response(messages.NEWS_HIDDEN)
+    return ok_response(message=messages.NEWS_HIDDEN)

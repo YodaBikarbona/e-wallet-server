@@ -68,6 +68,8 @@ class UserProvider:
 
     @classmethod
     def get_user_by_email(cls, email):
+        if not regex(regex_string=email, email=True):
+            return None
         user = Session.query(User).filter(User.email == email).first()
         return user
 
@@ -451,6 +453,7 @@ class UserProvider:
             .first()
         if news:
             news.hidden = True
+            Session.delete(news)
         # db.session.commit()
         # db.session.close()
         Session.commit()
