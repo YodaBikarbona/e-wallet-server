@@ -429,10 +429,12 @@ def get_graph(request):
                 sum_profit += profit['price']
         if sum_profit > 0:
             bill_sub_categories_list_profit.append({"label": "{0}".format(sub_cat), "value": sum_profit})
-    bills_prices_cost = list(set([bill[-1] for bill in bills_list if bill[-2] == 'Cost' and bill[-1] != 0]))
+    bills_prices_cost = list(set([bill[-1] for bill in bills_list if bill[-2] == _translation(
+        original_string='Cost', lang_code=lang) and bill[-1] != 0]))
     min_cost = min(bills_prices_cost) if bills_prices_cost else 0
     max_cost = max(bills_prices_cost) if bills_prices_cost else 0
-    bills_prices_profit = list(set([bill[-1] for bill in bills_list if bill[-2] == 'Profit' and bill[-1] != 0]))
+    bills_prices_profit = list(set([bill[-1] for bill in bills_list if bill[-2] == _translation(
+        original_string='Profit', lang_code=lang) and bill[-1] != 0]))
     min_profit = min(bills_prices_profit) if bills_prices_profit else 0
     max_profit = max(bills_prices_profit) if bills_prices_profit else 0
     currency = UserProvider.get_user_currency_by_currency_id(currency_id=request.json['currency_id'])
@@ -446,7 +448,9 @@ def get_graph(request):
         'bill_categories_list_cost': bill_categories_list_cost,
         'bill_categories_list_profit': bill_categories_list_profit,
         'bill_sub_categories_list_cost': bill_sub_categories_list_cost,
-        'bill_sub_categories_list_profit': bill_sub_categories_list_profit
+        'bill_sub_categories_list_profit': bill_sub_categories_list_profit,
+        'costs': round(sum(bills_prices_cost), 2),
+        'profits': round(sum(bills_prices_profit), 2),
     }
     db.session.close()
     return ok_response(message='Bills', additional_data=additional_data)
