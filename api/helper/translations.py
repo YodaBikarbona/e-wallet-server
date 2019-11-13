@@ -142,5 +142,13 @@ translation = {
     "Action is not possible, you don't have bills! To see report please add bills first.": {
         "en": "Action is not possible, you don't have bills! To see report please add bills first.",
         "hr": "Akcija nije moguća, nemate račune! Da biste vidjeli izvještaj molimo dodajte račune prvo."
+    },
+    "Cost": {
+        "en": "Cost",
+        "hr": "Trošak"
+    },
+    "Profit": {
+        "en": "Profit",
+        "hr": "Profit"
     }
 }

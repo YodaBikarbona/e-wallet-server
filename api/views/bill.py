@@ -396,11 +396,11 @@ def get_graph(request):
         for cost in costs_list:
             if date == cost['created']:
                 sum_cost += cost['price']
-        bills_list.append([date, 'Cost', sum_cost])
+        bills_list.append([date, _translation(original_string='Cost', lang_code=lang), sum_cost])
         for profit in profits_list:
             if date == profit['created']:
                 sum_profit += profit['price']
-        bills_list.append([date, 'Profit', sum_profit])
+        bills_list.append([date, _translation(original_string='Profit', lang_code=lang), sum_profit])
     # Pie category graph
     for cat in category_list:
         sum_cost = 0
