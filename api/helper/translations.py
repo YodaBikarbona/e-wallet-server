@@ -150,5 +150,9 @@ translation = {
     "Profit": {
         "en": "Profit",
         "hr": "Profit"
+    },
+    "Bill is successfully edited!": {
+        "en": "Bill is successfully edited!",
+        "hr": "Račun je uspješno izmjenjen!"
     }
 }

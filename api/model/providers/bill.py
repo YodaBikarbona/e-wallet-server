@@ -191,7 +191,7 @@ class BillProvider:
                                                         comment=True) else None
                 bill.currency_id = data['currencyId']
                 bill.bill_category_id = data['categoryId']
-                bill.bill_sub_category_id = data['subCategoryId']
+                bill.bill_sub_category_id = data['subCategoryId'] if data['subCategoryId'] != 'null' else None
                 bill.price = data['price']
                 bill.not_my_city = data['notMyCity']
                 bill.quantity = data['quantity']

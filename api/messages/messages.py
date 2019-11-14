@@ -14,3 +14,4 @@ MONTHLY_LIMIT_EDITED = "Monthly limit is successfully edited!"
 NEWS_LIST = 'News list'
 NEWS_HIDDEN = 'News are successfully deleted!'
 BILL_DELETED = 'Bill is successfully deleted!'
+BILL_EDITED = 'Bill is successfully edited!'
