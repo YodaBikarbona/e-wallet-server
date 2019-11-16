@@ -180,11 +180,11 @@ def regex(regex_string, first_name=None, last_name=None, email=None, title=None,
     :param comment:
     :return:
     """
-    if (first_name or last_name) and re.match("^[A-Za-z]*$", regex_string):
+    if (first_name or last_name) and re.match("^[\w]*$", regex_string):
         return True
     elif email and re.match("^[\w@.-]*$", regex_string):
         return True
-    elif (title or comment) and re.match("^[\w\s-]*$", regex_string):
+    elif (title or comment) and re.match("^[\W\s-]*$", regex_string):
         return True
     else:
         return False
