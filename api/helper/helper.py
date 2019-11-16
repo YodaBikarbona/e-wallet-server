@@ -184,7 +184,7 @@ def regex(regex_string, first_name=None, last_name=None, email=None, title=None,
         return True
     elif email and re.match("^[\w@.-]*$", regex_string):
         return True
-    elif (title or comment) and re.match("^[\W\s-]*$", regex_string):
+    elif (title or comment) and re.match("^[\w\s-]*$", regex_string):
         return True
     else:
         return False
