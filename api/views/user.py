@@ -18,7 +18,8 @@ from api.serializer.serializers import (
     CategorySerializer,
     SubCategorySerializer,
     UserCirrenciesSerializer,
-    NewsSerializer
+    NewsSerializer,
+    CategoryTranslationSerializer
 )
 from api.helper.helper import (
     now,
@@ -186,11 +187,15 @@ def user_settings_categories(request):
     categories = UserProvider.user_settings_categories(
         active=category_active,
         user_id=usr.id,
-        search=search
+        search=search,
+        lang_code=lang
     )
     additional_data = {
         "categories": CategorySerializer(many=True).dump(categories).data if categories else []
     }
+    for c in additional_data["categories"]:
+        translation = [tr for tr in c["translations"] if tr.lang_code == lang]
+        c["translations"] = CategoryTranslationSerializer(many=False).dump(translation[0]).data
     db.session.close()
     return ok_response(message=_translation(original_string=messages.SETTINGS_CATEGORIES, lang_code=lang),
                        additional_data=additional_data)
@@ -228,7 +233,8 @@ def user_settings_sub_categories(request):
     sub_categories = UserProvider.user_settings_sub_categories(
         active=sub_category_active,
         user_id=usr.id,
-        search=search
+        search=search,
+        lang_code=lang
     )
     additional_data = {
         "sub_categories": SubCategorySerializer(many=True).dump(sub_categories).data if sub_categories else []

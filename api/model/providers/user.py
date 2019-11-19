@@ -8,8 +8,21 @@ from api.helper.helper import (
     regex,
 )
 from api.model.config import db
-from api.model.user import User, Role, UserCurrency, News, UserNews
-from api.model.bill import Currency, UserBillCategory, UserBillSubCategory, BillCategory, BillSubCategory
+from api.model.user import (
+    User,
+    Role,
+    UserCurrency,
+    News,
+    UserNews,
+)
+from api.model.bill import (
+    Currency,
+    UserBillCategory,
+    UserBillSubCategory,
+    BillCategory,
+    BillSubCategory,
+    TranslationBillCategory
+)
 from api.helper.helper import date_format
 from config import session as Session
 from api.model.providers.bill import BillProvider
@@ -227,26 +240,33 @@ class UserProvider:
             return True
 
     @classmethod
-    def user_settings_categories(cls, active, user_id, search):
+    def user_settings_categories(cls, active, user_id, search, lang_code='en'):
         if not active:
             user_categories = Session.query(UserBillCategory)\
                 .filter(UserBillCategory.user_id == user_id).all()
             categories_ids = [cat.bill_category_id for cat in user_categories] if user_categories else []
             #Session.close()
             bill_categories = Session.query(BillCategory)\
-                .filter(BillCategory.id.notin_(categories_ids))
+                .join(TranslationBillCategory, BillCategory.id == TranslationBillCategory.bill_category_id)\
+                .filter(BillCategory.id.notin_(categories_ids),
+                        TranslationBillCategory.lang_code == lang_code)
         else:
             bill_categories = Session.query(BillCategory)\
                 .join(UserBillCategory, BillCategory.id == UserBillCategory.bill_category_id)\
-                .filter(UserBillCategory.user_id == user_id)
+                .join(TranslationBillCategory, BillCategory.id == TranslationBillCategory.bill_category_id)\
+                .filter(UserBillCategory.user_id == user_id,
+                        TranslationBillCategory.lang_code == lang_code)
         if search:
-            bill_categories = bill_categories.filter(BillCategory.name.ilike('%{0}%'.format(search)))
+            # bill_categories = bill_categories.filter(BillCategory.name.ilike('%{0}%'.format(search)))
+            bill_categories = bill_categories.filter(
+                TranslationBillCategory.translation_category_name.ilike('%{0}%'.format(search))
+            )
         return bill_categories.all()
 
     @classmethod
-    def user_settings_sub_categories(cls, active, user_id, search):
+    def user_settings_sub_categories(cls, active, user_id, search, lang_code='en'):
         # Get all active user categories
-        user_categories = cls.user_settings_categories(active=True, user_id=user_id, search='')
+        user_categories = cls.user_settings_categories(active=True, user_id=user_id, search='', lang_code=lang_code)
         # Get all subcategories of active categories
         sub_cats = Session.query(BillSubCategory)\
             .filter(BillSubCategory.bill_category_id.in_([cat.id for cat in user_categories]))\

@@ -46,10 +46,22 @@ class UsersSerializer(ma.Schema):
                   'address', 'phone', 'city_id', 'country_id', 'currency_id', 'city', 'country', 'role', 'image', 'currency')
 
 
+class CategoryTranslationSerializer(ma.Schema):
+
+    class Meta:
+        fields = ('id', 'translation_category_name', 'lang_code')
+
+
+class SubCategoryTranslationSerializer(ma.Schema):
+
+    class Meta:
+        fields = ('id', 'translation_subcategory_name', 'lang_code')
+
+
 class CategorySerializer(ma.Schema):
 
     class Meta:
-        fields = ('id', 'created', 'name')
+        fields = ('id', 'created', 'name', 'translations')
 
 
 class SubCategorySerializer(ma.Schema):
