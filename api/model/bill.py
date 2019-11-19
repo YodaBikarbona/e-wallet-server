@@ -43,6 +43,8 @@ class BillCategory(db.Model):
     cost_type = Column(Boolean, nullable=True)
     profit_type = Column(Boolean, nullable=True)
 
+    translations = relationship('TranslationBillCategory')
+
     def __repr__(self):
         return self.name
 
@@ -57,6 +59,7 @@ class BillSubCategory(db.Model):
     bill_category_id = Column(Integer, ForeignKey('bill_category.id', ondelete='CASCADE'), nullable=False)
 
     bill_category = relationship('BillCategory')
+    translations = relationship('TranslationBillSubCategory')
 
     def __repr__(self):
         return self.name
@@ -92,6 +95,38 @@ class UserBillSubCategory(db.Model):
         return self.bill_sub_category.name
 
 
+class TranslationBillCategory(db.Model):
+    __tablename__ = 'translation_bill_category'
+
+    id = Column(Integer, primary_key=True)
+    created = Column(DateTime, nullable=True, default=now())
+    original_category_name = Column(Unicode(255), nullable=False)
+    translation_category_name = Column(Unicode(255), nullable=False)
+    lang_code = Column(Unicode(10), nullable=False)
+
+    bill_category_id = Column(Integer, ForeignKey('bill_category.id', ondelete='CASCADE'), nullable=False)
+
+    bill_category = relationship('BillCategory')
+
+    def __repr__(self):
+        return self.translation_category_name
+
+
+# class TranslationBillSubCategory(db.Model):
+#     __tablename__ = 'translation_bill_sub_category'
+#
+#     id = Column(Integer, primary_key=True)
+#     created = Column(DateTime, nullable=True, default=now())
+#     original_subcategory_name = Column(Unicode(255), nullable=False)
+#     translation_subcategory_name = Column(Unicode(255), nullable=False)
+#     lang_code = Column(Unicode(10), nullable=False)
+#
+#     bill_sub_category_id = Column(Integer, ForeignKey('bill_sub_category.id', ondelete='CASCADE'), nullable=False)
+#
+#     bill_subcategory = relationship('BillSubCategory')
+#
+#     def __repr__(self):
+#         return self.translation_subcategory_name
 
 
 
