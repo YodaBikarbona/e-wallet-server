@@ -176,10 +176,11 @@ def password_regex(password):
             if char in spec:
                 is_spec = True
             else:
-                if char == char.upper():
-                    is_upper = True
-                if char == char.lower():
-                    is_lower = True
+                if char.isalpha():
+                    if char == char.upper():
+                        is_upper = True
+                    if char == char.lower():
+                        is_lower = True
     if is_upper and is_lower and is_spec and is_digit:
         return True
     else:
