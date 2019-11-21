@@ -19,7 +19,8 @@ from api.serializer.serializers import (
     SubCategorySerializer,
     UserCirrenciesSerializer,
     NewsSerializer,
-    CategoryTranslationSerializer
+    CategoryTranslationSerializer,
+    SubCategoryTranslationSerializer
 )
 from api.helper.helper import (
     now,
@@ -239,6 +240,9 @@ def user_settings_sub_categories(request):
     additional_data = {
         "sub_categories": SubCategorySerializer(many=True).dump(sub_categories).data if sub_categories else []
     }
+    for sc in additional_data["sub_categories"]:
+        translation = [tr for tr in sc["translations"] if tr.lang_code == lang]
+        sc["translations"] = SubCategoryTranslationSerializer(many=False).dump(translation[0]).data
     db.session.close()
     return ok_response(message=_translation(original_string=messages.SETTINGS_SUB_CATEGORIES, lang_code=lang),
                        additional_data=additional_data)

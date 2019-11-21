@@ -21,7 +21,8 @@ from api.model.bill import (
     UserBillSubCategory,
     BillCategory,
     BillSubCategory,
-    TranslationBillCategory
+    TranslationBillCategory,
+    TranslationBillSubCategory
 )
 from api.helper.helper import date_format
 from config import session as Session
@@ -291,7 +292,10 @@ class UserProvider:
                                          sub.id not in sub_categories_ids] if sub_categories_ids else []
             #Session.close()
             bill_sub_categories = Session.query(BillSubCategory)\
-                .filter(BillSubCategory.id.in_(sub_categories_ids_filter))
+                .join(TranslationBillSubCategory,
+                      BillSubCategory.id == TranslationBillSubCategory.bill_sub_category_id)\
+                .filter(BillSubCategory.id.in_(sub_categories_ids_filter),
+                        TranslationBillSubCategory.lang_code == lang_code)
             if not sub_categories_ids_filter:
                 #db.session.close()
                 #Session.close()
@@ -299,10 +303,16 @@ class UserProvider:
         else:
             bill_sub_categories = Session.query(BillSubCategory)\
                 .join(UserBillSubCategory, BillSubCategory.id == UserBillSubCategory.bill_sub_category_id)\
+                .join(TranslationBillSubCategory,
+                      BillSubCategory.id == TranslationBillSubCategory.bill_sub_category_id)\
                 .filter(UserBillSubCategory.user_id == user_id,
-                        UserBillSubCategory.bill_sub_category_id.in_([sub.id for sub in sub_cats]))
+                        UserBillSubCategory.bill_sub_category_id.in_([sub.id for sub in sub_cats]),
+                        TranslationBillSubCategory.lang_code == lang_code)
         if search:
-            bill_sub_categories = bill_sub_categories.filter(BillSubCategory.name.ilike('%{0}%'.format(search)))
+            #bill_sub_categories = bill_sub_categories.filter(BillSubCategory.name.ilike('%{0}%'.format(search)))
+            bill_sub_categories = bill_sub_categories.filter(
+                TranslationBillSubCategory.translation_subcategory_name.ilike('%{0}%'.format(search))
+            )
         return bill_sub_categories.all()
 
     @classmethod
