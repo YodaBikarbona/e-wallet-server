@@ -173,12 +173,13 @@ def password_regex(password):
             char = int(char)
             is_digit = True
         except Exception as ex:
-            if char == char.upper():
-                is_upper = True
-            if char == char.lower():
-                is_lower = True
             if char in spec:
                 is_spec = True
+            else:
+                if char == char.upper():
+                    is_upper = True
+                if char == char.lower():
+                    is_lower = True
     if is_upper and is_lower and is_spec and is_digit:
         return True
     else:
