@@ -72,7 +72,7 @@ def login(request):
                                                                     lang_code=lang))
     user = UserProvider.get_user_by_email(request.json['email'])
     if not user:
-        return error_handler(error_status=400, message=_translation(original_string=error_messages.USER_NOT_EXISTS,
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.WRONG_USERNAME_OR_PASSWORD,
                                                                     lang_code=lang))
     if user.password != new_psw(user.salt, request.json['password']):
         return error_handler(error_status=400, message=_translation(

@@ -161,9 +161,29 @@ def all_days_between_two_date(start_date, end_date):
 
 
 def password_regex(password):
-    if re.match(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
+    if (len(password) < 8) or (len(password) > 25):
+        return False
+    is_upper = False
+    is_lower = False
+    is_spec = False
+    is_digit = False
+    spec = "@#$%^&+=.!/?*-"
+    for char in password:
+        if char == char.upper():
+            is_upper = True
+        if char == char.lower():
+            is_lower = True
+        if char in spec:
+            is_spec = True
+        try:
+            char = int(char)
+            is_digit = True
+        except Exception as ex:
+            pass
+    if is_upper and is_lower and is_spec and is_digit:
         return True
-    return False
+    else:
+        return False
 
 
 def regex(regex_string, first_name=None, last_name=None, email=None, title=None, comment=None):
