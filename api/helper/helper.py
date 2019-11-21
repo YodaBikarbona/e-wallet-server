@@ -169,17 +169,16 @@ def password_regex(password):
     is_digit = False
     spec = "@#$%^&+=.!/?*-"
     for char in password:
-        if char == char.upper():
-            is_upper = True
-        if char == char.lower():
-            is_lower = True
-        if char in spec:
-            is_spec = True
         try:
             char = int(char)
             is_digit = True
         except Exception as ex:
-            pass
+            if char == char.upper():
+                is_upper = True
+            if char == char.lower():
+                is_lower = True
+            if char in spec:
+                is_spec = True
     if is_upper and is_lower and is_spec and is_digit:
         return True
     else:
