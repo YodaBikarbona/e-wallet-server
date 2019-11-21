@@ -243,6 +243,9 @@ def user_settings_sub_categories(request):
     for sc in additional_data["sub_categories"]:
         translation = [tr for tr in sc["translations"] if tr.lang_code == lang]
         sc["translations"] = SubCategoryTranslationSerializer(many=False).dump(translation[0]).data
+        if sc["bill_category"]:
+            c_translation = [trc for trc in sc['bill_category']['translations'] if trc.lang_code == lang]
+            sc['bill_category']["translations"] = CategoryTranslationSerializer(many=False).dump(c_translation[0]).data
     db.session.close()
     return ok_response(message=_translation(original_string=messages.SETTINGS_SUB_CATEGORIES, lang_code=lang),
                        additional_data=additional_data)

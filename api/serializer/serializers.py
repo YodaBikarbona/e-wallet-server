@@ -65,7 +65,7 @@ class CategorySerializer(ma.Schema):
 
 
 class SubCategorySerializer(ma.Schema):
-    bill_category = ma.Nested(CategorySerializer, only=['name'])
+    bill_category = ma.Nested(CategorySerializer, only=['name', 'translations'])
 
     class Meta:
         fields = ('id', 'created', 'name', 'bill_category_id', 'bill_category', 'translations')

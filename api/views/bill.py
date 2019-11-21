@@ -11,7 +11,14 @@ from api.model.providers.user import UserProvider
 from api.model.providers.bill import BillProvider
 from api.messages import error_messages, messages
 from api.validation.bill import NewBillSchema
-from api.serializer.serializers import BillSerializer, CategorySerializer, SubCategorySerializer, CurrencySerializer
+from api.serializer.serializers import (
+    BillSerializer,
+    CategorySerializer,
+    SubCategorySerializer,
+    CurrencySerializer,
+    CategoryTranslationSerializer,
+    SubCategoryTranslationSerializer
+)
 import pdfkit
 from manage import _get_pdfkit_config
 from api.helper.translations import _translation
@@ -267,10 +274,16 @@ def get_sub_categoryes_by_category(request):
         db.session.close()
         return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
                                                                     lang_code=lang))
-    sub_categories = BillProvider.get_sub_categories(category_id=request.json['category_id'], user_id=usr.id)
+    sub_categories = BillProvider.get_sub_categories(category_id=request.json['category_id'], user_id=usr.id, lang_code=lang)
     additional_data = {
         'sub_categories': SubCategorySerializer(many=True).dump(sub_categories).data if sub_categories else []
     }
+    for sc in additional_data["sub_categories"]:
+        translation = [tr for tr in sc["translations"] if tr.lang_code == lang]
+        sc["translations"] = SubCategoryTranslationSerializer(many=False).dump(translation[0]).data
+        if sc["bill_category"]:
+            c_translation = [trc for trc in sc['bill_category']['translations'] if trc.lang_code == lang]
+            sc['bill_category']["translations"] = CategoryTranslationSerializer(many=False).dump(c_translation[0]).data
     db.session.close()
     return ok_response(message='', additional_data=additional_data)
 

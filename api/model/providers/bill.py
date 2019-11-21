@@ -1,4 +1,10 @@
-from api.model.bill import Bill, BillCategory, BillSubCategory
+from api.model.bill import (
+    Bill,
+    BillCategory,
+    BillSubCategory,
+    TranslationBillCategory,
+    TranslationBillSubCategory
+)
 from api.model.country import Currency
 from api.model.config import db
 from config import session as Session
@@ -40,13 +46,14 @@ class BillProvider:
         return new_bill
 
     @classmethod
-    def get_categories(cls):
+    def get_categories(cls, lang_code='en'):
         categories = Session.query(BillCategory)\
-            .filter()
+            .join(TranslationBillCategory, BillCategory.id == TranslationBillCategory.bill_category_id)\
+            .filter(TranslationBillCategory.lang_code == lang_code)
         return categories.all()
 
     @classmethod
-    def get_sub_categories(cls, category_id, user_id):
+    def get_sub_categories(cls, category_id, user_id, lang_code='en'):
         if category_id == 'null':
             category_id = None
         user_subcategories = Session.query(UserBillSubCategory).filter(UserBillSubCategory.user_id == user_id).all()
@@ -55,8 +62,10 @@ class BillProvider:
         else:
             return []
         sub_categories = Session.query(BillSubCategory)\
+            .join(TranslationBillSubCategory, BillSubCategory.id == TranslationBillSubCategory.bill_sub_category_id)\
             .filter(BillSubCategory.bill_category_id == category_id,
-                    BillSubCategory.id.in_(user_subcategories))
+                    BillSubCategory.id.in_(user_subcategories),
+                    TranslationBillSubCategory.lang_code == lang_code)
         return sub_categories.all()
 
     @classmethod
