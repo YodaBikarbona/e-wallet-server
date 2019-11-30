@@ -117,6 +117,20 @@ def get_costs(request):
             date_to=request.json['dateTo']
         )
     }
+    for c in additional_data['costs']:
+        category_translation = [tr for tr in c['bill_category']['translations'] if tr.lang_code == lang]
+        if category_translation:
+            c['bill_category']['translations'] = CategoryTranslationSerializer(many=False).dump(
+                category_translation[0]).data
+        else:
+            c['bill_category']['translations'] = c['bill_category']['name']
+        if c['bill_sub_category']:
+            subcategory_translation = [tr for tr in c['bill_sub_category']['translations'] if tr.lang_code == lang]
+            if subcategory_translation:
+                c['bill_sub_category']['translations'] = SubCategoryTranslationSerializer(many=False).dump(
+                    subcategory_translation[0]).data
+            else:
+                c['bill_category']['translations'] = c['bill_sub_category']['name']
     db.session.close()
     return ok_response(message='', additional_data=additional_data)
 
@@ -253,6 +267,20 @@ def get_profits(request):
             date_to=request.json['dateTo']
         )
     }
+    for p in additional_data['profits']:
+        category_translation = [tr for tr in p['bill_category']['translations'] if tr.lang_code == lang]
+        if category_translation:
+            p['bill_category']['translations'] = CategoryTranslationSerializer(many=False).dump(
+                category_translation[0]).data
+        else:
+            p['bill_category']['translations'] = p['bill_category']['name']
+        if p['bill_sub_category']:
+            subcategory_translation = [tr for tr in p['bill_sub_category']['translations'] if tr.lang_code == lang]
+            if subcategory_translation:
+                p['bill_sub_category']['translations'] = SubCategoryTranslationSerializer(many=False).dump(
+                    subcategory_translation[0]).data
+            else:
+                p['bill_category']['translations'] = p['bill_sub_category']['name']
     db.session.close()
     return ok_response(message='', additional_data=additional_data)
 
