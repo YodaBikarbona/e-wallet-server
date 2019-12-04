@@ -374,9 +374,9 @@ def print_pdf_report(request):
     rendered = render_template(template, user=user, items=items, report_date=date_format(now()),
                                bills=bills, bill_type=request.json['billType'], currencies=currencies, summ=summ_list)
     # Production report
-    #report = pdfkit.from_string(rendered, False, css=scss, configuration=_get_pdfkit_config())
+    report = pdfkit.from_string(rendered, False, css=scss, configuration=_get_pdfkit_config())
     # Localhost report
-    report = pdfkit.from_string(rendered, False, css=scss)
+    # report = pdfkit.from_string(rendered, False, css=scss)
     response = make_response(report)
     db.session.close()
     if bills:
