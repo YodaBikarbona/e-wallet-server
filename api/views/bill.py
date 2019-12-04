@@ -371,12 +371,31 @@ def print_pdf_report(request):
     template = "report_template.html"
     if lang == 'hr':
         template = "report_template_hr.html"
+
+    for b in bills:
+        category_translation = [tr for tr in b['bill_category']['translations'] if tr.lang_code == lang]
+        if category_translation:
+            b['bill_category']['translations'] = CategoryTranslationSerializer(many=False).dump(
+                category_translation[0]).data
+        else:
+            b['bill_category']['translations'] = {
+                'translation_category_name': b['bill_category']['name']
+            }
+        if b['bill_sub_category']:
+            subcategory_translation = [tr for tr in b['bill_sub_category']['translations'] if tr.lang_code == lang]
+            if subcategory_translation:
+                b['bill_sub_category']['translations'] = SubCategoryTranslationSerializer(many=False).dump(
+                    subcategory_translation[0]).data
+            else:
+                b['bill_sub_category']['translations'] = {
+                    'translation_subcategory_name': b['bill_sub_category']['name']
+                }
     rendered = render_template(template, user=user, items=items, report_date=date_format(now()),
                                bills=bills, bill_type=request.json['billType'], currencies=currencies, summ=summ_list)
     # Production report
     report = pdfkit.from_string(rendered, False, css=scss, configuration=_get_pdfkit_config())
     # Localhost report
-    # report = pdfkit.from_string(rendered, False, css=scss)
+    #report = pdfkit.from_string(rendered, False, css=scss)
     response = make_response(report)
     db.session.close()
     if bills:

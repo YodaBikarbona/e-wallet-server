@@ -53,8 +53,16 @@
                     <td> {{ bill.bill_type }} </td>
                     <td> {{ bill.created }} </td>
                     <td> {{ bill.title }} </td>
-                    <td> {{ bill.bill_category.name }} </td>
-                    <td> {{ bill.bill_sub_category.name }} </td>
+                    {% if bill.bill_category.translations %}
+                        <td> {{ bill.bill_category.translations.translation_category_name }} </td>
+                    {% else %}
+                        <td> {{ bill.bill_category.name }} </td>
+                    {% endif %}
+                    {% if bill.bill_sub_category.translations %}
+                        <td> {{ bill.bill_sub_category.translations.translation_subcategory_name }} </td>
+                    {% else %}
+                        <td> {{ bill.bill_sub_category.name }} </td>
+                    {% endif %}
                     <td> {{ bill.currency.code }} </td>
                     <td> {{ bill.price }} </td>
                 </tr>
