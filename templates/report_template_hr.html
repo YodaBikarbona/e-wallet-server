@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="e-wallet">E-wallet</div>
+    <h1 class="header">Izvještaj</h1>
+
+    <div class="w-100">
+        <table class="w-100 no-border">
+            <tr class="no-border">
+                <td class="no-border">Ime: {{ user.first_name }}</td>
+                <td class="no-border">Prezime: {{ user.last_name }}</td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border">Lokacija: {{ user.address }}, {{ user.city.name }}, {{ user.country.name }}</td>
+                <td class="no-border">E-Mail: {{ user.email }}</td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border"></td>
+                <td class="no-border"></td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border">Datum izvještaja: {{ report_date }}</td>
+                <td class="no-border">Računi: {{ items }}</td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border">Valuta: {{ currencies }}</td>
+                <td class="no-border"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="m-bottom20 w-100"></div>
+    <table class="w-100">
+        <thead>
+            <tr class="text-align-left lightGray">
+                <td style="width: 20px">Br.</td>
+                <td style="width: 50px">Tip</td>
+                <td style="width: 160px">Datum</td>
+                <td style="width: 160px">Naslov</td>
+                <td style="width: 70px">Kategorija</td>
+                <td style="width: 70px">Podkategorija</td>
+                <td style="width: 50px">Val.</td>
+                <td style="width: 70px">Cijena</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bill in bills %}
+                <tr>
+                    <td> {{ bill.sequence }} </td>
+                    <td> {{ bill.bill_type }} </td>
+                    <td> {{ bill.created }} </td>
+                    <td> {{ bill.title }} </td>
+                    <td> {{ bill.bill_category.name }} </td>
+                    <td> {{ bill.bill_sub_category.name }} </td>
+                    <td> {{ bill.currency.code }} </td>
+                    <td> {{ bill.price }} </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br/>
+    <table class="w-100 no-border">
+        <thead>
+            <tr class="lightGray">
+                <td colspan="2" class="text-align-center">UKUPNO</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in summ %}
+                <tr>
+                    <td style="width: 50%"> {{ s.currency }} </td>
+                    <td style="width: 50%"> {{ s.summ }} </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

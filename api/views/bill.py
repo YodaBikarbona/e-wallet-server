@@ -130,7 +130,7 @@ def get_costs(request):
                 c['bill_sub_category']['translations'] = SubCategoryTranslationSerializer(many=False).dump(
                     subcategory_translation[0]).data
             else:
-                c['bill_category']['translations'] = c['bill_sub_category']['name']
+                c['bill_sub_category']['translations'] = c['bill_sub_category']['name']
     db.session.close()
     return ok_response(message='', additional_data=additional_data)
 
@@ -368,12 +368,15 @@ def print_pdf_report(request):
                           'summ': round(summ, 2)})
     items = len(bills)
     scss = ['static/report/report.scss']
-    rendered = render_template("report_template.html", user=user, items=items, report_date=date_format(now()),
+    template = "report_template.html"
+    if lang == 'hr':
+        template = "report_template_hr.html"
+    rendered = render_template(template, user=user, items=items, report_date=date_format(now()),
                                bills=bills, bill_type=request.json['billType'], currencies=currencies, summ=summ_list)
     # Production report
-    report = pdfkit.from_string(rendered, False, css=scss, configuration=_get_pdfkit_config())
+    #report = pdfkit.from_string(rendered, False, css=scss, configuration=_get_pdfkit_config())
     # Localhost report
-    # report = pdfkit.from_string(rendered, False, css=scss)
+    report = pdfkit.from_string(rendered, False, css=scss)
     response = make_response(report)
     db.session.close()
     if bills:
