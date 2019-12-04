@@ -433,6 +433,25 @@ def get_graph(request):
         date_to=request.json['dateTo']
     )
     bills = BillSerializer(many=True).dump(bills).data if bills else []
+    # Translation part
+    for b in bills:
+        category_translation = [tr for tr in b['bill_category']['translations'] if tr.lang_code == lang]
+        if category_translation:
+            b['bill_category']['translations'] = CategoryTranslationSerializer(many=False).dump(
+                category_translation[0]).data
+        else:
+            b['bill_category']['translations'] = {
+                'translation_category_name': b['bill_category']['name']
+            }
+        if b['bill_sub_category']:
+            subcategory_translation = [tr for tr in b['bill_sub_category']['translations'] if tr.lang_code == lang]
+            if subcategory_translation:
+                b['bill_sub_category']['translations'] = SubCategoryTranslationSerializer(many=False).dump(
+                    subcategory_translation[0]).data
+            else:
+                b['bill_sub_category']['translations'] = {
+                    'translation_subcategory_name': b['bill_sub_category']['name']
+                }
     bills = sorted(bills, key=lambda i: i['created'])
     bills_dates = []
     for i, bill in enumerate(bills):
@@ -470,30 +489,36 @@ def get_graph(request):
     for cat in category_list:
         sum_cost = 0
         sum_profit = 0
+        translation_category = ''
         for cost in costs_list:
             if cat == cost['bill_category']['name']:
+                translation_category = cost['bill_category']['translations']['translation_category_name']
                 sum_cost += cost['price']
         if sum_cost > 0:
-            bill_categories_list_cost.append({"label": "{0}".format(cat), "value": sum_cost})
+            bill_categories_list_cost.append({"label": "{0}".format(translation_category), "value": sum_cost})
         for profit in profits_list:
+            translation_category = profit['bill_category']['translations']['translation_category_name']
             if cat == profit['bill_category']['name']:
                 sum_profit += profit['price']
         if sum_profit > 0:
-            bill_categories_list_profit.append({"label": "{0}".format(cat), "value": sum_profit})
+            bill_categories_list_profit.append({"label": "{0}".format(translation_category), "value": sum_profit})
     # Pie sub category graph
     for sub_cat in sub_category_list:
         sum_cost = 0
         sum_profit = 0
+        translation_subcategory = ''
         for cost in costs_list:
             if cost['bill_sub_category'] and sub_cat == cost['bill_sub_category']['name']:
+                translation_subcategory = cost['bill_sub_category']['translations']['translation_subcategory_name']
                 sum_cost += cost['price']
         if sum_cost > 0:
-            bill_sub_categories_list_cost.append({"label": "{0}".format(sub_cat), "value": sum_cost})
+            bill_sub_categories_list_cost.append({"label": "{0}".format(translation_subcategory), "value": sum_cost})
         for profit in profits_list:
             if profit['bill_sub_category'] and sub_cat == profit['bill_sub_category']['name']:
+                translation_subcategory = profit['bill_sub_category']['translations']['translation_subcategory_name']
                 sum_profit += profit['price']
         if sum_profit > 0:
-            bill_sub_categories_list_profit.append({"label": "{0}".format(sub_cat), "value": sum_profit})
+            bill_sub_categories_list_profit.append({"label": "{0}".format(translation_subcategory), "value": sum_profit})
     bills_prices_cost = list(set([bill[-1] for bill in bills_list if bill[-2] == _translation(
         original_string='Cost', lang_code=lang) and bill[-1] != 0]))
     min_cost = min(bills_prices_cost) if bills_prices_cost else 0
