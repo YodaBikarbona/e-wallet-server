@@ -25,6 +25,7 @@ class User(db.Model):
     new_password_code = Column(Unicode(6), nullable=True)
     new_password_code_expired = Column(DateTime, nullable=True)
     code = Column(Unicode(6), nullable=True)
+    application_rating = Column(Integer, nullable=0)
 
     city_id = Column(Integer, ForeignKey('city.id', ondelete='CASCADE'), nullable=False)
     role_id = Column(Integer, ForeignKey('role.id', ondelete='CASCADE'), nullable=False)
