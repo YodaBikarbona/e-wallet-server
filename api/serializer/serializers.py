@@ -43,7 +43,8 @@ class UsersSerializer(ma.Schema):
     class Meta:
         fields = ('id', 'created', 'first_name', 'last_name', 'email', 'activated',
                   'first_login', 'last_login', 'birth_date', 'gender', 'address', 'phone', 'role_id', 'created',
-                  'address', 'phone', 'city_id', 'country_id', 'currency_id', 'city', 'country', 'role', 'image', 'currency')
+                  'address', 'phone', 'city_id', 'country_id', 'currency_id', 'application_rating', 'city',
+                  'country', 'role', 'image', 'currency')
 
 
 class CategoryTranslationSerializer(ma.Schema):

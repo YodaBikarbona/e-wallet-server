@@ -490,3 +490,9 @@ class UserProvider:
         #Session.close()
         return True
 
+    @classmethod
+    def update_application_rating(cls, user, rating):
+        user.application_rating = rating
+        Session.commit()
+        return True
+

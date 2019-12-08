@@ -663,3 +663,20 @@ def clear_news(request):
     UserProvider.hide_news_by_user_id_and_news_id(user_id=usr.id, news_id=request.json['newsId'])
     db.session.close()
     return ok_response(message=messages.NEWS_HIDDEN)
+
+
+def update_application_rating(request):
+    lang = request.headers['Lang']
+    claims = check_security_token(request.headers['Authorization'])
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
+    if not usr:
+        db.session.close()
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
+    UserProvider.update_application_rating(user=usr, rating=request.json['rating'])
+    db.session.close()
+    return ok_response(message='')

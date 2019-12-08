@@ -27,7 +27,8 @@ from api.views.user import (
     get_active_currencies_limit,
     edit_currency_monthly_limit,
     get_news,
-    clear_news
+    clear_news,
+    update_application_rating
 )
 #from api.model.config import app
 from config import app
@@ -323,6 +324,11 @@ def delete_bill_endpoint(id):
 @app.route(post_route.EDIT_BILL, methods=['POST'])
 def edit_bill_endpoint(id):
     return edit_bill(request, id)
+
+
+@app.route(post_route.APPLICATION_RATING, methods=['POST'])
+def update_application_rating_endpoint():
+    return update_application_rating(request)
 
 
 @app.route('/v1/add_cat_subcat', methods=['GET'])
