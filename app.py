@@ -30,6 +30,10 @@ from api.views.user import (
     clear_news,
     update_application_rating
 )
+from api.views.application import (
+    get_bugs,
+    add_new_bug
+)
 #from api.model.config import app
 from config import app
 from api.helper.helper import ok_response, date_format, now
@@ -329,6 +333,16 @@ def edit_bill_endpoint(id):
 @app.route(post_route.APPLICATION_RATING, methods=['POST'])
 def update_application_rating_endpoint():
     return update_application_rating(request)
+
+
+@app.route(get_route.BUGS, methods=['GET'])
+def get_bugs_endpoint():
+    return get_bugs(request)
+
+
+@app.route(post_route.ADD_BUG, methods=['POST'])
+def add_new_bug_endpoint():
+    return add_new_bug(request)
 
 
 @app.route('/v1/add_cat_subcat', methods=['GET'])

@@ -98,3 +98,10 @@ class NewsSerializer(ma.Schema):
 
     class Meta:
         fields = ('id', 'created', 'title', 'content', 'type', 'user_id', 'user')
+
+
+class BugsSerializer(ma.Schema):
+    user = ma.Nested(UsersSerializer, only=['first_name', 'last_name'])
+
+    class Meta:
+        fields = ('id', 'created', 'comment', 'is_fixed', 'user_id', 'user')
