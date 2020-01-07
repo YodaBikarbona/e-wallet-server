@@ -95,6 +95,34 @@ def add_new_bug(request):
                                                                     lang_code=lang))
     if not ApplicationProvider.add_new_bug(comment=request.json['comment'], user_id=usr.id):
         db.session.close()
-        return error_handler(error_status=400, message='')
+        return error_handler(error_status=400, message=_translation(original_string=error_messages.BUG_CREATE_ERROR,
+                                                                    lang_code=lang))
     db.session.close()
-    return ok_response(message='')
+    return ok_response(message=_translation(original_string=messages.USER_NOT_FOUND,
+                                            lang_code=lang))
+
+
+def add_new_suggestion(request):
+    """
+    This method will add new suggestion from users
+    :param request:
+    :return: message
+    """
+    claims = check_security_token(request.headers['Authorization'])
+    lang = request.headers['Lang']
+    if claims:
+        usr = UserProvider.get_user_by_ID(claims['user_id'])
+    else:
+        return error_handler(error_status=403, message=_translation(original_string=error_messages.INVALID_TOKEN,
+                                                                    lang_code=lang))
+    if not usr:
+        db.session.close()
+        return error_handler(error_status=404, message=_translation(original_string=error_messages.USER_NOT_FOUND,
+                                                                    lang_code=lang))
+    if not ApplicationProvider.add_new_suggestion(comment=request.json['comment'], user_id=usr.id):
+        db.session.close()
+        return error_handler(error_status=400, message=_translation(
+            original_string=error_messages.SUGGESTION_CREATE_ERROR,
+            lang_code=lang))
+    db.session.close()
+    return ok_response(message=_translation(original_string=messages.SUGGESTION_CREATED, lang_code=lang))

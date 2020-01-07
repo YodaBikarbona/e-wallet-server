@@ -32,7 +32,8 @@ from api.views.user import (
 )
 from api.views.application import (
     get_bugs,
-    add_new_bug
+    add_new_bug,
+    add_new_suggestion
 )
 #from api.model.config import app
 from config import app
@@ -346,6 +347,11 @@ def get_bugs_endpoint():
 @app.route(post_route.ADD_BUG, methods=['POST'])
 def add_new_bug_endpoint():
     return add_new_bug(request)
+
+
+@app.route(post_route.ADD_SUGGESTION, methods=['POST'])
+def add_new_suggestion_endpoint():
+    return add_new_suggestion(request)
 
 
 @app.route('/v1/add_cat_subcat', methods=['GET'])

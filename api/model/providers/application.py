@@ -16,7 +16,8 @@ from api.model.user import (
     UserNews,
 )
 from api.model.application import (
-    Bugs
+    Bugs,
+    Suggestion
 )
 from api.model.bill import (
     Currency,
@@ -47,6 +48,20 @@ class ApplicationProvider:
             bug.comment = comment
             bug.created = now()
             Session.add(bug)
+            Session.commit()
+            return True
+        except Exception as ex:
+            Session.rollback()
+            print(ex)
+
+    @classmethod
+    def add_new_suggestion(cls, comment, user_id):
+        try:
+            suggestion = Suggestion()
+            suggestion.user_id = user_id
+            suggestion.comment = comment
+            suggestion.created = now()
+            Session.add(suggestion)
             Session.commit()
             return True
         except Exception as ex:

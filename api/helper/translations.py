@@ -154,5 +154,21 @@ translation = {
     "Bill is successfully edited!": {
         "en": "Bill is successfully edited!",
         "hr": "Račun je uspješno izmjenjen!"
+    },
+    "Bug is successfully created!": {
+        "en": "Bug is successfully created!",
+        "hr": "Greška je uspješno prijavljena!"
+    },
+    "Suggestion is successfully created!": {
+        "en": "Suggestion is successfully created!",
+        "hr": "Prijedlog je uspješno kreiran!"
+    },
+    "Error! Something is wrong, bug didn't successfully created!": {
+        "en": "Error! Something is wrong, bug didn't successfully created!",
+        "hr": "Greška! Nešto nije u redu, greška nije uspješno prijavljena!"
+    },
+    "Error! Something is wrong, suggestion didn't successfully created!": {
+        "en": "Error! Something is wrong, suggestion didn't successfully created!",
+        "hr": "Greška! Nešto nije u redu, prijedlog nije uspješno kreiran!"
     }
 }

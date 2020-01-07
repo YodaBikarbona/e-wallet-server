@@ -19,3 +19,18 @@ class Bugs(db.Model):
 
     def __repr__(self):
         return self.title
+
+
+class Suggestion(db.Model):
+    __tablename__ = 'suggestions'
+
+    id = Column(Integer, primary_key=True)
+    created = Column(DateTime, nullable=True, default=now())
+    comment = Column(Unicode(255), nullable=False)
+
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+
+    user = relationship('User')
+
+    def __repr__(self):
+        return self.title
