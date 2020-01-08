@@ -74,7 +74,8 @@ class BillProvider:
         return currencies.all()
 
     @classmethod
-    def get_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, bills_limit=None, bills_offset=None, search=None, date_from = '', date_to = ''):
+    def get_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, bills_limit=None,
+                             bills_offset=None, search=None, date_from='', date_to='', location=None):
         bills = Session.query(Bill)\
             .filter(Bill.user_id == user_id)
         if category_id and category_id != 'null':
@@ -92,17 +93,18 @@ class BillProvider:
             bills = bills.filter(Bill.created >= date_from)
         if date_to:
             bills = bills.filter(Bill.created < date_to)
+        if location:
+            bills = bills.filter(Bill.not_my_city == False) if location == 'True' else bills.filter(Bill.not_my_city == True)
         bills = bills.filter(Bill.bill_type == bill_type)
         bills = bills.order_by(Bill.created.desc())
         if bills_limit:
             bills = bills.limit(bills_limit)
         if bills_offset:
             bills = bills.offset(bills_offset*bills_limit)
-
         return bills.all()
 
     @classmethod
-    def count_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, search, date_from, date_to):
+    def count_costs_or_profits(cls, category_id, sub_category_id, currency_id, user_id, bill_type, search, date_from, date_to, location):
         return len(cls.get_costs_or_profits(
             category_id=category_id,
             sub_category_id=sub_category_id,
@@ -111,7 +113,8 @@ class BillProvider:
             bill_type=bill_type,
             search=search,
             date_from=date_from,
-            date_to=date_to
+            date_to=date_to,
+            location=location
         ))
 
     @classmethod

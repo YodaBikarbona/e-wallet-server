@@ -102,7 +102,8 @@ def get_costs(request):
         bills_offset=request.json['billsOffset'],
         search=request.json['search'],
         date_from=request.json['dateFrom'],
-        date_to=request.json['dateTo']
+        date_to=request.json['dateTo'],
+        location=request.json['location']
     )
     additional_data = {
         'costs': BillSerializer(many=True).dump(costs).data if costs else [],
@@ -114,7 +115,8 @@ def get_costs(request):
             bill_type='costs',
             search=request.json['search'],
             date_from=request.json['dateFrom'],
-            date_to=request.json['dateTo']
+            date_to=request.json['dateTo'],
+            location=request.json['location']
         )
     }
     for c in additional_data['costs']:
@@ -252,7 +254,8 @@ def get_profits(request):
         bills_offset=request.json['billsOffset'],
         search=request.json['search'],
         date_from=request.json['dateFrom'],
-        date_to=request.json['dateTo']
+        date_to=request.json['dateTo'],
+        location=request.json['location']
     )
     additional_data = {
         'profits': BillSerializer(many=True).dump(profits).data if profits else [],
@@ -264,7 +267,8 @@ def get_profits(request):
             bill_type='profits',
             search=request.json['search'],
             date_from=request.json['dateFrom'],
-            date_to=request.json['dateTo']
+            date_to=request.json['dateTo'],
+            location=request.json['location']
         )
     }
     for p in additional_data['profits']:
@@ -342,7 +346,8 @@ def print_pdf_report(request):
         bill_type=request.json['billType'],
         search=request.json['search'],
         date_from=request.json['dateFrom'],
-        date_to=request.json['dateTo']
+        date_to=request.json['dateTo'],
+        location=request.json['location']
     )
     bills = BillSerializer(many=True).dump(bills).data if bills else []
     #items = len(BillProvider.get_costs_or_profits('null', 'null', 'null', user_id=usr.id, bill_type=request.json['billType'], bills=bills))
@@ -393,9 +398,9 @@ def print_pdf_report(request):
     rendered = render_template(template, user=user, items=items, report_date=date_format(now()),
                                bills=bills, bill_type=request.json['billType'], currencies=currencies, summ=summ_list)
     # Production report
-    report = pdfkit.from_string(rendered, False, css=scss, configuration=_get_pdfkit_config())
+    #report = pdfkit.from_string(rendered, False, css=scss, configuration=_get_pdfkit_config())
     # Localhost report
-    #report = pdfkit.from_string(rendered, False, css=scss)
+    report = pdfkit.from_string(rendered, False, css=scss)
     response = make_response(report)
     db.session.close()
     if bills:
