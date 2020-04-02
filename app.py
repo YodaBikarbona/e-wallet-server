@@ -102,7 +102,7 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 @app.route('/dashboard/application', strict_slashes=False)
 @app.route('/dashboard/application/bugs', strict_slashes=False)
 @app.route('/dashboard/application/suggestions', strict_slashes=False)
-@app.route('dashboard/application/info', strict_slashes=False)
+@app.route('/dashboard/application/info', strict_slashes=False)
 @app.route('/', strict_slashes=False)
 def root():
    return app.send_static_file('index.html')
