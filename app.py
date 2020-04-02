@@ -102,6 +102,7 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 @app.route('/dashboard/application', strict_slashes=False)
 @app.route('/dashboard/application/bugs', strict_slashes=False)
 @app.route('/dashboard/application/suggestions', strict_slashes=False)
+@app.route('dashboard/application/info', strict_slashes=False)
 @app.route('/', strict_slashes=False)
 def root():
    return app.send_static_file('index.html')
@@ -353,6 +354,22 @@ def add_new_bug_endpoint():
 def add_new_suggestion_endpoint():
     return add_new_suggestion(request)
 
+# # Push notification
+# @app.route("/subscription/", methods=["GET", "POST"])
+# def subscription():
+#     """
+#         POST creates a subscription
+#         GET returns vapid public key which clients uses to send around push notification
+#     """
+#     from flask import Response
+#     import json
+#     from api.helper.helper import VAPID_PUBLIC_KEY
+#     if request.method == "GET":
+#         return Response(response=json.dumps({"public_key": VAPID_PUBLIC_KEY}),
+#             headers={"Access-Control-Allow-Origin": "*"}, content_type="application/json")
+#
+#     subscription_token = request.get_json("subscription_token")
+#     return Response(status=201, mimetype="application/json")
 
 @app.route('/v1/add_cat_subcat', methods=['GET'])
 def add_subcat_endpoint():
