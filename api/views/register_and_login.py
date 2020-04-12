@@ -56,7 +56,7 @@ def register(request):
 
 
 def send_code_to_mail(recipient, code):
-    msg = Message('Activation code', sender='privateewallet@gmail.com', recipients=['{0}'.format(recipient)])
+    msg = Message('Activation code', sender='privateewallet@hotmail.com', recipients=['{0}'.format(recipient)])
     msg.body = 'Activation code: {0}'.format(code)
     try:
         mail.send(msg)
