@@ -62,6 +62,7 @@ class UserProvider:
             user.salt = new_salt()
             user.password = new_psw(user.salt, user_data['password'])
             user.role_id = role.id
+            user.activated = True
             #user.image_id = None
             #user.image_id = 1 if user_data['gender'] == 'male' else user.image_id
             #user.image_id = 2 if user_data['gender'] == 'female' else user.image_id
@@ -157,7 +158,7 @@ class UserProvider:
     def save_new_password(cls, user, user_data):
         user.salt = new_salt()
         user.password = new_psw(user.salt, user_data['newPassword'])
-        user.activated = False
+        # user.activated = False
         # db.session.commit()
         # db.session.close()
         Session.commit()

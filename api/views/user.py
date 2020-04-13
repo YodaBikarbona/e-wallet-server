@@ -518,7 +518,7 @@ def change_password(request):
         return error_handler(400, error_messages.PASSWORD_NOT_VALID)
     UserProvider.save_new_password(user=usr, user_data=request.json)
     UserProvider.set_new_restart_code(user=usr, code=True)
-    send_code_to_mail(recipient=usr.email, code=usr.code)
+    # send_code_to_mail(recipient=usr.email, code=usr.code)
     db.session.close()
     return ok_response(message=_translation(original_string=messages.RESET_PASSWORD, lang_code=lang))
 

@@ -45,14 +45,15 @@ def register(request):
         Session.close()
         return error_handler(error_status=400, message=_translation(original_string=error_messages.REGEX_ERROR,
                                                                     lang_code=lang))
-    code = user.code
-    recipient = request.json['email']
-    send_mail = send_code_to_mail(recipient=recipient, code=code)
-    if send_mail:
-        Session.close()
-        return ok_response(message=messages.USER_CREATED)
-    Session.close()
-    return error_handler(error_status=400, message='Something is wrong!')
+    return ok_response(message=messages.USER_CREATED)
+    # code = user.code
+    # recipient = request.json['email']
+    # send_mail = send_code_to_mail(recipient=recipient, code=code)
+    # if send_mail:
+    #     Session.close()
+    #     return ok_response(message=messages.USER_CREATED)
+    # Session.close()
+    # return error_handler(error_status=400, message='Something is wrong!')
 
 
 def send_code_to_mail(recipient, code):
