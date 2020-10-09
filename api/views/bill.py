@@ -358,7 +358,12 @@ def print_pdf_report(request):
         if bill['bill_sub_category_id'] != False:
             bill_sub_category = BillProvider.get_subcategory_by_sub_cat_id(bill_sub_category_id=bill['bill_sub_category_id'])
             bill['bill_sub_category'] = SubCategorySerializer(many=False).dump(bill_sub_category).data
-        bill['created'] = date_format(bill['created'], string=True)
+        try:
+            bill['created'] = date_format(bill['created'], string=True)
+        except Exception as ex:
+            # Replace +00:00 with .5
+            print(ex)
+            bill['created'] = date_format(bill['created'][:-6] + '.5', string=True)
         summ += bill['price']
         if bill['currency']['code'] not in list_of_currencies:
             list_of_currencies.append(bill['currency']['code'])
